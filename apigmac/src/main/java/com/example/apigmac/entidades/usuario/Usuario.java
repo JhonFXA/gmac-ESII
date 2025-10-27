@@ -1,5 +1,6 @@
 package com.example.apigmac.entidades.usuario;
 
+import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.modelo.enums.Perfil;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +26,16 @@ public class Usuario implements UserDetails {
     private String cpf;
     private String nome;
     private Perfil perfil;
+
+    public Usuario(RegistroUsuarioDTO dados){
+        this.login = dados.login();
+        this.email = dados.email();
+        this.senha = dados.senha();
+        this.cpf = dados.cpf();
+        this.nome = dados.nome();
+        this.perfil = dados.perfil();
+       // this.dataNascimento = dados.dataNascimento();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

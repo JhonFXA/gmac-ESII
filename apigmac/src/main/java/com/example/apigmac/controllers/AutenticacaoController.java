@@ -15,6 +15,6 @@ public class AutenticacaoController {
 
     @PostMapping ("/login")
     public ResponseEntity<Usuario> login (@RequestBody @Valid LoginDTO loginDTO){
-
+        return ResponseEntity.ok().build();
     }
 }
