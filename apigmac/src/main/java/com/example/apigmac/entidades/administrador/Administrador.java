@@ -1,10 +1,8 @@
-package com.example.apigmac.dominio.administrador;
+package com.example.apigmac.entidades.administrador;
 
 
-import com.example.apigmac.dominio.usuario.Usuario;
+import com.example.apigmac.entidades.usuario.Usuario;
 import jakarta.persistence.*;
-
-import java.util.UUID;
 
 @Table(name = "administrador")
 @Entity

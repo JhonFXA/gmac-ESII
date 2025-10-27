@@ -1,7 +1,6 @@
-package com.example.apigmac.dominio.paciente;
+package com.example.apigmac.entidades.paciente;
 
-import com.example.apigmac.dominio.endereco.Endereco;
-import com.example.apigmac.dominio.usuario.Usuario;
+import com.example.apigmac.entidades.endereco.Endereco;
 import com.example.apigmac.modelo.enums.EstadoCivil;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import jakarta.persistence.*;

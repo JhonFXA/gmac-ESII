@@ -1,8 +1,7 @@
-package com.example.apigmac.dominio.cadastro;
+package com.example.apigmac.entidades.cadastro;
 
-import com.example.apigmac.dominio.medico.Medico;
-import com.example.apigmac.dominio.paciente.Paciente;
-import com.example.apigmac.dominio.recepcionista.Recepcionista;
+import com.example.apigmac.entidades.paciente.Paciente;
+import com.example.apigmac.entidades.recepcionista.Recepcionista;
 import jakarta.persistence.*;
 
 import java.util.Date;

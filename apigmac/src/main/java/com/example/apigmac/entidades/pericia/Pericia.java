@@ -1,9 +1,9 @@
-package com.example.apigmac.dominio.pericia;
+package com.example.apigmac.entidades.pericia;
 
 
-import com.example.apigmac.dominio.documentacao.Documentacao;
-import com.example.apigmac.dominio.medico.Medico;
-import com.example.apigmac.dominio.paciente.Paciente;
+import com.example.apigmac.entidades.documentacao.Documentacao;
+import com.example.apigmac.entidades.medico.Medico;
+import com.example.apigmac.entidades.paciente.Paciente;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import jakarta.persistence.*;
 import lombok.Getter;

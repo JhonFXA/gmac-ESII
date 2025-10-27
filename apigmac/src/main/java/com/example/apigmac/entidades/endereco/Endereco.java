@@ -1,4 +1,4 @@
-package com.example.apigmac.dominio.endereco;
+package com.example.apigmac.entidades.endereco;
 
 
 import jakarta.persistence.Entity;

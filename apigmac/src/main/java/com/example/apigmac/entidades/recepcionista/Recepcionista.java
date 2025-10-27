@@ -1,13 +1,11 @@
-package com.example.apigmac.dominio.recepcionista;
+package com.example.apigmac.entidades.recepcionista;
 
-import com.example.apigmac.dominio.usuario.Usuario;
+import com.example.apigmac.entidades.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Table(name = "recepcionista")
 @Entity
