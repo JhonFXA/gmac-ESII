@@ -11,7 +11,7 @@ public enum Perfil {
         this.perfil = perfil;
     }
 
-    public String getPerfil (String perfil){
+    public String getPerfil (){
         return  perfil;
     }
 }

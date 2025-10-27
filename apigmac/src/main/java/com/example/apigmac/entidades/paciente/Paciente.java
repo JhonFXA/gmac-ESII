@@ -5,6 +5,7 @@ import com.example.apigmac.modelo.enums.EstadoCivil;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import jakarta.persistence.*;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Table(name = "paciente")
@@ -21,6 +22,7 @@ public class Paciente {
     private EstadoCivil estadoCivil;
     private StatusSolicitacao statusSolicitacao;
     private String urlDocumentacao;
+    private Date DataNascimento;
 
     @OneToOne
     @JoinColumn(name = "id_endereco")
