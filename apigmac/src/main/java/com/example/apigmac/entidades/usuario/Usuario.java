@@ -1,14 +1,12 @@
 package com.example.apigmac.entidades.usuario;
 
 import com.example.apigmac.modelo.enums.Perfil;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,9 +20,12 @@ public class Usuario implements UserDetails {
     private String login;
     private String email;
     private String senha;
-    private String cpf;
     private String nome;
+
+    @Enumerated(EnumType.STRING)
     private Perfil perfil;
+
+    private Date dataNascimento;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
