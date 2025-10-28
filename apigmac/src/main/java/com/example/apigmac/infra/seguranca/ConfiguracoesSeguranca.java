@@ -23,6 +23,7 @@ public class ConfiguracoesSeguranca {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/registro").permitAll()
                         .anyRequest().authenticated()
         )
         .build();
