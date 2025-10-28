@@ -31,6 +31,7 @@ public class ConfiguracoesSeguranca {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/registro").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/auth/buscar/{id}").hasRole("ADMIN")
                         .anyRequest().authenticated()
         )
         .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)
