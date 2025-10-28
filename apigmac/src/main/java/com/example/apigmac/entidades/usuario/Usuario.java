@@ -4,7 +4,9 @@ import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.modelo.enums.Perfil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,6 +17,8 @@ import java.util.UUID;
 
 @Table(name = "usuario")
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario implements UserDetails {
