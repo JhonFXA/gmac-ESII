@@ -49,8 +49,6 @@ public class Usuario implements UserDetails {
         this.dataNascimento = dataNascimento;
     }
 
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if(this.perfil == Perfil.ADMINISTRADOR) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
