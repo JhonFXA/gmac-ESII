@@ -2,19 +2,21 @@ package com.example.apigmac.entidades.usuario;
 
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.modelo.enums.Perfil;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 @Table(name = "usuario")
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Usuario implements UserDetails {
     @Id
     @GeneratedValue
@@ -25,17 +27,23 @@ public class Usuario implements UserDetails {
     private String senha;
     private String cpf;
     private String nome;
-    private Perfil perfil;
 
-    public Usuario(RegistroUsuarioDTO dados){
-        this.login = dados.login();
-        this.email = dados.email();
-        this.senha = dados.senha();
-        this.cpf = dados.cpf();
-        this.nome = dados.nome();
-        this.perfil = dados.perfil();
-       // this.dataNascimento = dados.dataNascimento();
+    @Enumerated(EnumType.STRING)
+    private Perfil perfil;
+    private Date dataNascimento;
+
+
+    public Usuario(String login, String email, String senha, String cpf, String nome, Perfil perfil, Date dataNascimento){
+        this.login = login;
+        this.email = email;
+        this.senha = senha;
+        this.cpf = cpf;
+        this.nome = nome;
+        this.perfil = perfil;
+        this.dataNascimento = dataNascimento;
     }
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
