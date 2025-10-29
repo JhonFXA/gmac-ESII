@@ -1,8 +1,10 @@
 package com.example.apigmac.DTOs;
 
 import com.example.apigmac.modelo.enums.Perfil;
+
+import java.time.LocalDate;
 import java.util.Date;
 
-public record RegistroUsuarioDTO(String login, String email, String senha, String cpf, String nome, Perfil perfil, Date dataNascimento){
+public record RegistroUsuarioDTO(String login, String email, String senha, String cpf, String nome, Perfil perfil, LocalDate dataNascimento){
 
 }

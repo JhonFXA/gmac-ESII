@@ -7,13 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,10 +35,10 @@ public class Usuario implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Perfil perfil;
-    private Date dataNascimento;
+    private LocalDate dataNascimento;
 
 
-    public Usuario(String login, String email, String senha, String cpf, String nome, Perfil perfil, Date dataNascimento){
+    public Usuario(String login, String email, String senha, String cpf, String nome, Perfil perfil, LocalDate dataNascimento){
         this.login = login;
         this.email = email;
         this.senha = senha;
