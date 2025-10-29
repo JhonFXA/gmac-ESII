@@ -12,7 +12,12 @@ public class ServicoAutorizacao implements UserDetailsService {
     @Autowired
     RepositorioUsuario repositorio;
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repositorio.findByLogin(username);
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        UserDetails usuario = repositorio.findByLogin(login);
+        if (usuario == null) {
+            throw new UsernameNotFoundException("Usuário não encontrado: " + login);
+        }
+        return usuario;
     }
+
 }

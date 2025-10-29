@@ -1,6 +1,6 @@
 CREATE TABLE recepcionista(
-    id UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
-    CONSTRAINT fk_usuario
+    id_usuario UUID DEFAULT RANDOM_UUID() PRIMARY KEY,
+    CONSTRAINT fk3_usuario
             FOREIGN KEY (id_usuario)
             REFERENCES usuario(id)
 );

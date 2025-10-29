@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("auth")
-public class UsuarioController{
+public class RegistroController {
 
     @Autowired
     private RepositorioUsuario repositorio;

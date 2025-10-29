@@ -7,7 +7,7 @@ CREATE TABLE documentacao(
     CONSTRAINT fk_paciente
                     FOREIGN KEY (id_paciente)
                     REFERENCES paciente(id),
-    CONSTRAINT fk_usuario
+    CONSTRAINT fk_5usuario
                         FOREIGN KEY (id_usuario)
                         REFERENCES usuario(id)
 );

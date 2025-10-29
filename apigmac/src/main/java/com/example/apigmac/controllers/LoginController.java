@@ -2,16 +2,12 @@ package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.LoginDTO;
 import com.example.apigmac.DTOs.TokenDTO;
-import com.example.apigmac.entidades.usuario.Usuario;
 import com.example.apigmac.servicos.ServicoLogin;
-import com.example.apigmac.servicos.ServicoToken;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,18 +17,18 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("auth")
-public class AutenticacaoController {
+public class LoginController {
 
     @Autowired
     ServicoLogin servicoLogin;
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO loginDTO) {
+    public ResponseEntity login(@RequestBody @Valid LoginDTO loginDTO) {
         try {
             TokenDTO token = servicoLogin.login(loginDTO);
             return ResponseEntity.ok(token);
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("erro", "Login ou senha inválidos"));
+                    .body(Map.of("Erro", "Login ou senha inválidos"));
         }
     }
 }
