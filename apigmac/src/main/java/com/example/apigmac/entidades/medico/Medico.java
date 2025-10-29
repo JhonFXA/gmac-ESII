@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "recepcionista")
+import java.util.UUID;
+
+@Table(name = "medico")
 @Entity
 @Getter
 @Setter
@@ -15,6 +17,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Medico {
     @Id
+    @Column(name = "id_usuario")
+    private UUID idUsuario;
+
     @OneToOne
     @MapsId
     @JoinColumn(name = "id_usuario")
