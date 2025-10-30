@@ -1,15 +1,19 @@
 import { useState } from "react";
 
+import '../css/default.css'
+import '../css/Form.css'
 export function Form() {
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showSenha, setShowSenha] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setMessage("");
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
@@ -19,15 +23,14 @@ export function Form() {
       });
 
       if (!response.ok) {
-        setMessage("Login ou senha inválidos");
+        const error = await response.json();
+        setMessage(error.Erro || "Login ou senha inválidos");
         return;
       }
 
       const data = await response.json();
 
       localStorage.setItem("token", data.token);
-
-      setMessage("Login bem-sucedido!");
 
       setTimeout(() => {
         window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
@@ -41,34 +44,26 @@ export function Form() {
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="login" className="block mb-1">Login:</label>
-        <input
-          type="text"
-          id="login"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
-          className="w-72 h-10 p-2 border rounded"
-        />
+    <form className="form-container" onSubmit={handleSubmit}>
+
+      <div className="input-div">
+        <div className="user-field">
+          <label htmlFor="login" className="">Usuário</label>
+          <input type="text" id="login" value={login} onChange={(e) => setLogin(e.target.value)}className="input-txt user-input"/>
+        </div>
+        <div className="password-field">
+          <label htmlFor="senha" className="">Senha</label>
+          <input type={showSenha ? "text" : "password"} id="senha" value={senha} onChange={(e) => setSenha(e.target.value)} className="input-txt password-input"/>
+          <i className={`fa-solid ${ showSenha ? "fa-eye-slash" : "fa-eye" } view-icon`} onClick={() => setShowSenha(!showSenha)}></i>
+        </div>
+        <p className="error-message">{message}</p>
       </div>
-      <div>
-        <label htmlFor="senha" className="block mb-1">Senha:</label>
-        <input
-          type="password"
-          id="senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          className="w-72 h-10 p-2 border rounded"
-        />
+
+      <div className="button-div">
+        <input type="submit" value={loading ? "Enviando..." : "Entrar"} className="default-button"/>
+        <button type="button" className="default-button">Lembrar Senha</button>
       </div>
-      <input
-        type="submit"
-        value={loading ? "Enviando..." : "Login"}
-        className="w-72 h-10 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600"
-        disabled={loading}
-      />
-      {message && <p className="mt-2">{message}</p>}
+
     </form>
   );
 }
