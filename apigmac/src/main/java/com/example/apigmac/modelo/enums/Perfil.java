@@ -3,7 +3,8 @@ package com.example.apigmac.modelo.enums;
 public enum Perfil {
     ADMINISTRADOR("administrador"),
     RECEPCIONISTA("recepcionista"),
-    MEDICO("medico");
+    MEDICO("medico"),
+    INATIVO("inativo");
 
     private String perfil;
 

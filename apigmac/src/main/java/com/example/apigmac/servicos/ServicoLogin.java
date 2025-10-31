@@ -3,8 +3,10 @@ package com.example.apigmac.servicos;
 import com.example.apigmac.DTOs.LoginDTO;
 import com.example.apigmac.DTOs.TokenDTO;
 import com.example.apigmac.entidades.usuario.Usuario;
+import com.example.apigmac.modelo.enums.Perfil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,11 @@ public class ServicoLogin {
 
         var usuarioLogado = (Usuario)auth.getPrincipal();
         var token = servicoToken.gerarToken(usuarioLogado);
+        if (usuarioLogado.getPerfil() == Perfil.INATIVO) {
+            throw new DisabledException("Usuário inativo");
+        }
         return new TokenDTO(token,usuarioLogado.getPerfil().toString());
+
+
     }
 }

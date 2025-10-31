@@ -1,25 +1,40 @@
 import { useState } from "react";
-import './App.css';
+import './css/App.css';
 
-import {Form} from './components/Form.jsx'
+import logo from "./assets/gmac-logo.png";
+import illustration from "./assets/illustration.svg";
+import ufsLogo from "./assets/ufs-logo.png";
+import {Form} from './components/Form.jsx';
 
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex flex-1 border">
-       <div className="w-1/2 border border-red-500">
+    <div className="container">
+
+      <main className="">
           {/* Conteúdo da esquerda */}
-        </div>
-        <div className="w-1/2 flex justify-center items-center border border-blue-500">
-          <div className="p-4 border">
-            <h1 className="text-2xl font-bold mb-4">GMAC</h1>
-            <Form />
-          </div>
-        </div>
+          <section className="image-content">
+            <img src={illustration} height={500} alt="" />
+          </section>
+
+          <section className="form-content">
+            <div className="form-div">
+              <img src={logo} height={200}/>
+              <Form />
+            </div>
+          </section>
       </main>
-      <footer className="h-24 border mt-auto flex items-center justify-center">
-        {/* Conteúdo do footer */}
+
+      <footer className="footer">
+        <div className="footer-info">
+          <img src={ufsLogo} alt="Logo da UFS" />
+          <p>Desenvolvido pela <br/>Universidade Federal de Sergipe (UFS)</p>
+          <p>@2025 GMAC</p>
+        </div>
+        <div className="footer-links">
+          <a href="#">Termos de uso</a>
+          <a href="#">Ajuda</a>
+        </div>
       </footer>
     </div>
   )
