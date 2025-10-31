@@ -12,7 +12,6 @@ import com.example.apigmac.repositorios.RepositorioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -59,7 +58,7 @@ public class ServicoRegistro {
         }
 
         if (!dataNascimentoValida(dados.dataNascimento())) {
-            throw new IllegalArgumentException("Data de nascimento inválida");
+            throw new IllegalArgumentException("Data inválida");
         }
 
         String senhaCriptografada = passwordEncoder.encode(dados.senha());

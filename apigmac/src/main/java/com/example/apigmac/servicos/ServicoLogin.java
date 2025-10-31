@@ -20,8 +20,8 @@ public class ServicoLogin {
         var authToken = new UsernamePasswordAuthenticationToken(loginDTO.login(), loginDTO.senha());
         var auth = authenticationManager.authenticate(authToken);
 
-        // auth.getPrincipal() é o usuário carregado pelo ServicoAutorizacao
-        var token = servicoToken.gerarToken((Usuario) auth.getPrincipal());
-        return new TokenDTO(token);
+        var usuarioLogado = (Usuario)auth.getPrincipal();
+        var token = servicoToken.gerarToken(usuarioLogado);
+        return new TokenDTO(token,usuarioLogado.getPerfil().toString());
     }
 }

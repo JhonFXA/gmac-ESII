@@ -21,7 +21,7 @@ public class ServicoBuscarId {
         return new RegistroUsuarioDTO(
                 usuario.getLogin(),
                 usuario.getEmail(),
-                null, // senha não deve ser retornada
+                null,
                 usuario.getCpf(),
                 usuario.getNome(),
                 usuario.getPerfil(),
