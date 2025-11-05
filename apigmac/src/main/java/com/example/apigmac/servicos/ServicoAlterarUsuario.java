@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ServicoAlterarUsuario {
+    @Autowired
+    ServicoVerificacao verificacao;
 
     @Autowired
     private RepositorioUsuario repositorioUsuario;
@@ -20,14 +22,39 @@ public class ServicoAlterarUsuario {
         Usuario usuario = repositorioUsuario.findById(dto.id())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        if (dto.nome() != null) usuario.setNome(dto.nome());
-        if (dto.cpf() != null) usuario.setCpf(dto.cpf());
-        if (dto.email() != null) usuario.setEmail(dto.email());
-        if (dto.login() != null) usuario.setLogin(dto.login());
+        if (dto.nome() != null) {
+            usuario.setNome(dto.nome());
+        }
+        if (dto.cpf() != null) {
+            if (!verificacao.cpfValido(dto.cpf())){
+                throw new IllegalArgumentException("CPF inválido.");
+            }
+            usuario.setCpf(dto.cpf());
+        }
+        if (dto.email() != null) {
+            if (!verificacao.emailValido(dto.email())){
+                throw new IllegalArgumentException("E-mail inválido ou domínio inexistente.");
+            }
+            usuario.setEmail(dto.email());
+        }
+        if (dto.login() != null) {
+            if (repositorioUsuario.findByLogin(dto.login()) != null) {
+                throw new IllegalArgumentException("Login já existe");
+            }
+            usuario.setLogin(dto.login());
+        }
         if (dto.perfil() != null) usuario.setPerfil(dto.perfil());
-        if (dto.dataNascimento() != null) usuario.setDataNascimento(dto.dataNascimento());
+        if (dto.dataNascimento() != null) {
+            if (!verificacao.dataNascimentoValida(dto.dataNascimento())) {
+                throw new IllegalArgumentException("Data inválida");
+            }
+            usuario.setDataNascimento(dto.dataNascimento());
+        }
 
         if (dto.senha() != null) {
+            if (!verificacao.senhaValida(dto.senha())) {
+                throw new IllegalArgumentException("Senha inválida");
+            }
             String senhaCriptografada = passwordEncoder.encode(dto.senha());
             usuario.setSenha(senhaCriptografada);
         }

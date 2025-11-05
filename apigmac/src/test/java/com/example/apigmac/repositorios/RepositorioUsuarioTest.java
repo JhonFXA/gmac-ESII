@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -42,7 +43,7 @@ class RepositorioUsuarioTest {
                 "123.456.789-00",         // CPF
                 "Usuário Teste",          // nome
                 Perfil.RECEPCIONISTA,            // perfil
-                new Date()                // data de nascimento (ex: hoje)
+                LocalDate.now()                // data de nascimento (ex: hoje)
         );
 
         this.criarUsuario(usuario);

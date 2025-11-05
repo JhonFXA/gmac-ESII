@@ -37,7 +37,7 @@ public class ConfiguracoesSeguranca {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET,"/buscar/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST,"/auth/registro").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/auth/registro").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/alterar").hasRole("ADMIN")
                         .anyRequest().authenticated()
         )

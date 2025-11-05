@@ -13,8 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Optional;
-import java.util.Date;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +42,7 @@ class ServicoAutorizacaoTest {
                 "123.456.789-00",
                 "Usuário Teste",
                 Perfil.RECEPCIONISTA,
-                new Date()
+                LocalDate.now()
         );
     }
 

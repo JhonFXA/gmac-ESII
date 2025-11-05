@@ -23,10 +23,10 @@ public class ServicoLogin {
         var auth = authenticationManager.authenticate(authToken);
 
         var usuarioLogado = (Usuario)auth.getPrincipal();
-        var token = servicoToken.gerarToken(usuarioLogado);
         if (usuarioLogado.getPerfil() == Perfil.INATIVO) {
             throw new DisabledException("Usuário inativo");
         }
+        var token = servicoToken.gerarToken(usuarioLogado);
         return new TokenDTO(token,usuarioLogado.getPerfil().toString());
 
 
