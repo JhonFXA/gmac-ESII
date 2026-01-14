@@ -43,6 +43,11 @@ export function Form() {
     }
   };
 
+
+  function printWindowSize() {
+    console.log("Width: " + window.innerWidth + ", Height: " + window.innerHeight);
+  }
+
   return (
     <form className="form-container" onSubmit={handleSubmit}>
 
@@ -61,7 +66,7 @@ export function Form() {
 
       <div className="button-div">
         <input type="submit" value={loading ? "Enviando..." : "Entrar"} className="default-button"/>
-        <button type="button" className="default-button">Lembrar Senha</button>
+        <button type="button" onClick={printWindowSize} className="default-button">Lembrar Senha</button>
       </div>
 
     </form>
