@@ -12,16 +12,7 @@ import com.example.apigmac.repositorios.RepositorioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import java.time.LocalDate;
 
-import java.util.Hashtable;
-import java.util.InputMismatchException;
-import java.util.Objects;
 @Service
 public class ServicoRegistro {
     @Autowired
@@ -47,12 +38,18 @@ public class ServicoRegistro {
             throw new IllegalArgumentException("Login já existe");
         }
 
+        if (repositorioUsuario.findByCpf(dados.cpf()) != null){
+            throw new IllegalArgumentException("CPF já cadastrado");
+        }
         if (!verificacao.cpfValido(dados.cpf())) {
             throw new IllegalArgumentException("CPF inválido");
         }
-
         if (!verificacao.senhaValida(dados.senha())) {
             throw new IllegalArgumentException("Senha inválida");
+        }
+
+        if (repositorioUsuario.findByEmail(dados.email()) != null){
+            throw new IllegalArgumentException("Email já cadastrado");
         }
 
         if (!verificacao.emailValido(dados.email())) {

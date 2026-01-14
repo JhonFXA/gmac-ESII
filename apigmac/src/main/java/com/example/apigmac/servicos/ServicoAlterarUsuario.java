@@ -26,12 +26,18 @@ public class ServicoAlterarUsuario {
             usuario.setNome(dto.nome());
         }
         if (dto.cpf() != null) {
+            if (repositorioUsuario.findByCpf(dto.cpf()) != null){
+                throw new IllegalArgumentException("CPF já cadastrado");
+            }
             if (!verificacao.cpfValido(dto.cpf())){
                 throw new IllegalArgumentException("CPF inválido.");
             }
             usuario.setCpf(dto.cpf());
         }
         if (dto.email() != null) {
+            if (repositorioUsuario.findByEmail(dto.email()) != null){
+                throw new IllegalArgumentException("Email já cadastrado");
+            }
             if (!verificacao.emailValido(dto.email())){
                 throw new IllegalArgumentException("E-mail inválido ou domínio inexistente.");
             }

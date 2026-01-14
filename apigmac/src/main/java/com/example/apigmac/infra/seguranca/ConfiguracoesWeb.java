@@ -10,7 +10,7 @@ public class ConfiguracoesWeb implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registro){
         registro.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
 
     }

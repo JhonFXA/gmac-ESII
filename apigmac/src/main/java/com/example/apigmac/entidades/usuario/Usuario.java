@@ -28,9 +28,15 @@ public class Usuario implements UserDetails {
     private UUID id;
 
     private String login;
+
+    @Column(unique = true)
     private String email;
+
     private String senha;
+
+    @Column(unique = true)
     private String cpf;
+
     private String nome;
 
     @Enumerated(EnumType.STRING)
