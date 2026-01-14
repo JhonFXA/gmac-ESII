@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 @Component
 public class FiltroSeguranca extends OncePerRequestFilter {
@@ -31,7 +32,9 @@ public class FiltroSeguranca extends OncePerRequestFilter {
         if (token != null){
             var login = servicoToken.validarToken(token);
             UserDetails usuario = repositorio.findByLogin(login);
-
+            if (usuario == null) {
+                throw new AccessDeniedException("Usuário não tem permissão ou token inválido.");
+            }
             var autenticacao = new UsernamePasswordAuthenticationToken(usuario,null,usuario.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(autenticacao);
