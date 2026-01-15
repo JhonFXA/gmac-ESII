@@ -4,6 +4,53 @@
     min-height : 100vh
 }
 
+.header {
+    border: solid var(--border-color) 1px;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.nav-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: 20px;
+}
+
+.header-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+}
+
+.header-btn.user-btn {
+    border: solid 3px;
+}
+
+.header-btn.notification-btn{
+    position: relative;
+}
+
+.header-btn.notification-btn::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    bottom: 4px;
+    right: 6px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.header-btn i {
+    font-size: 28px;
+}
+
 main {
     display: flex;
     flex: 1;
