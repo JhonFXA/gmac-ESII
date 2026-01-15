@@ -1,6 +1,6 @@
 package com.example.apigmac.repositorios;
 
-import com.example.apigmac.entidades.usuario.Usuario;
+import com.example.apigmac.entidades.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 

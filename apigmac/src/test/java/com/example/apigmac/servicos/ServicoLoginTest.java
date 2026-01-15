@@ -2,7 +2,7 @@ package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.LoginDTO;
 import com.example.apigmac.DTOs.TokenDTO;
-import com.example.apigmac.entidades.usuario.Usuario;
+import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

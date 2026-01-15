@@ -1,6 +1,5 @@
-package com.example.apigmac.entidades.medico;
+package com.example.apigmac.entidades;
 
-import com.example.apigmac.entidades.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,10 +19,11 @@ public class Medico {
     @Column(name = "id_usuario")
     private UUID idUsuario;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @MapsId
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
+    @Column(nullable = false)
     private String especializacao;
 }

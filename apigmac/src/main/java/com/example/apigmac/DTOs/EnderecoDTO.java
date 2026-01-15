@@ -1,4 +1,4 @@
 package com.example.apigmac.DTOs;
 
-public record EndereçoDTO(String cep,String cidade,String estado, String numero,String logradouro,String complemento) {
+public record EnderecoDTO(String cep,String cidade,String estado,String bairro, String numero,String logradouro,String complemento) {
 }

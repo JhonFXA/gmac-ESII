@@ -1,6 +1,6 @@
 package com.example.apigmac.repositorios;
 
-import com.example.apigmac.entidades.administrador.Administrador;
+import com.example.apigmac.entidades.Administrador;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

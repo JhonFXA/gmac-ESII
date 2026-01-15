@@ -1,36 +1,26 @@
-package com.example.apigmac.entidades.documentacao;
+package com.example.apigmac.entidades;
 
 
-import com.example.apigmac.entidades.medico.Medico;
-import com.example.apigmac.entidades.paciente.Paciente;
-import com.example.apigmac.modelo.enums.StatusDocumentacao;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.UUID;
 
-@Table(name = "documentacao")
 @Entity
+@Table(name = "documentacao")
 @Getter
 @Setter
-
 public class Documentacao {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Date dataValidacao;
-    private StatusDocumentacao statusDocumentacao;
+    @Column(nullable = false)
+    private String caminho;
 
-    @OneToOne
-    @JoinColumn(name = "id_paciente")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
-
-    @OneToOne
-    @JoinColumn(name = "id_usuario")
-    private Medico medico;
-
-
 }

@@ -1,6 +1,5 @@
-package com.example.apigmac.entidades.paciente;
+package com.example.apigmac.entidades;
 
-import com.example.apigmac.entidades.endereco.Endereco;
 import com.example.apigmac.modelo.enums.EstadoCivil;
 import com.example.apigmac.modelo.enums.Sexo;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
@@ -10,37 +9,44 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Table(name = "paciente")
 @Entity
+@Table(name = "paciente")
 public class Paciente {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String cpf;
 
+    @Column(nullable = false)
     private String telefone;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Sexo sexo;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "estado_civil", nullable = false)
     private EstadoCivil estadoCivil;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status_solicitacao", nullable = false)
     private StatusSolicitacao statusSolicitacao;
 
-    private String urlDocumentacao;
+    @Column(name = "data_nascimento", nullable = false)
+    private LocalDate dataNascimento;
 
-    private LocalDate DataNascimento;
-
-    // mappedBy diz: "O controle desta relação está no campo 'paciente' da classe Endereco"
-    // orphanRemoval garante que se você remover um endereço da lista, ele seja deletado do banco
-    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Relacionamento 1:N com Endereco
+    @OneToMany(
+            mappedBy = "paciente",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Endereco> enderecos;
-
 }
+

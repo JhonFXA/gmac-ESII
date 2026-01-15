@@ -1,7 +1,7 @@
 package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
-import com.example.apigmac.entidades.usuario.Usuario;
+import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioUsuario;
 import org.junit.jupiter.api.BeforeEach;

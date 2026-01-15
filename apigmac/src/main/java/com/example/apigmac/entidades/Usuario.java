@@ -1,6 +1,5 @@
-package com.example.apigmac.entidades.usuario;
+package com.example.apigmac.entidades;
 
-import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.modelo.enums.Perfil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,24 +23,30 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Usuario implements UserDetails {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(unique = true,nullable = false)
     private String login;
 
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String senha;
 
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String cpf;
 
+    @Column(nullable = false)
     private String nome;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Perfil perfil;
+    @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
+
 
 
     public Usuario(String login, String email, String senha, String cpf, String nome, Perfil perfil, LocalDate dataNascimento){

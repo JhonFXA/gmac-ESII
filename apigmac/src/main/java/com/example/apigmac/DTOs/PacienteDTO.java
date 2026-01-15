@@ -1,4 +1,13 @@
 package com.example.apigmac.DTOs;
 
-public class PacienteDTO {
+import com.example.apigmac.modelo.enums.EstadoCivil;
+import com.example.apigmac.modelo.enums.Sexo;
+import com.example.apigmac.modelo.enums.StatusSolicitacao;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public record PacienteDTO(String cpf, StatusSolicitacao status, LocalDate dataNascimento, String telefone, String email,
+                          Sexo sexo, EstadoCivil estadoCivil, MultipartFile documento, List<EnderecoDTO> enderecos) {
 }

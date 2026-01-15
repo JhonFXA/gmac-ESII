@@ -1,6 +1,6 @@
 package com.example.apigmac.servicos;
 
-import com.example.apigmac.entidades.usuario.Usuario;
+import com.example.apigmac.entidades.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;

@@ -1,7 +1,6 @@
-package com.example.apigmac.entidades.endereco;
+package com.example.apigmac.entidades;
 
 
-import com.example.apigmac.entidades.paciente.Paciente;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,24 +17,38 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Endereco {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false)
     private String logradouro;
+
+    @Column(nullable = false)
     private String numero;
+
     private String complemento;
+
+    @Column(nullable = false)
     private String cidade;
+
+    @Column(nullable = false)
     private String estado;
+
+    @Column(nullable = false)
     private String cep;
 
-    @ManyToOne // Muitos endereços para um paciente
-    @JoinColumn(name = "id_paciente") // Nome da coluna que será criada na tabela 'endereco'
+    @Column(nullable = false)
+    private String bairro;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
-    public Endereco(String cep,String cidade,String estado,String logradouro,String numero,String complemento){
+    public Endereco(String cep,String cidade,String estado,String bairro,String logradouro,String numero,String complemento){
         this.cep = cep;
         this.cidade = cidade;
         this.estado = estado;
+        this.bairro = bairro;
         this.logradouro = logradouro;
         this.numero = numero;
         this.complemento = complemento;

@@ -1,39 +1,38 @@
-package com.example.apigmac.entidades.pericia;
+package com.example.apigmac.entidades;
 
 
-import com.example.apigmac.entidades.documentacao.Documentacao;
-import com.example.apigmac.entidades.medico.Medico;
-import com.example.apigmac.entidades.paciente.Paciente;
+import com.example.apigmac.modelo.enums.StatusPericia;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
-@Table(name = "pericia")
 @Entity
+@Table(name = "pericia")
 @Getter
 @Setter
 public class Pericia {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Date dataPericia;
-    private StatusSolicitacao statusPericia;
+    @Column(name = "data_pericia", nullable = false)
+    private LocalDate dataPericia;
 
-    @OneToOne
-    @JoinColumn(name = "id_paciente")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_pericia", nullable = false)
+    private StatusPericia statusPericia;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
 
-    @OneToOne
-    @JoinColumn(name = "id_documentacao")
-    private Documentacao documentacao;
-
-    @OneToOne
-    @JoinColumn(name = "id_usuario")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Medico medico;
-
 }

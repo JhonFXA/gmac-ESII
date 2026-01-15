@@ -1,24 +1,29 @@
-package com.example.apigmac.entidades.cadastro;
+package com.example.apigmac.entidades;
 
-import com.example.apigmac.entidades.paciente.Paciente;
-import com.example.apigmac.entidades.recepcionista.Recepcionista;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.UUID;
 
-@Table(name = "cadastro")
 @Entity
+@Table(name = "cadastro")
 public class Cadastro {
+
     @Id
-    @OneToOne
+    @Column(name = "id_paciente")
+    private UUID idPaciente;
+
+    @OneToOne(optional = false)
     @MapsId
-    @JoinColumn(name = "id_paciente")
+    @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
 
-    @OneToOne
-    @JoinColumn(name = "id_usuario")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Recepcionista recepcionista;
 
-    private Date dataCadastro;
-
+    @Column(name = "data_cadastro", nullable = false)
+    private LocalDate dataCadastro;
 }
+

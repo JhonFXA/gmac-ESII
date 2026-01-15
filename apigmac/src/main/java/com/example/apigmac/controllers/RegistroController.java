@@ -1,7 +1,7 @@
 package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
-import com.example.apigmac.entidades.usuario.Usuario;
+import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.servicos.ServicoRegistro;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
