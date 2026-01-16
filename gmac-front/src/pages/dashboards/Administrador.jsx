@@ -3,7 +3,7 @@ import '../../css/dashboard.css';
 import Header from '../../components/Header.jsx';
 import Footer from '../../components/Footer.jsx';
 
-function Recepcionista() {
+function Administrador() {
   return (
     <div className="container">
         <Header />
@@ -14,4 +14,4 @@ function Recepcionista() {
   )
 }
 
-export default Recepcionista;
+export default Administrador;
