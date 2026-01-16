@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 import '../css/default.css'
 import '../css/Form.css'
@@ -8,6 +10,9 @@ export function Form() {
   const [message, setMessage] = useState("");
   const [showSenha, setShowSenha] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
 
 
   const handleSubmit = async (e) => {
@@ -32,11 +37,8 @@ export function Form() {
 
       const data = await response.json();
 
-      localStorage.setItem("token", data.token);
-
-      setTimeout(() => {
-        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-      }, 2000);
+      authLogin(data.token, data.perfil);
+      navigate("/dashboard");
 
     } catch (err) {
       setMessage("Erro de conexão: " + err.message);

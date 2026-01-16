@@ -1,7 +1,7 @@
-import '../css/App.css';
-import '../css/Recepcionista.css';
-import Header from '../components/Header.jsx';
-import Footer from '../components/Footer.jsx';
+import '../../css/App.css';
+import '../../css/Recepcionista.css';
+import Header from '../../components/Header.jsx';
+import Footer from '../../components/Footer.jsx';
 
 function Recepcionista() {
   return (

@@ -1,15 +1,26 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext.jsx';
+import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 import Login from './pages/Login.jsx'
-import Recepcionista from './pages/Recepcionista.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Login />} />
-        <Route path='/recepcionista' element={<Recepcionista />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Login />} />
+          <Route 
+            path='/dashboard' 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
