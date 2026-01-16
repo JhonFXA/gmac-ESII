@@ -17,13 +17,15 @@ public class ServicoAlterarPaciente {
 
     public void alterarPaciente(AlterarPacienteDTO dto) {
 
-        Paciente paciente = repositorioPaciente.findById(dto.id())
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        Paciente paciente = (Paciente) repositorioPaciente.findByCpf(dto.cpf());
+        if (paciente == null) {
+            throw new RuntimeException("Paciente não encontrado");
+        }
 
         if (dto.cpf() != null) {
-            if (!verificacao.cpfValido(dto.cpf())) {
-                throw new IllegalArgumentException("CPF inválido");
-            }
+//            if (!verificacao.cpfValido(dto.cpf())) {
+//                throw new IllegalArgumentException("CPF inválido");
+//            }
 
             Paciente existente = (Paciente) repositorioPaciente.findByCpf(dto.cpf());
             if (existente != null && !existente.getId().equals(paciente.getId())) {
@@ -33,17 +35,21 @@ public class ServicoAlterarPaciente {
             paciente.setCpf(dto.cpf());
         }
 
+        if(dto.nome() != null){
+            paciente.setNome(dto.nome());
+        }
+
         if (dto.telefone() != null) {
-            if (!verificacao.telefoneValido(dto.telefone())) {
-                throw new IllegalArgumentException("Telefone inválido");
-            }
+//            if (!verificacao.telefoneValido(dto.telefone())) {
+//                throw new IllegalArgumentException("Telefone inválido");
+//            }
             paciente.setTelefone(dto.telefone());
         }
 
         if (dto.email() != null) {
-            if (!verificacao.emailValido(dto.email())) {
-                throw new IllegalArgumentException("E-mail inválido ou domínio inexistente");
-            }
+//            if (!verificacao.emailValido(dto.email())) {
+//                throw new IllegalArgumentException("E-mail inválido ou domínio inexistente");
+//            }
 
             Paciente existente = (Paciente) repositorioPaciente.findByEmail(dto.email());
             if (existente != null && !existente.getId().equals(paciente.getId())) {
@@ -66,9 +72,9 @@ public class ServicoAlterarPaciente {
         }
 
         if (dto.dataNascimento() != null) {
-            if (!verificacao.dataNascimentoValida(dto.dataNascimento())) {
-                throw new IllegalArgumentException("Data de nascimento inválida");
-            }
+//            if (!verificacao.dataNascimentoValida(dto.dataNascimento())) {
+//                throw new IllegalArgumentException("Data de nascimento inválida");
+//            }
             paciente.setDataNascimento(dto.dataNascimento());
         }
 

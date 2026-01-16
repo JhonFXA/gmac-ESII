@@ -26,6 +26,9 @@ public class Paciente {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false)
+    private String nome;
+
     @Column(nullable = false, unique = true)
     private String cpf;
 
@@ -58,7 +61,8 @@ public class Paciente {
     )
     private List<Endereco> enderecos;
 
-    public Paciente(String cpf, String telefone, String email, Sexo sexo, EstadoCivil estadoCivil, StatusSolicitacao statusSolicitacao, LocalDate dataNascimento) {
+    public Paciente(String nome,String cpf, String telefone, String email, Sexo sexo, EstadoCivil estadoCivil, StatusSolicitacao statusSolicitacao, LocalDate dataNascimento) {
+        this.nome = nome;
         this.cpf = cpf;
         this.telefone = telefone;
         this.email = email;

@@ -23,7 +23,7 @@ public class LoginController {
     @Autowired
     ServicoLogin servicoLogin;
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO loginDTO) {
         try {
             TokenDTO token = servicoLogin.login(loginDTO);
             return ResponseEntity.ok(token);

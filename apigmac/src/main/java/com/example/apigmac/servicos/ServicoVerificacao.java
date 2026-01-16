@@ -1,6 +1,7 @@
 package com.example.apigmac.servicos;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -148,10 +149,16 @@ public class ServicoVerificacao {
             return false;
         }
 
-        if (!dataNascimento.isBefore(LocalDate.now())) {
-            return false;
-        }
+        return dataNascimento.isBefore(LocalDate.now());
+    }
+    public void validarPdf(MultipartFile file) {
+        if (file.isEmpty())
+            throw new IllegalArgumentException("Arquivo vazio");
 
-        return true;
+        if (!"application/pdf".equalsIgnoreCase(file.getContentType()))
+            throw new IllegalArgumentException("Apenas PDF é permitido");
+
+        if (!Objects.requireNonNull(file.getOriginalFilename()).toLowerCase().endsWith(".pdf"))
+            throw new IllegalArgumentException("Arquivo deve ser .pdf");
     }
 }

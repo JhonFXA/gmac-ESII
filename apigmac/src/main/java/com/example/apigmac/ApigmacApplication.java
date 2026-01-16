@@ -13,12 +13,5 @@ public class ApigmacApplication {
 		SpringApplication.run(ApigmacApplication.class, args);
 	}
 
-//	@Bean
-//	CommandLineRunner testarS3(S3Client s3Client) {
-//		return args -> {
-//			s3Client.listBuckets().buckets()
-//					.forEach(b -> System.out.println(b.name()));
-//		};
-//	}
 
 }

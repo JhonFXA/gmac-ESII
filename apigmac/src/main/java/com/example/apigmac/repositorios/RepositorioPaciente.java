@@ -8,6 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.UUID;
 
 public interface RepositorioPaciente extends JpaRepository<Paciente, UUID> {
-    UserDetails findByCpf(String cpf);
-    UserDetails findByEmail(String email);
+    Paciente findByCpf(String cpf);
+    Paciente findByEmail(String email);
 }

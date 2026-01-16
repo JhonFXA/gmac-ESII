@@ -10,6 +10,7 @@ import java.util.UUID;
 public record AlterarPacienteDTO(
         UUID id,
         String cpf,
+        String nome,
         String telefone,
         String email,
         Sexo sexo,

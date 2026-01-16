@@ -2,15 +2,17 @@ package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.DTOs.PacienteDTO;
-import com.example.apigmac.entidades.Endereco;
+import com.example.apigmac.entidades.Documentacao;
 import com.example.apigmac.entidades.Paciente;
-import com.example.apigmac.repositorios.RepositorioEndereco;
+import com.example.apigmac.modelo.enums.StatusDocumentacao;
+import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioPaciente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+
 
 @Service
 public class ServicoCadastrarPaciente {
@@ -19,34 +21,38 @@ public class ServicoCadastrarPaciente {
     private RepositorioPaciente repositorioPaciente;
 
     @Autowired
-    private RepositorioEndereco repositorioEndereco;
+    private ServicoEndereco servicoEndereco;
+
+    @Autowired
+    private RepositorioDocumentacao repositorioDocumentacao;
 
     @Autowired
     private ServicoVerificacao verificacao;
 
-    public Paciente cadastrarPaciente(PacienteDTO dados){
-        if(repositorioPaciente.findByCpf(dados.cpf()) != null){
-            throw new IllegalArgumentException("Usuario já cadastrado!");
-        }
+    @Autowired
+    private ServicoTransformarDocumentacao transformarDocumentacao;
 
 
-        Paciente paciente = new Paciente(dados.cpf(), dados.telefone(), dados.email(), dados.sexo(), dados.estadoCivil(), dados.statusSolicitacao(), dados.dataNascimento());
+    public Paciente cadastrarPaciente(PacienteDTO dados, MultipartFile documento){
+//        if(repositorioPaciente.findByCpf(dados.cpf()) != null){
+//            throw new IllegalArgumentException("Usuario já cadastrado!");
+//        }
 
-        paciente = repositorioPaciente.saveAndFlush(paciente);
+        Paciente paciente = new Paciente(dados.nome(),dados.cpf(), dados.telefone(), dados.email(), dados.sexo(), dados.estadoCivil(), dados.statusSolicitacao(), dados.dataNascimento());
+
+        String caminho = transformarDocumentacao
+                .caminhoDocumentacao(documento, dados.cpf());
+
+        Documentacao documentacao = new Documentacao();
+        documentacao.setCaminho(caminho);
+        documentacao.setStatusDocumentacao(StatusDocumentacao.PENDENTE);
+        documentacao.setDataEnvio(LocalDate.now());
+        paciente = repositorioPaciente.save(paciente);
+        documentacao.setPaciente(paciente);
+        repositorioDocumentacao.save(documentacao);
 
         for (EnderecoDTO dto : dados.enderecos()) {
-            Endereco endereco = new Endereco(
-                    dto.cep(),
-                    dto.cidade(),
-                    dto.estado(),
-                    dto.bairro(),
-                    dto.logradouro(),
-                    dto.numero(),
-                    dto.complemento()
-            );
-
-            endereco.setPaciente(paciente);
-            repositorioEndereco.saveAndFlush(endereco);
+            servicoEndereco.cadastrarEndereco(dto,paciente);
         }
 
         return paciente;
