@@ -9,5 +9,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record PacienteDTO(String cpf, StatusSolicitacao statusSolicitacao, LocalDate dataNascimento, String telefone, String email,
-                          Sexo sexo, EstadoCivil estadoCivil, MultipartFile documento, List<EnderecoDTO> enderecos) {
+                          Sexo sexo, EstadoCivil estadoCivil, List<EnderecoDTO> enderecos) {
 }

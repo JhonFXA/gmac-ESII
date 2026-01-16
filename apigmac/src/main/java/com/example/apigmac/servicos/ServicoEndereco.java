@@ -5,13 +5,15 @@ import com.example.apigmac.entidades.Endereco;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.repositorios.RepositorioEndereco;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ServicoEndereco {
 
     @Autowired
     RepositorioEndereco repositorioEndereco;
 
-    public Endereco cadastrarEndereco(EnderecoDTO enderecoDTO, Paciente paciente){
+    public void cadastrarEndereco(EnderecoDTO enderecoDTO, Paciente paciente){
         Endereco endereco = new Endereco(
                 enderecoDTO.cep(),
                 enderecoDTO.cidade(),
@@ -22,7 +24,6 @@ public class ServicoEndereco {
                 enderecoDTO.complemento()
         );
         endereco.setPaciente(paciente);
-        endereco = repositorioEndereco.save(endereco);
-        return endereco;
+        repositorioEndereco.save(endereco);
     }
 }
