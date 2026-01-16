@@ -74,6 +74,17 @@ public class ServicoVerificacao {
         return true;
     }
 
+    public boolean telefoneValido(String telefone) {
+        if (telefone == null) {
+            return false;
+        }
+
+        String telefoneLimpo = telefone.replaceAll("[^0-9]", "");
+
+        // Aceita: 10 (fixo) ou 11 (celular com 9)
+        return telefoneLimpo.length() == 10 || telefoneLimpo.length() == 11;
+    }
+
     public boolean emailValido(String email) {
         if (email == null || !email.contains("@")) {
             return false;

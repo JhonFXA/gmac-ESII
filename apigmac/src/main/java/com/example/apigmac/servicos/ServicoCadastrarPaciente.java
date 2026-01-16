@@ -25,9 +25,10 @@ public class ServicoCadastrarPaciente {
     private ServicoVerificacao verificacao;
 
     public Paciente cadastrarPaciente(PacienteDTO dados){
-//        if(repositorioPaciente.findByCpf(dados.cpf()) != null){
-//            throw new IllegalArgumentException("Usuario já cadastrado!");
-//        }
+        if(repositorioPaciente.findByCpf(dados.cpf()) != null){
+            throw new IllegalArgumentException("Usuario já cadastrado!");
+        }
+
 
         Paciente paciente = new Paciente(dados.cpf(), dados.telefone(), dados.email(), dados.sexo(), dados.estadoCivil(), dados.statusSolicitacao(), dados.dataNascimento());
 

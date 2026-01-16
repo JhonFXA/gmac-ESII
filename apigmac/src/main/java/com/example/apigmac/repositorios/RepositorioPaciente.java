@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface RepositorioPaciente extends JpaRepository<Paciente, UUID> {
     UserDetails findByCpf(String cpf);
+    UserDetails findByEmail(String email);
 }

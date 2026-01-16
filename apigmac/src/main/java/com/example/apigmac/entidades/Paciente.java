@@ -5,7 +5,9 @@ import com.example.apigmac.modelo.enums.EstadoCivil;
 import com.example.apigmac.modelo.enums.Sexo;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -16,6 +18,8 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "paciente")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Paciente {
 
     @Id
