@@ -1,14 +1,19 @@
 package com.example.apigmac.entidades;
 
+import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.modelo.enums.EstadoCivil;
 import com.example.apigmac.modelo.enums.Sexo;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "paciente")
 public class Paciente {
@@ -48,5 +53,16 @@ public class Paciente {
             orphanRemoval = true
     )
     private List<Endereco> enderecos;
+
+    public Paciente(String cpf, String telefone, String email, Sexo sexo, EstadoCivil estadoCivil, StatusSolicitacao statusSolicitacao, LocalDate dataNascimento) {
+        this.cpf = cpf;
+        this.telefone = telefone;
+        this.email = email;
+        this.sexo = sexo;
+        this.estadoCivil = estadoCivil;
+        this.statusSolicitacao = statusSolicitacao;
+        this.dataNascimento = dataNascimento;
+
+    }
 }
 
