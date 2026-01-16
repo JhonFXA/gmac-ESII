@@ -8,6 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 
-public record PacienteDTO(String cpf, StatusSolicitacao statusSolicitacao, LocalDate dataNascimento, String telefone, String email,
+public record PacienteDTO(String nome,String cpf, StatusSolicitacao statusSolicitacao, LocalDate dataNascimento, String telefone, String email,
                           Sexo sexo, EstadoCivil estadoCivil, List<EnderecoDTO> enderecos) {
 }

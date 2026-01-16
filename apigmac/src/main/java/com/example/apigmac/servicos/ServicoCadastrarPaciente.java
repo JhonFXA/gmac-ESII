@@ -38,7 +38,7 @@ public class ServicoCadastrarPaciente {
 //            throw new IllegalArgumentException("Usuario já cadastrado!");
 //        }
 
-        Paciente paciente = new Paciente(dados.cpf(), dados.telefone(), dados.email(), dados.sexo(), dados.estadoCivil(), dados.statusSolicitacao(), dados.dataNascimento());
+        Paciente paciente = new Paciente(dados.nome(),dados.cpf(), dados.telefone(), dados.email(), dados.sexo(), dados.estadoCivil(), dados.statusSolicitacao(), dados.dataNascimento());
 
         String caminho = transformarDocumentacao
                 .caminhoDocumentacao(documento, dados.cpf());
