@@ -1,13 +1,19 @@
 import logo from '../assets/gmac-logo2.png';
 import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 function Header(){
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef();
+    const {logout} = useAuth();
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
+
+    const handleLogout = () => {
+        logout();
+    }
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -57,8 +63,8 @@ function Header(){
                                 <p>Configuracões</p>
                             </a>
                         </li>
-                        <li className='logout-option'>
-                            <a href="">
+                        <li onClick={handleLogout} className='logout-option'>
+                            <a href=''>
                                 <i className="fa-solid fa-sign-out-alt"></i>
                                 <p>Sair</p>
                             </a>

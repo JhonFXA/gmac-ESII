@@ -1,11 +1,14 @@
 import { useAuth } from "../context/AuthContext.jsx";
-import  Recepcionista from "./dashboards/Recepcionista.jsx";
-import Medico from "./dashboards/Medico.jsx";
-import Administrador from "./dashboards/Administrador.jsx";
 import { Navigate } from "react-router-dom";
-import '../css/App.css';
 
-export default function Dashboard() {
+import Recepcionista from "./panels/Recepcionista.jsx";
+import Medico from "./panels/Medico.jsx";
+import Administrador from "./panels/Administrador.jsx";
+
+import '../css/App.css';
+import '../css/main-panel.css';
+
+export default function PainelPrincipal() {
   const { perfil } = useAuth();
 
   switch (perfil) {

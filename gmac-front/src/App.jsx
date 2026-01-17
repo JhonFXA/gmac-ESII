@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 import Login from './pages/Login.jsx'
-import Dashboard from './pages/Dashboard.jsx';
+import PainelPrincipal from './pages/PainelPrincipal.jsx';
 
 function App() {
   return (
@@ -11,10 +11,10 @@ function App() {
         <Routes>
           <Route path='/' element={<Login />} />
           <Route 
-            path='/dashboard' 
+            path='/painel-principal' 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <PainelPrincipal />
               </ProtectedRoute>
             } 
           />

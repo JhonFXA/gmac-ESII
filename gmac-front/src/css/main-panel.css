@@ -1,0 +1,66 @@
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-collection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-block: 40px;
+}
+
+.main-button {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: var(--text-light-color);
+    width: 440px;
+    height: 120px;
+    font-size: 30px;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+
+    transition: all 0.28s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-button i {
+    margin-left: 36px;
+    margin-right: 36px;
+    font-size: 48px;
+}
+
+.main-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: white;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.28s ease;
+    z-index: 1;
+}
+
+.main-button:hover::before {
+    transform: scaleY(1);
+}
+
+.main-button > * {
+    position: relative;
+    z-index: 2;
+    transition: color 0.28s ease;
+}
+
+.main-button:hover {
+    color: var(--primary-color);
+}
+
+.main-button:active {
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.4);
+    transform: translateY(4px);
+}

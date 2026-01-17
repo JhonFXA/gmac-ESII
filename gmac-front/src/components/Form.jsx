@@ -38,7 +38,7 @@ export function Form() {
       const data = await response.json();
 
       authLogin(data.token, data.perfil);
-      navigate("/dashboard");
+      navigate("/painel-principal");
 
     } catch (err) {
       setMessage("Erro de conexão: " + err.message);
