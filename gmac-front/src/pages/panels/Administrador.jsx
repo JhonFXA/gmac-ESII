@@ -1,13 +1,16 @@
 import Header from '../../components/Header.jsx';
 import Footer from '../../components/Footer.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Administrador() {
+  const navigate = useNavigate();
+
   return (
     <div className="container">
         <Header />
         <main className="main">
           <div className="button-collection">
-            <button className="main-button">
+            <button className="main-button" onClick={() => navigate('/painel-principal/cadastrar-usuario')}>
               <i className="fas fa-user-plus"></i>
               <p>Cadastrar Usuário</p>
               </button>
@@ -16,11 +19,11 @@ function Administrador() {
               <p>Gerenciar Usuários</p>
               </button>
             <button className="main-button">
-              <i class="fa-regular fa-calendar"></i>
+              <i className="fa-regular fa-calendar"></i>
               <p>Gerenciar Perícias</p>
               </button>
             <button className="main-button">
-              <i class="fa-solid fa-chart-column"></i>
+              <i className="fa-solid fa-chart-column"></i>
               <p>Gerar Relatório</p>
               </button>
             <button className="main-button">

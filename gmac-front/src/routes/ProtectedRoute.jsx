@@ -7,6 +7,10 @@ export function ProtectedRoute({children, allowedProfiles}) {
     if (!token) {
         return <Navigate to="/" replace />;
     }
+    
+    if (allowedProfiles && !allowedProfiles.includes(perfil)) {
+        return <Navigate to="/painel-principal" replace />;
+    }
 
     return children;
 }
