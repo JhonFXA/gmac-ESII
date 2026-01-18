@@ -33,7 +33,7 @@ public class ConfiguracoesSeguranca {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/usuario/buscar/{id}").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET,"/usuario/buscar/{cpf}").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST,"/usuario/registro").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/usuario/alterar").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/paciente/cadastrar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")

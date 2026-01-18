@@ -32,20 +32,6 @@ public class ServicoAlterarPaciente {
             throw new RuntimeException("Paciente não encontrado");
         }
 
-        if (dto.cpf() != null && !dto.cpf().equals(paciente.getCpf())) {
-
-            if (!verificacao.cpfValido(dto.cpf())) {
-                throw new IllegalArgumentException("CPF inválido");
-            }
-
-            Paciente existente = repositorioPaciente.findByCpf(dto.cpf());
-            if (existente != null && !existente.getId().equals(paciente.getId())) {
-                throw new IllegalArgumentException("CPF já cadastrado");
-            }
-
-            paciente.setCpf(dto.cpf());
-        }
-
         if (dto.nome() != null) {
             if (!verificacao.textoObrigatorioValido(dto.nome(), 3)) {
                 throw new IllegalArgumentException("Nome inválido");

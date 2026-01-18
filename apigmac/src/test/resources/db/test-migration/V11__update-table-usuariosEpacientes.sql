@@ -1,1 +1,0 @@
-ALTER TABLE usuario ADD COLUMN data_nascimento DATE NOT NULL;

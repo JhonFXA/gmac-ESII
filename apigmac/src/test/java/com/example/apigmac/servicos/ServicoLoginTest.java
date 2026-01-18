@@ -14,6 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.DisabledException;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -34,15 +36,23 @@ public class ServicoLoginTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
+
         usuarioAtivo = new Usuario();
         usuarioAtivo.setLogin("teste");
         usuarioAtivo.setSenha("123");
         usuarioAtivo.setPerfil(Perfil.ADMINISTRADOR);
+        usuarioAtivo.setNome("Nome Teste");
+        usuarioAtivo.setEmail("teste@email.com");
+        usuarioAtivo.setCpf("12345678900");
+        // ADICIONE ESTA LINHA:
+        usuarioAtivo.setDataNascimento(LocalDate.of(2000, 1, 1));
 
         usuarioInativo = new Usuario();
         usuarioInativo.setLogin("inativo");
         usuarioInativo.setSenha("123");
         usuarioInativo.setPerfil(Perfil.INATIVO);
+        // Para o usuário inativo, também é boa prática preencher se o código chegar até o DTO
+        usuarioInativo.setDataNascimento(LocalDate.of(2000, 1, 1));
     }
 
     @Test

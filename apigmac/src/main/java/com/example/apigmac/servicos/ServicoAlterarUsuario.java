@@ -21,23 +21,22 @@ public class ServicoAlterarUsuario {
 
     @Transactional
     public void alterarUsuario(AlterarUsuarioDTO dto){
-        Usuario usuario = repositorioUsuario.findById(dto.id())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (dto == null) {
+            throw new IllegalArgumentException("Digite o Campo que quer mudar");
+        }
+
+        Usuario usuario = (Usuario) repositorioUsuario.findByCpf(dto.cpf());
+
+        if (usuario == null) {
+            throw new RuntimeException("Usuario não encontrado");
+        }
 
         if (dto.nome() != null) {
             if (!verificacao.textoObrigatorioValido(dto.nome(), 3)) {
                 throw new IllegalArgumentException("Nome inválido");
             }
             usuario.setNome(dto.nome());
-        }
-        if (dto.cpf() != null) {
-            if (repositorioUsuario.findByCpf(dto.cpf()) != null){
-                throw new IllegalArgumentException("CPF já cadastrado");
-            }
-            if (!verificacao.cpfValido(dto.cpf())){
-                throw new IllegalArgumentException("CPF inválido.");
-            }
-            usuario.setCpf(dto.cpf());
         }
         if (dto.email() != null) {
             if (repositorioUsuario.findByEmail(dto.email()) != null){

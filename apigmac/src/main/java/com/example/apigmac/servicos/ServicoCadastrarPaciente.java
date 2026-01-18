@@ -103,11 +103,12 @@ public class ServicoCadastrarPaciente {
 
 
         paciente = repositorioPaciente.save(paciente);
-        cadastrarDocumento(documento,paciente.getCpf());
 
         for (EnderecoDTO dto : dados.enderecos()) {
             cadastrarEndereco(dto,paciente.getCpf());
         }
+
+        cadastrarDocumento(documento,paciente.getCpf());
 
         return paciente;
     }

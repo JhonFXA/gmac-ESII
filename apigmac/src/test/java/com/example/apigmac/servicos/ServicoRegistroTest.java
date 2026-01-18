@@ -57,7 +57,8 @@ class ServicoRegistroTest {
                 "52998224725",
                 "João Silva",
                 Perfil.ADMINISTRADOR,
-                LocalDate.of(1990, 1, 1)
+                LocalDate.of(1990, 1, 1),
+                null
         );
     }
 
@@ -66,7 +67,10 @@ class ServicoRegistroTest {
     @Test
     void deveCadastrarAdministradorComSucesso() {
         // Mockando validações positivas
+        when(verificacao.textoObrigatorioValido(dtoBase.nome(), 3)).thenReturn(true);
         when(repositorioUsuario.findByLogin(dtoBase.login())).thenReturn(null);
+        when(repositorioUsuario.findByCpf(dtoBase.cpf())).thenReturn(null);
+        when(repositorioUsuario.findByEmail(dtoBase.email())).thenReturn(null);
         when(verificacao.cpfValido(dtoBase.cpf())).thenReturn(true);
         when(verificacao.senhaValida(dtoBase.senha())).thenReturn(true);
         when(verificacao.emailValido(dtoBase.email())).thenReturn(true);
@@ -85,7 +89,9 @@ class ServicoRegistroTest {
         );
         usuarioSalvo.setId(UUID.randomUUID());
 
-        when(repositorioUsuario.saveAndFlush(any(Usuario.class))).thenReturn(usuarioSalvo);
+        when(repositorioUsuario.save(any(Usuario.class)))
+                .thenReturn(usuarioSalvo);
+
 
         Usuario resultado = servicoRegistro.cadastrarUsuario(dtoBase);
 
@@ -109,14 +115,15 @@ class ServicoRegistroTest {
                 "52998224725",
                 "Dr. João",
                 Perfil.MEDICO,
-                LocalDate.of(1985, 1, 1)
+                LocalDate.of(1985, 1, 1),
+                "CARDIOLOGISTA"
         );
 
         mockValidacoes(dtoMedico);
 
         Usuario usuarioMock = new Usuario();
         usuarioMock.setId(UUID.randomUUID());
-        when(repositorioUsuario.saveAndFlush(any(Usuario.class))).thenReturn(usuarioMock);
+        when(repositorioUsuario.save(any(Usuario.class))).thenReturn(usuarioMock);
 
         servicoRegistro.cadastrarUsuario(dtoMedico);
 
@@ -134,14 +141,15 @@ class ServicoRegistroTest {
                 "52998224725",
                 "Maria",
                 Perfil.RECEPCIONISTA,
-                LocalDate.of(1995, 5, 10)
+                LocalDate.of(1995, 5, 10),
+                null
         );
 
         mockValidacoes(dtoRecep);
 
         Usuario usuarioMock = new Usuario();
         usuarioMock.setId(UUID.randomUUID());
-        when(repositorioUsuario.saveAndFlush(any(Usuario.class))).thenReturn(usuarioMock);
+        when(repositorioUsuario.save(any(Usuario.class))).thenReturn(usuarioMock);
 
         servicoRegistro.cadastrarUsuario(dtoRecep);
 
@@ -205,11 +213,22 @@ class ServicoRegistroTest {
     }
 
     private void mockValidacoes(RegistroUsuarioDTO dto) {
+        when(verificacao.textoObrigatorioValido(dto.nome(), 3)).thenReturn(true);
+
+        if (dto.perfil() == Perfil.MEDICO) {
+            when(verificacao.textoObrigatorioValido(dto.especializacao(), 3))
+                    .thenReturn(true);
+        }
+
         when(repositorioUsuario.findByLogin(dto.login())).thenReturn(null);
+        when(repositorioUsuario.findByCpf(dto.cpf())).thenReturn(null);
+        when(repositorioUsuario.findByEmail(dto.email())).thenReturn(null);
         when(verificacao.cpfValido(dto.cpf())).thenReturn(true);
         when(verificacao.senhaValida(dto.senha())).thenReturn(true);
         when(verificacao.emailValido(dto.email())).thenReturn(true);
         when(verificacao.dataNascimentoValida(dto.dataNascimento())).thenReturn(true);
         when(passwordEncoder.encode(dto.senha())).thenReturn("senhaCriptografada");
     }
+
+
 }
