@@ -1,7 +1,7 @@
 package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.LoginDTO;
-import com.example.apigmac.DTOs.TokenDTO;
+import com.example.apigmac.DTOs.LoginUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +56,7 @@ public class ServicoLoginTest {
         when(servicoToken.gerarToken(usuarioAtivo)).thenReturn("tokenGerado");
 
         // Act
-        TokenDTO resultado = servicoLogin.login(loginDTO);
+        LoginUsuarioDTO resultado = servicoLogin.login(loginDTO);
 
         // Assert
         assertNotNull(resultado);

@@ -1,7 +1,7 @@
 package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.LoginDTO;
-import com.example.apigmac.DTOs.TokenDTO;
+import com.example.apigmac.DTOs.LoginUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class ServicoLogin {
     @Autowired
     private ServicoToken servicoToken;
 
-    public TokenDTO login(LoginDTO loginDTO) {
+    public LoginUsuarioDTO login(LoginDTO loginDTO) {
         var authToken = new UsernamePasswordAuthenticationToken(loginDTO.login(), loginDTO.senha());
         var auth = authenticationManager.authenticate(authToken);
 
@@ -27,7 +27,7 @@ public class ServicoLogin {
             throw new DisabledException("Usuário inativo");
         }
         var token = servicoToken.gerarToken(usuarioLogado);
-        return new TokenDTO(token,usuarioLogado.getPerfil().toString());
+        return new LoginUsuarioDTO(token,usuarioLogado.getLogin(),usuarioLogado.getNome(),usuarioLogado.getPerfil().toString(),usuarioLogado.getEmail(),usuarioLogado.getCpf(),usuarioLogado.getDataNascimento().toString());
 
 
     }

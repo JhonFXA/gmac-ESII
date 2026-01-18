@@ -23,4 +23,8 @@ public class Administrador {
     @MapsId
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
+
+    public Administrador(Usuario usuario){
+        this.usuario = usuario;
+    }
 }

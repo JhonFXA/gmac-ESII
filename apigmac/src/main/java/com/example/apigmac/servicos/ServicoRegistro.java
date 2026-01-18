@@ -9,12 +9,14 @@ import com.example.apigmac.repositorios.RepositorioAdm;
 import com.example.apigmac.repositorios.RepositorioMed;
 import com.example.apigmac.repositorios.RepositorioRecepicionista;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ServicoRegistro {
+
     @Autowired
     private ServicoVerificacao verificacao;
 
@@ -33,32 +35,51 @@ public class ServicoRegistro {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Transactional
     public Usuario cadastrarUsuario(RegistroUsuarioDTO dados) {
-        if (repositorioUsuario.findByLogin(dados.login()) != null) {
-            throw new IllegalArgumentException("Login já existe");
+
+        if (dados == null) {
+            throw new IllegalArgumentException("Dados não informados");
         }
 
-        if (repositorioUsuario.findByCpf(dados.cpf()) != null){
-            throw new IllegalArgumentException("CPF já cadastrado");
+        if (!verificacao.textoObrigatorioValido(dados.nome(), 3)) {
+            throw new IllegalArgumentException("Nome inválido");
         }
+
         if (!verificacao.cpfValido(dados.cpf())) {
             throw new IllegalArgumentException("CPF inválido");
         }
-        if (!verificacao.senhaValida(dados.senha())) {
-            throw new IllegalArgumentException("Senha inválida");
-        }
 
-        if (repositorioUsuario.findByEmail(dados.email()) != null){
-            throw new IllegalArgumentException("Email já cadastrado");
+        if (repositorioUsuario.findByCpf(dados.cpf()) != null) {
+            throw new IllegalArgumentException("CPF já cadastrado");
         }
 
         if (!verificacao.emailValido(dados.email())) {
             throw new IllegalArgumentException("Email inválido");
         }
 
+        if (repositorioUsuario.findByEmail(dados.email()) != null) {
+            throw new IllegalArgumentException("Email já cadastrado");
+        }
+
+        if (repositorioUsuario.findByLogin(dados.login()) != null) {
+            throw new IllegalArgumentException("Login já existe");
+        }
+
+        if (!verificacao.senhaValida(dados.senha())) {
+            throw new IllegalArgumentException("Senha inválida");
+        }
+
         if (!verificacao.dataNascimentoValida(dados.dataNascimento())) {
             throw new IllegalArgumentException("Data inválida");
         }
+        if (dados.perfil() == Perfil.MEDICO) {
+
+            if (!verificacao.textoObrigatorioValido(dados.especializacao(), 3)) {
+                throw new IllegalArgumentException("Especialização é obrigatória para médico");
+            }
+        }
+
 
         String senhaCriptografada = passwordEncoder.encode(dados.senha());
 
@@ -73,19 +94,28 @@ public class ServicoRegistro {
         );
 
 
-        if (dados.perfil() == Perfil.ADMINISTRADOR) {
-            Administrador admin = new Administrador(usuario.getId(), usuario);
-            repositorioAdm.save(admin);
-        } else if (dados.perfil() == Perfil.MEDICO) {
-            Medico med = new Medico(usuario.getId(), usuario, "MEDICO");
-            repositorioMed.save(med);
-        } else if (dados.perfil() == Perfil.RECEPCIONISTA) {
-            Recepcionista recep = new Recepcionista(usuario.getId(), usuario);
-            repositorioRecepicionista.save(recep);
+        usuario = repositorioUsuario.save(usuario);
+
+        switch (dados.perfil()) {
+
+            case ADMINISTRADOR -> {
+                Administrador admin = new Administrador(usuario);
+                repositorioAdm.save(admin);
+            }
+
+            case MEDICO -> {
+                Medico med = new Medico(usuario,dados.especializacao());
+                repositorioMed.save(med);
+            }
+
+            case RECEPCIONISTA -> {
+                Recepcionista recep = new Recepcionista(usuario);
+                repositorioRecepicionista.save(recep);
+            }
+
+            default -> throw new IllegalArgumentException("Perfil inválido");
         }
 
-        usuario = repositorioUsuario.saveAndFlush(usuario);
         return usuario;
     }
-
 }

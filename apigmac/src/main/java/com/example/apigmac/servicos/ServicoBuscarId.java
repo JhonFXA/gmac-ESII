@@ -1,5 +1,6 @@
 package com.example.apigmac.servicos;
 
+import com.example.apigmac.DTOs.ExibeUsuarioDTO;
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.repositorios.RepositorioUsuario;
@@ -14,14 +15,13 @@ public class ServicoBuscarId {
     @Autowired
     private RepositorioUsuario repositorioUser;
 
-    public RegistroUsuarioDTO buscarUsuario(UUID id) {
+    public ExibeUsuarioDTO buscarUsuario(UUID id) {
         Usuario usuario = repositorioUser.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário com ID " + id + " não encontrado"));
 
-        return new RegistroUsuarioDTO(
+        return new ExibeUsuarioDTO(
                 usuario.getLogin(),
                 usuario.getEmail(),
-                null,
                 usuario.getCpf(),
                 usuario.getNome(),
                 usuario.getPerfil(),

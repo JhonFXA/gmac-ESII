@@ -34,7 +34,7 @@ public class ServicoBuscarPaciente {
                         endereco.getLogradouro(),
                         endereco.getComplemento()
                 ))
-                .toList(); // Java 16+
+                .toList();
 
 
 

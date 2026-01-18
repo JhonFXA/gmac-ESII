@@ -1,7 +1,6 @@
 package com.example.apigmac.infra.seguranca;
 
 
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,16 +10,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +28,7 @@ public class ConfiguracoesSeguranca {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
@@ -42,8 +37,10 @@ public class ConfiguracoesSeguranca {
                         .requestMatchers(HttpMethod.POST,"/usuario/registro").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/usuario/alterar").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/paciente/cadastrar").hasAnyRole("ADMIN", "RECEPCIONISTA")
+                        .requestMatchers(HttpMethod.POST, "/paciente/{cpf}/endereco").hasAnyRole("ADMIN", "RECEPCIONISTA")
+                        .requestMatchers(HttpMethod.POST, "/paciente/{cpf}/documento").hasAnyRole("ADMIN", "RECEPCIONISTA")
                         .requestMatchers(HttpMethod.PUT,"/paciente/alterar").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/paciente/buscar").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/paciente/buscar/{cpf}").permitAll()
                         .anyRequest().authenticated()
         )
         .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)

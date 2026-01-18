@@ -1,5 +1,6 @@
 package com.example.apigmac.servicos;
 
+import com.example.apigmac.DTOs.ExibeUsuarioDTO;
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
@@ -45,7 +46,7 @@ class ServicoBuscarIdTest {
     void deveRetornarRegistroUsuarioDTOQuandoUsuarioExiste() {
         when(repositorioUsuario.findById(usuario.getId())).thenReturn(Optional.of(usuario));
 
-        RegistroUsuarioDTO dto = servicoBuscarId.buscarUsuario(usuario.getId());
+        ExibeUsuarioDTO dto = servicoBuscarId.buscarUsuario(usuario.getId());
 
         assertNotNull(dto);
         assertEquals(usuario.getLogin(), dto.login());

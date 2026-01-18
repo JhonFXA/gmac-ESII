@@ -1,8 +1,10 @@
 package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.AlterarPacienteDTO;
+import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,19 +17,28 @@ public class ServicoAlterarPaciente {
     @Autowired
     ServicoVerificacao verificacao;
 
+    @Autowired
+    ServicoCadastrarPaciente servicoCadastrarPaciente;
+
+    @Transactional
     public void alterarPaciente(AlterarPacienteDTO dto) {
 
-        Paciente paciente = (Paciente) repositorioPaciente.findByCpf(dto.cpf());
+        if (dto == null) {
+            throw new IllegalArgumentException("Digite o Campo que quer mudar");
+        }
+
+        Paciente paciente = repositorioPaciente.findByCpf(dto.cpf());
         if (paciente == null) {
             throw new RuntimeException("Paciente não encontrado");
         }
 
-        if (dto.cpf() != null) {
-//            if (!verificacao.cpfValido(dto.cpf())) {
-//                throw new IllegalArgumentException("CPF inválido");
-//            }
+        if (dto.cpf() != null && !dto.cpf().equals(paciente.getCpf())) {
 
-            Paciente existente = (Paciente) repositorioPaciente.findByCpf(dto.cpf());
+            if (!verificacao.cpfValido(dto.cpf())) {
+                throw new IllegalArgumentException("CPF inválido");
+            }
+
+            Paciente existente = repositorioPaciente.findByCpf(dto.cpf());
             if (existente != null && !existente.getId().equals(paciente.getId())) {
                 throw new IllegalArgumentException("CPF já cadastrado");
             }
@@ -35,25 +46,29 @@ public class ServicoAlterarPaciente {
             paciente.setCpf(dto.cpf());
         }
 
-        if(dto.nome() != null){
+        if (dto.nome() != null) {
+            if (!verificacao.textoObrigatorioValido(dto.nome(), 3)) {
+                throw new IllegalArgumentException("Nome inválido");
+            }
             paciente.setNome(dto.nome());
         }
 
         if (dto.telefone() != null) {
-//            if (!verificacao.telefoneValido(dto.telefone())) {
-//                throw new IllegalArgumentException("Telefone inválido");
-//            }
+            if (!verificacao.telefoneValido(dto.telefone())) {
+                throw new IllegalArgumentException("Telefone inválido");
+            }
             paciente.setTelefone(dto.telefone());
         }
 
-        if (dto.email() != null) {
-//            if (!verificacao.emailValido(dto.email())) {
-//                throw new IllegalArgumentException("E-mail inválido ou domínio inexistente");
-//            }
+        if (dto.email() != null && !dto.email().equals(paciente.getEmail())) {
 
-            Paciente existente = (Paciente) repositorioPaciente.findByEmail(dto.email());
+            if (!verificacao.emailValido(dto.email())) {
+                throw new IllegalArgumentException("Email inválido");
+            }
+
+            Paciente existente = repositorioPaciente.findByEmail(dto.email());
             if (existente != null && !existente.getId().equals(paciente.getId())) {
-                throw new IllegalArgumentException("E-mail já cadastrado");
+                throw new IllegalArgumentException("Email já cadastrado");
             }
 
             paciente.setEmail(dto.email());
@@ -72,13 +87,11 @@ public class ServicoAlterarPaciente {
         }
 
         if (dto.dataNascimento() != null) {
-//            if (!verificacao.dataNascimentoValida(dto.dataNascimento())) {
-//                throw new IllegalArgumentException("Data de nascimento inválida");
-//            }
+            if (!verificacao.dataNascimentoValida(dto.dataNascimento())) {
+                throw new IllegalArgumentException("Data de nascimento inválida");
+            }
             paciente.setDataNascimento(dto.dataNascimento());
         }
-
-        repositorioPaciente.save(paciente);
     }
 
 }

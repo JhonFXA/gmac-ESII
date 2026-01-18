@@ -1,6 +1,7 @@
 package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.AlterarPacienteDTO;
+import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.DTOs.PacienteDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.servicos.ServicoAlterarPaciente;
@@ -38,7 +39,7 @@ public class PacienteController {
     private ServicoAlterarPaciente servicoAlterarPaciente;
 
     @PutMapping("/alterar")
-    public ResponseEntity alterarPaciente(@RequestBody AlterarPacienteDTO dto){
+    public ResponseEntity<?> alterarPaciente(@RequestBody AlterarPacienteDTO dto){
         try {
             servicoAlterarPaciente.alterarPaciente(dto);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -51,10 +52,33 @@ public class PacienteController {
     @Autowired
     private ServicoBuscarPaciente servicoBuscarPaciente;
     @GetMapping("/buscar/{cpf}")
-    public ResponseEntity buscarPaciente(@PathVariable String cpf){
+    public ResponseEntity<?> buscarPaciente(@PathVariable String cpf){
         try {
             PacienteDTO dto = servicoBuscarPaciente.buscarPaciente(cpf);
             return ResponseEntity.ok(dto);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("Error", ex.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/{cpf}/documento",consumes = "multipart/form-data")
+    public ResponseEntity<?> adicionarDocumento(@PathVariable("cpf") String cpf, @RequestPart(value = "documento",required = false) MultipartFile documento)
+    {
+        try {
+            servicoCadastrarPaciente.cadastrarDocumento(documento,cpf);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+
+        } catch (IllegalArgumentException ex){
+            return ResponseEntity.badRequest().body(Map.of("erro", ex.getMessage()));
+        }
+    }
+
+    @PostMapping("/{cpf}/endereco")
+    public ResponseEntity<?> adicionarEndereco(@RequestBody EnderecoDTO enderecoDTO,@PathVariable String cpf){
+        try {
+            servicoCadastrarPaciente.cadastrarEndereco(enderecoDTO,cpf);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("Error", ex.getMessage()));

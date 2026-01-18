@@ -3,6 +3,7 @@ package com.example.apigmac.servicos;
 import com.example.apigmac.DTOs.AlterarUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,15 @@ public class ServicoAlterarUsuario {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void alterarUsuario(AlterarUsuarioDTO dto){
         Usuario usuario = repositorioUsuario.findById(dto.id())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         if (dto.nome() != null) {
+            if (!verificacao.textoObrigatorioValido(dto.nome(), 3)) {
+                throw new IllegalArgumentException("Nome inválido");
+            }
             usuario.setNome(dto.nome());
         }
         if (dto.cpf() != null) {
@@ -49,7 +54,9 @@ public class ServicoAlterarUsuario {
             }
             usuario.setLogin(dto.login());
         }
-        if (dto.perfil() != null) usuario.setPerfil(dto.perfil());
+        if (dto.perfil() != null) {
+            usuario.setPerfil(dto.perfil());
+        }
         if (dto.dataNascimento() != null) {
             if (!verificacao.dataNascimentoValida(dto.dataNascimento())) {
                 throw new IllegalArgumentException("Data inválida");
@@ -64,8 +71,6 @@ public class ServicoAlterarUsuario {
             String senhaCriptografada = passwordEncoder.encode(dto.senha());
             usuario.setSenha(senhaCriptografada);
         }
-
-        repositorioUsuario.save(usuario);
 
     }
 }

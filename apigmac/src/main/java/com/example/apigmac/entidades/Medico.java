@@ -26,4 +26,9 @@ public class Medico {
 
     @Column(nullable = false)
     private String especializacao;
+
+    public Medico(Usuario usuario,String especializacao){
+        this.usuario = usuario;
+        this.especializacao = especializacao;
+    }
 }

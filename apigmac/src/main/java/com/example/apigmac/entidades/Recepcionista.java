@@ -24,4 +24,8 @@ public class Recepcionista {
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
+    public Recepcionista(Usuario usuario){
+        this.usuario = usuario;
+    }
+
 }

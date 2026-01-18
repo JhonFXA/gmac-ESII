@@ -36,7 +36,9 @@ public class ServicoTransformarDocumentacao {
 
     public String caminhoDocumentacao(MultipartFile imgDoc,String cpf) {
 
-        verificacao.validarPdf(imgDoc);
+        if (!verificacao.pdfValido(imgDoc)) {
+            throw new IllegalArgumentException("Documento inválido");
+        }
 
         String nomeArquivo = String.format(
                 "documentos/%s/%s.pdf",

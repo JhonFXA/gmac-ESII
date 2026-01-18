@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,7 +60,14 @@ public class Paciente {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Endereco> enderecos;
+    private List<Endereco> enderecos = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "paciente",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Documentacao> documentacoes = new ArrayList<>();
 
     public Paciente(String nome,String cpf, String telefone, String email, Sexo sexo, EstadoCivil estadoCivil, StatusSolicitacao statusSolicitacao, LocalDate dataNascimento) {
         this.nome = nome;
@@ -72,5 +80,16 @@ public class Paciente {
         this.dataNascimento = dataNascimento;
 
     }
+
+    public void adicionarEndereco(Endereco endereco) {
+        endereco.setPaciente(this);
+        this.enderecos.add(endereco);
+    }
+
+    public void adicionarDocumentacao(Documentacao doc) {
+        doc.setPaciente(this);
+        this.documentacoes.add(doc);
+    }
+
 }
 

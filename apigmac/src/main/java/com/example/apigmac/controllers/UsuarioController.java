@@ -1,6 +1,7 @@
 package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.AlterarUsuarioDTO;
+import com.example.apigmac.DTOs.ExibeUsuarioDTO;
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.servicos.ServicoAlterarUsuario;
 import com.example.apigmac.servicos.ServicoBuscarId;
@@ -40,7 +41,7 @@ public class UsuarioController {
     @GetMapping("/buscar/{id}")
     public ResponseEntity<?> buscarUsuario(@PathVariable UUID id) {
         try {
-            RegistroUsuarioDTO dto = servicoBuscarId.buscarUsuario(id);
+            ExibeUsuarioDTO dto = servicoBuscarId.buscarUsuario(id);
             return ResponseEntity.ok(dto);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(404).body(Map.of("erro", ex.getMessage()));

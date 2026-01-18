@@ -1,7 +1,7 @@
 package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.LoginDTO;
-import com.example.apigmac.DTOs.TokenDTO;
+import com.example.apigmac.DTOs.LoginUsuarioDTO;
 import com.example.apigmac.servicos.ServicoLogin;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,8 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginDTO loginDTO) {
         try {
-            TokenDTO token = servicoLogin.login(loginDTO);
-            return ResponseEntity.ok(token);
+            LoginUsuarioDTO usuarioLogado = servicoLogin.login(loginDTO);
+            return ResponseEntity.ok(usuarioLogado);
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("Erro", "Login ou senha inválidos"));
