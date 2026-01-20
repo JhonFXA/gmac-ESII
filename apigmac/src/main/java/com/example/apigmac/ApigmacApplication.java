@@ -13,5 +13,4 @@ public class ApigmacApplication {
 		SpringApplication.run(ApigmacApplication.class, args);
 	}
 
-
 }
