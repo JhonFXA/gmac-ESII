@@ -1,6 +1,8 @@
 CREATE TABLE documentacao (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     caminho VARCHAR(100) NOT NULL,
+    status_documentacao VARCHAR(20) NOT NULL,
+    data_envio DATE NOT NULL,
 
     id_paciente UUID NOT NULL,
 

@@ -41,6 +41,8 @@ public class ConfiguracoesSeguranca {
                         .requestMatchers(HttpMethod.POST, "/paciente/{cpf}/documento").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
                         .requestMatchers(HttpMethod.PUT,"/paciente/alterar").permitAll()
                         .requestMatchers(HttpMethod.GET,"/paciente/buscar/{cpf}").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/documentacao/buscar").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/documentacao/url/{id}").permitAll()
                         .anyRequest().authenticated()
         )
         .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)

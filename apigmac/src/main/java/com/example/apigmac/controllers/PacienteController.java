@@ -22,6 +22,13 @@ public class PacienteController {
     @Autowired
     private ServicoCadastrarPaciente servicoCadastrarPaciente;
 
+
+    @Autowired
+    private ServicoAlterarPaciente servicoAlterarPaciente;
+
+    @Autowired
+    private ServicoBuscarPaciente servicoBuscarPaciente;
+
     @PostMapping(value = "/cadastrar",consumes = "multipart/form-data")
     public ResponseEntity<?> cadastrarPaciente(@RequestPart("dados") PacienteDTO dados, @RequestPart(value = "documento",required = false) MultipartFile documento)
     {
@@ -34,10 +41,6 @@ public class PacienteController {
         }
     }
 
-
-    @Autowired
-    private ServicoAlterarPaciente servicoAlterarPaciente;
-
     @PutMapping("/alterar")
     public ResponseEntity<?> alterarPaciente(@RequestBody AlterarPacienteDTO dto){
         try {
@@ -49,8 +52,7 @@ public class PacienteController {
         }
     }
 
-    @Autowired
-    private ServicoBuscarPaciente servicoBuscarPaciente;
+
     @GetMapping("/buscar/{cpf}")
     public ResponseEntity<?> buscarPaciente(@PathVariable String cpf){
         try {

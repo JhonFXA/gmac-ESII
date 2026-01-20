@@ -1,6 +1,7 @@
 package com.example.apigmac.entidades;
 
 import com.example.apigmac.modelo.enums.StatusDocumentacao;
+import com.example.apigmac.modelo.enums.StatusValidacaoDocumentacao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,9 +26,12 @@ public class ValidacaoDocumentacao {
     @Column(name = "data_validacao", nullable = false)
     private LocalDate dataValidacao;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(name = "status_validacao", nullable = false)
-    private StatusDocumentacao statusDocumentacao;
+    private StatusValidacaoDocumentacao statusValidacaoDocumentacao;
+
+    @Column(name = "observacao", nullable = false)
+    private String observacao;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_paciente", nullable = false)
@@ -35,7 +39,7 @@ public class ValidacaoDocumentacao {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Medico medico;
+    private Usuario usuario;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_documentacao", nullable = false)

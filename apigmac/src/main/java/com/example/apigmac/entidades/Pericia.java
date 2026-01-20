@@ -34,5 +34,5 @@ public class Pericia {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Medico medico;
+    private Usuario usuario;
 }

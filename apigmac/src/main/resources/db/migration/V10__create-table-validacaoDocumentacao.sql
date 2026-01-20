@@ -2,6 +2,7 @@ CREATE TABLE validacao_documentacao (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     data_validacao DATE NOT NULL,
     status_validacao VARCHAR(40) NOT NULL,
+    observacao VARCHAR(200) NOT NULL,
 
     id_paciente UUID NOT NULL,
     id_usuario UUID NOT NULL,

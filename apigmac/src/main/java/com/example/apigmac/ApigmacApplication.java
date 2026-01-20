@@ -8,10 +8,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootApplication
 public class ApigmacApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(ApigmacApplication.class, args);
 	}
-
 
 }

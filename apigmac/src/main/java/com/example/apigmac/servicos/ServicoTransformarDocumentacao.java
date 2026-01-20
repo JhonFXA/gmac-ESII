@@ -1,5 +1,7 @@
 package com.example.apigmac.servicos;
 
+import com.example.apigmac.entidades.Documentacao;
+import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,6 +36,9 @@ public class ServicoTransformarDocumentacao {
 
     @Autowired
     private S3Presigner s3Presigner;
+
+    @Autowired
+    private RepositorioDocumentacao repositorioDocumentacao;
 
     public String caminhoDocumentacao(MultipartFile imgDoc,String cpf) {
 
@@ -67,11 +73,16 @@ public class ServicoTransformarDocumentacao {
         }
     }
 
-    public String gerarPresignedUrl(String key) {
+    public String gerarPresignedUrl(UUID id) {
+        Optional<Documentacao> documentacao = repositorioDocumentacao.findById(id);
+        if (documentacao.isEmpty()){
+            throw new RuntimeException("Documentacao não encontrada");
+        }
+        String caminho = documentacao.get().getCaminho();
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(nomeBucket)
-                .key(key)
+                .key(caminho)
                 .build();
 
         GetObjectPresignRequest presignRequest =

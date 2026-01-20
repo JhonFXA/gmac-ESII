@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.net.URL;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -83,6 +84,7 @@ class ServicoTransformarDocumentacaoTest {
     @Test
     void deveGerarPresignedUrlCorretamente() throws Exception {
         // Arrange
+        UUID id = UUID.randomUUID();
         String key = "documentos/123/arquivo.pdf";
         String urlEsperada = "https://s3.aws.com/url-temporaria";
 
@@ -93,7 +95,7 @@ class ServicoTransformarDocumentacaoTest {
                 .thenReturn(presignedMock);
 
         // Act
-        String urlResultado = servico.gerarPresignedUrl(key);
+        String urlResultado = servico.gerarPresignedUrl(id);
 
         // Assert
         assertEquals(urlEsperada, urlResultado);
