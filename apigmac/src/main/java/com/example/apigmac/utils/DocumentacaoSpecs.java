@@ -1,4 +1,4 @@
-package com.example.apigmac.repositorios;
+package com.example.apigmac.utils;
 
 import com.example.apigmac.entidades.Documentacao;
 import com.example.apigmac.modelo.enums.StatusDocumentacao;

@@ -2,6 +2,7 @@ package com.example.apigmac.servicos;
 
 import com.example.apigmac.entidades.Documentacao;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
+import com.example.apigmac.utils.CpfUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,6 @@ public class ServicoTransformarDocumentacao {
     @Value("${aws.s3.bucket-name}")
     private String nomeBucket;
 
-    @Value("${aws.region}")
-    private String awsRegion;
-
     @Autowired
     private S3Client s3Client;
 
@@ -45,10 +43,12 @@ public class ServicoTransformarDocumentacao {
         if (!verificacao.pdfValido(imgDoc)) {
             throw new IllegalArgumentException("Documento inválido");
         }
+        String cpfNormalizado = CpfUtils.normalizar(cpf);
+
 
         String nomeArquivo = String.format(
                 "documentos/%s/%s.pdf",
-                cpf,
+                cpfNormalizado,
                 UUID.randomUUID()
         );
 

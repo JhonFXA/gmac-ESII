@@ -3,8 +3,9 @@ package com.example.apigmac.servicos;
 import com.example.apigmac.DTOs.DocumentoDTO;
 import com.example.apigmac.entidades.Documentacao;
 import com.example.apigmac.modelo.enums.StatusDocumentacao;
-import com.example.apigmac.repositorios.DocumentacaoSpecs;
+import com.example.apigmac.utils.DocumentacaoSpecs;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
+import com.example.apigmac.utils.CpfUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,8 @@ public class ServicoListarDocumentacao {
             boolean decrescente,
             int pagina,
             int tamanho) {
+        String cpfNormalizado = CpfUtils.normalizar(cpf);
+
 
         // 1. Definindo a Ordenação (Igual ao anterior)
         Sort sort;
@@ -47,12 +50,12 @@ public class ServicoListarDocumentacao {
         }
 
         // 4. Executando a busca paginada
-        Specification<Documentacao> spec = DocumentacaoSpecs.filtrar(cpf, nome, statusParaFiltrar);
+        Specification<Documentacao> spec = DocumentacaoSpecs.filtrar(cpfNormalizado, nome, statusParaFiltrar);
         Page<Documentacao> paginaEntidades = repositorioDocumentacao.findAll(spec, pageable);
 
         return paginaEntidades.map(doc -> new DocumentoDTO(
                 doc.getId().toString(),
-                doc.getPaciente().getCpf(),
+                CpfUtils.formatar(doc.getPaciente().getCpf()),
                 doc.getPaciente().getNome(),
                 doc.getDataEnvio().toString(),
                 doc.getStatusDocumentacao().name()

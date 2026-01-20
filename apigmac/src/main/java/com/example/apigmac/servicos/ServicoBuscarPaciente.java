@@ -5,6 +5,7 @@ import com.example.apigmac.DTOs.PacienteDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.repositorios.RepositorioPaciente;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.utils.CpfUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,9 @@ public class ServicoBuscarPaciente {
     private RepositorioPaciente repositorioPaciente;
 
     public PacienteDTO buscarPaciente(String cpf){
-        System.out.println(cpf);
-        Paciente paciente = repositorioPaciente.findByCpf(cpf);
+        String cpfNormalizado = CpfUtils.normalizar(cpf);
+
+        Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
 
         if (paciente == null) {
             throw new RuntimeException("Paciente não encontrado");
@@ -40,7 +42,7 @@ public class ServicoBuscarPaciente {
 
         return new PacienteDTO(
                 paciente.getNome(),
-                paciente.getCpf(),
+                CpfUtils.formatar(paciente.getCpf()),
                 paciente.getStatusSolicitacao(),
                 paciente.getDataNascimento(),
                 paciente.getTelefone(),

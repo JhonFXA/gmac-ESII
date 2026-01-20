@@ -7,7 +7,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.*;
 import java.time.LocalDate;
 import java.util.Hashtable;
-import java.util.InputMismatchException;
 import java.util.Objects;
 
 @Service
@@ -19,13 +18,6 @@ public class ServicoVerificacao {
 
     public boolean cpfValido(String cpf) {
         if (cpf == null) return false;
-
-        // 1. Verifica rigorosamente o formato: 3 dígitos, ponto, 3 dígitos, ponto, 3 dígitos, hífen, 2 dígitos
-        // Exemplo: 123.456.789-01
-        String regexFormatado = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}";
-        if (!cpf.matches(regexFormatado)) {
-            return false;
-        }
 
         // 2. Remove a formatação para realizar o cálculo dos dígitos verificadores
         String cpfLimpo = cpf.replaceAll("[^0-9]", "");

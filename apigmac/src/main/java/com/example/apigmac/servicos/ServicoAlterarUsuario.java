@@ -3,6 +3,7 @@ package com.example.apigmac.servicos;
 import com.example.apigmac.DTOs.AlterarUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,8 +26,10 @@ public class ServicoAlterarUsuario {
         if (dto == null) {
             throw new IllegalArgumentException("Digite o Campo que quer mudar");
         }
+        String cpfNormalizado = CpfUtils.normalizar((dto.cpf()));
 
-        Usuario usuario = (Usuario) repositorioUsuario.findByCpf(dto.cpf());
+
+        Usuario usuario = (Usuario) repositorioUsuario.findByCpf(cpfNormalizado);
 
         if (usuario == null) {
             throw new RuntimeException("Usuario não encontrado");

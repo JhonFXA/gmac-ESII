@@ -26,7 +26,7 @@ public class ValidacaoDocumentacao {
     @Column(name = "data_validacao", nullable = false)
     private LocalDate dataValidacao;
 
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "status_validacao", nullable = false)
     private StatusValidacaoDocumentacao statusValidacaoDocumentacao;
 

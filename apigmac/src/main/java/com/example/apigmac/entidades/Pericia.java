@@ -2,19 +2,21 @@ package com.example.apigmac.entidades;
 
 
 import com.example.apigmac.modelo.enums.StatusPericia;
-import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 @Entity
 @Table(name = "pericia")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Pericia {
 
     @Id
@@ -35,4 +37,8 @@ public class Pericia {
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_documentacao", nullable = false)
+    private Documentacao documentacao;
 }

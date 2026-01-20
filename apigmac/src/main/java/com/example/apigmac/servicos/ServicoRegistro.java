@@ -9,6 +9,7 @@ import com.example.apigmac.repositorios.RepositorioAdm;
 import com.example.apigmac.repositorios.RepositorioMed;
 import com.example.apigmac.repositorios.RepositorioRecepicionista;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,16 +42,17 @@ public class ServicoRegistro {
         if (dados == null) {
             throw new IllegalArgumentException("Dados não informados");
         }
+        String cpfNormalizado = CpfUtils.normalizar((dados.cpf()));
 
         if (!verificacao.textoObrigatorioValido(dados.nome(), 3)) {
             throw new IllegalArgumentException("Nome inválido");
         }
 
-        if (!verificacao.cpfValido(dados.cpf())) {
+        if (!verificacao.cpfValido(cpfNormalizado)) {
             throw new IllegalArgumentException("CPF inválido");
         }
 
-        if (repositorioUsuario.findByCpf(dados.cpf()) != null) {
+        if (repositorioUsuario.findByCpf(cpfNormalizado) != null) {
             throw new IllegalArgumentException("CPF já cadastrado");
         }
 
@@ -87,7 +89,7 @@ public class ServicoRegistro {
                 dados.login(),
                 dados.email(),
                 senhaCriptografada,
-                dados.cpf(),
+                cpfNormalizado,
                 dados.nome(),
                 dados.perfil(),
                 dados.dataNascimento()

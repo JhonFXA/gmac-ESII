@@ -29,7 +29,7 @@ public class Documentacao {
     @Column(nullable = false)
     private LocalDate dataEnvio;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL,optional = false)
     @JoinColumn(name = "id_paciente", nullable = false)
     private Paciente paciente;
 }

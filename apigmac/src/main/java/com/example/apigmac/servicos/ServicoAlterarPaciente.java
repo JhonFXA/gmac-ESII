@@ -4,6 +4,7 @@ import com.example.apigmac.DTOs.AlterarPacienteDTO;
 import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,7 @@ public class ServicoAlterarPaciente {
     private RepositorioPaciente repositorioPaciente;
 
     @Autowired
-    ServicoVerificacao verificacao;
-
-    @Autowired
-    ServicoCadastrarPaciente servicoCadastrarPaciente;
+    private ServicoVerificacao verificacao;
 
     @Transactional
     public void alterarPaciente(AlterarPacienteDTO dto) {
@@ -26,8 +24,10 @@ public class ServicoAlterarPaciente {
         if (dto == null) {
             throw new IllegalArgumentException("Digite o Campo que quer mudar");
         }
+        String cpfNormalizado = CpfUtils.normalizar((dto.cpf()));
 
-        Paciente paciente = repositorioPaciente.findByCpf(dto.cpf());
+
+        Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if (paciente == null) {
             throw new RuntimeException("Paciente não encontrado");
         }

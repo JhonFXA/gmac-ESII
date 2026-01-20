@@ -9,6 +9,7 @@ import com.example.apigmac.modelo.enums.StatusDocumentacao;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioEndereco;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class ServicoCadastrarPaciente {
     private ServicoTransformarDocumentacao transformarDocumentacao;
 
     @Autowired
-    RepositorioEndereco repositorioEndereco;
+    private RepositorioEndereco repositorioEndereco;
+
 
     @Transactional
     public Paciente cadastrarPaciente(PacienteDTO dados, MultipartFile documento){
@@ -41,16 +43,17 @@ public class ServicoCadastrarPaciente {
         if (dados == null) {
             throw new IllegalArgumentException("Dados do paciente não informados");
         }
+        String cpfNormalizado = CpfUtils.normalizar((dados.cpf()));
 
         if (!verificacao.textoObrigatorioValido(dados.nome(), 3)) {
             throw new IllegalArgumentException("Nome inválido");
         }
 
-        if (!verificacao.cpfValido(dados.cpf())) {
+        if (!verificacao.cpfValido(cpfNormalizado)) {
             throw new IllegalArgumentException("CPF inválido");
         }
 
-        if (repositorioPaciente.findByCpf(dados.cpf()) != null) {
+        if (repositorioPaciente.findByCpf(cpfNormalizado) != null) {
             throw new IllegalArgumentException("Usuário já cadastrado");
         }
 
@@ -92,7 +95,7 @@ public class ServicoCadastrarPaciente {
 
         Paciente paciente = new Paciente(
                 dados.nome(),
-                dados.cpf(),
+                cpfNormalizado,
                 dados.telefone(),
                 dados.email(),
                 dados.sexo(),
@@ -115,6 +118,8 @@ public class ServicoCadastrarPaciente {
 
 
     public void cadastrarEndereco(EnderecoDTO enderecoDTO, String cpf){
+
+        String cpfNormalizado = CpfUtils.normalizar(cpf);
 
         if (enderecoDTO == null) {
             throw new IllegalArgumentException("Endereço não informado");
@@ -144,7 +149,7 @@ public class ServicoCadastrarPaciente {
             throw new IllegalArgumentException("Número inválido");
         }
 
-        Paciente paciente = repositorioPaciente.findByCpf(cpf);
+        Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if (paciente == null) {
             throw new RuntimeException("Paciente não encontrado");
         }
@@ -168,11 +173,13 @@ public class ServicoCadastrarPaciente {
 
     public void cadastrarDocumento(MultipartFile documento, String cpf){
 
+        String cpfNormalizado = CpfUtils.normalizar(cpf);
+
         if (!verificacao.pdfValido(documento)) {
             throw new IllegalArgumentException("Documento inválido (somente PDF)");
         }
 
-        Paciente paciente = repositorioPaciente.findByCpf(cpf);
+        Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if (paciente == null) {
             throw new RuntimeException("Paciente não encontrado");
         }
