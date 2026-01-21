@@ -44,6 +44,7 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Perfil perfil;
+
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
