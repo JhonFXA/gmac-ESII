@@ -45,6 +45,7 @@ public class ConfiguracoesSeguranca {
                         .requestMatchers(HttpMethod.GET,"/documentacao/url/{id}").hasAnyRole("ADMINISTRADOR", "MEDICO")
                         .requestMatchers(HttpMethod.GET,"/documentacao/validar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.POST, "/pericia/marcar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
+                        .requestMatchers(HttpMethod.PUT, "/pericia/validarPericia").hasRole("MEDICO")
                         .anyRequest().authenticated()
         )
         .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)

@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -74,17 +75,18 @@ public class ServicoValidarDocumentacao {
         }
     }
 
-    private void atualizarStatusRelacionados(Documentacao doc, StatusValidacaoDocumentacao status,Usuario usuario,LocalDate data) {
+    private void atualizarStatusRelacionados(Documentacao doc, StatusValidacaoDocumentacao status, Usuario usuario, Date data) {
         switch (status) {
-            case APROVADO:
+            case APROVADA:
                 doc.setStatusDocumentacao(StatusDocumentacao.APROVADA);
                 doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
                 break;
-            case REPROVADO:
+            case REPROVADA:
                 doc.setStatusDocumentacao(StatusDocumentacao.REPROVADA);
                 doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
                 break;
             case PERICIA:
+
                 doc.setStatusDocumentacao(StatusDocumentacao.PENDENTE);
                 doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.PENDENTE);
                 PericiaDTO periciaDTO = new PericiaDTO(
