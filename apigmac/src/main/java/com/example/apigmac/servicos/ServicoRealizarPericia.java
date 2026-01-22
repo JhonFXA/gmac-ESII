@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,15 +35,15 @@ public class ServicoRealizarPericia {
     private RepositorioPericia repositorioPericia;
 
     public void validarPericia(ValidacaoDocumentacaoDTO dto, UUID periciaId){
-        Optional<Pericia> pericia = repositorioPericia.findById(periciaId);
-        if (pericia.isEmpty()){
-            throw new RuntimeException("Pericia não encontrada.");
-        }
+        Pericia pericia = repositorioPericia.findById(periciaId)
+                .orElseThrow(() ->
+                        new NoSuchElementException("Perícia não encontrada")
+                );
 
-        pericia.get().setStatusPericia(StatusPericia.FINALIZADA);
+        pericia.setStatusPericia(StatusPericia.FINALIZADA);
 
         servicoValidarDocumentacao.registrarValidacao(dto);
 
-        repositorioPericia.save(pericia.get());
+        repositorioPericia.save(pericia);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("paciente")
@@ -36,8 +37,15 @@ public class PacienteController {
             Paciente paciente = servicoCadastrarPaciente.cadastrarPaciente(dados,documento);
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
-        } catch (IllegalArgumentException ex){
-            return ResponseEntity.badRequest().body(Map.of("erro", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao cadastrar paciente"));
         }
     }
 
@@ -46,9 +54,25 @@ public class PacienteController {
         try {
             servicoAlterarPaciente.alterarPaciente(dto);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("Error", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            // Dados inválidos enviados pelo cliente
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (NoSuchElementException ex) {
+            // Paciente não encontrado
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            // Erro inesperado
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "erro", "Erro interno ao alterar paciente"
+                    ));
         }
     }
 
@@ -58,9 +82,20 @@ public class PacienteController {
         try {
             PacienteDTO dto = servicoBuscarPaciente.buscarPaciente(cpf);
             return ResponseEntity.ok(dto);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("Error", ex.getMessage()));
+        } catch (IllegalArgumentException ex){
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao buscar paciente"));
         }
     }
 
@@ -71,8 +106,20 @@ public class PacienteController {
             servicoCadastrarPaciente.cadastrarDocumento(documento,cpf);
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
-        } catch (IllegalArgumentException ex){
-            return ResponseEntity.badRequest().body(Map.of("erro", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao adicionar documento"));
         }
     }
 
@@ -81,9 +128,21 @@ public class PacienteController {
         try {
             servicoCadastrarPaciente.cadastrarEndereco(enderecoDTO,cpf);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("Error", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao adicionar endereço"));
         }
+
     }
 }

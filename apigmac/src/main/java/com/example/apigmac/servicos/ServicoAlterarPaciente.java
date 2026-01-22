@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class ServicoAlterarPaciente {
 
@@ -24,12 +26,17 @@ public class ServicoAlterarPaciente {
         if (dto == null) {
             throw new IllegalArgumentException("Digite o Campo que quer mudar");
         }
+
+        if (dto.cpf() == null) {
+            throw new IllegalArgumentException("CPF é obrigatório para alteração");
+        }
+
         String cpfNormalizado = CpfUtils.normalizar((dto.cpf()));
 
 
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
-        if (paciente == null) {
-            throw new RuntimeException("Paciente não encontrado");
+        if(paciente == null) {
+            throw new NoSuchElementException("Paciente não encontrado");
         }
 
         if (dto.nome() != null) {

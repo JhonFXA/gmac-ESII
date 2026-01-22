@@ -27,8 +27,8 @@ public class ServicoToken {
                     .withExpiresAt(tempoExpiracao())
                     .sign(algoritmo);
             return token;
-        } catch (JWTCreationException exception){
-            throw new RuntimeException("Erro ao gerar token",exception);
+        } catch (JWTCreationException ex){
+            throw new IllegalStateException("Erro ao gerar token JWT", ex);
         }
     }
 

@@ -75,6 +75,11 @@ public class ServicoRegistro {
         if (!verificacao.dataNascimentoValida(dados.dataNascimento())) {
             throw new IllegalArgumentException("Data inválida");
         }
+
+        if (dados.perfil() == null) {
+            throw new IllegalArgumentException("Perfil é obrigatório");
+        }
+
         if (dados.perfil() == Perfil.MEDICO) {
 
             if (!verificacao.textoObrigatorioValido(dados.especializacao(), 3)) {

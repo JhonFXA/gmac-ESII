@@ -4,6 +4,7 @@ import com.example.apigmac.DTOs.ExibeUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.utils.CpfUtils;
 import com.example.apigmac.utils.UsuarioSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,15 @@ public class ServicoListarUsuario {
 
 //        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 //        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+        if (pagina < 0) {
+            throw new IllegalArgumentException("Página não pode ser negativa");
+        }
+
+        if (tamanho <= 0) {
+            throw new IllegalArgumentException("Tamanho da página deve ser maior que zero");
+        }
+
 
 
         // 📌 Ordenação SOMENTE por nome

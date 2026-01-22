@@ -34,6 +34,11 @@ public class ServicoListarPericia {
             int tamanho) {
 
         var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("Usuário não autenticado");
+        }
+
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 
         if (usuarioLogado.getPerfil() == Perfil.MEDICO) {
@@ -45,6 +50,10 @@ public class ServicoListarPericia {
             sort = Sort.by("dataPericia").descending();
         } else {
             sort = Sort.by("dataPericia").ascending();
+        }
+
+        if (pagina < 0 || tamanho <= 0) {
+            throw new IllegalArgumentException("Parâmetros de paginação inválidos");
         }
 
         Pageable pageable = PageRequest.of(pagina, tamanho, sort);

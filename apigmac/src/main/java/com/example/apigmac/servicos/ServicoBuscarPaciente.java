@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ServicoBuscarPaciente {
@@ -17,12 +18,15 @@ public class ServicoBuscarPaciente {
     private RepositorioPaciente repositorioPaciente;
 
     public PacienteDTO buscarPaciente(String cpf){
+        if (cpf == null || cpf.isBlank()) {
+            throw new IllegalArgumentException("CPF é obrigatório");
+        }
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
 
         if (paciente == null) {
-            throw new RuntimeException("Paciente não encontrado");
+            throw new NoSuchElementException("Paciente não encontrado");
         }
 
         List<EnderecoDTO> enderecosDTO = paciente.getEnderecos()
