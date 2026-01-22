@@ -2,6 +2,7 @@ package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.PaginaPericiaDTO;
 import com.example.apigmac.DTOs.PericiaDTO;
+import com.example.apigmac.DTOs.RemarcarPericiaDTO;
 import com.example.apigmac.DTOs.ValidacaoPericiaDTO;
 import com.example.apigmac.modelo.enums.StatusPericia;
 import com.example.apigmac.servicos.periciaServicos.ServicoCancelarPericia;
@@ -141,9 +142,9 @@ public class PericiaController {
     @PutMapping("/{id}/remarcar")
     public ResponseEntity<Map<String, String>> remarcar(
             @PathVariable UUID id,
-            @RequestBody Map<String, LocalDateTime> payload) {
+            @RequestBody RemarcarPericiaDTO remarcarPericiaDTO) {
         try {
-            LocalDateTime novaData = payload.get("data");
+            LocalDateTime novaData = remarcarPericiaDTO.data();
             servicoCancelarPericia.remarcarPericia(id, novaData);
 
             return ResponseEntity.ok(

@@ -8,6 +8,7 @@ import com.example.apigmac.entidades.ValidacaoDocumentacao;
 import com.example.apigmac.modelo.enums.*;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioValidacaoDocumentacao;
+import com.example.apigmac.servicos.emailServicos.ServicoEmail;
 import com.example.apigmac.servicos.periciaServicos.ServicoMarcarPericia;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 @Service
 public class ServicoValidarDocumentacao {
+
+    @Autowired
+    private ServicoEmail servicoEmail;
 
     @Autowired
     private RepositorioDocumentacao repositorioDocumentacao;
@@ -87,29 +93,98 @@ public class ServicoValidarDocumentacao {
         }
     }
 
-    private void atualizarStatusRelacionados(Documentacao doc, StatusValidacaoDocumentacao status, Usuario usuario, LocalDateTime data) {
-        switch (status) {
-            case APROVADA:
-                doc.setStatusDocumentacao(StatusDocumentacao.APROVADA);
-                doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
-                break;
-            case REPROVADA:
-                doc.setStatusDocumentacao(StatusDocumentacao.REPROVADA);
-                doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
-                break;
-            case PERICIA:
+private void atualizarStatusRelacionados(
+            Documentacao doc,
+            StatusValidacaoDocumentacao status,
+            Usuario usuario,
+            LocalDateTime data
+){
+            String nomePaciente = doc.getPaciente().getNome().toUpperCase(Locale.forLanguageTag("pt-BR"));
+            String email = doc.getPaciente().getEmail();
 
-                doc.setStatusDocumentacao(StatusDocumentacao.PENDENTE);
-                doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.PENDENTE);
-                PericiaDTO periciaDTO = new PericiaDTO(
-                        data,
-                        StatusPericia.AGENDADA,
-                        doc.getPaciente(),
-                        usuario,
-                        doc
-                );
-                servicoMarcarPericia.marcarPericia(periciaDTO);
-                break;
+
+            switch (status) {
+                case APROVADA -> {
+                    servicoEmail.enviarEmailTexto(
+                            email,
+                            "Solicitação de Medicação Aprovada",
+                            """
+                            Prezado(a) Sr(a). %s,
+        
+                            Informamos que, após avaliação médica, sua solicitação de medicação foi APROVADA.
+        
+                            Solicitamos que compareça à unidade de saúde mais próxima para dar continuidade às próximas etapas do processo.
+        
+                            Esta mensagem é automática e enviada pelo sistema de gerenciamento de solicitações de medicação.
+        
+                            Atenciosamente,
+                            Sistema GMAC
+                            """.formatted(nomePaciente)
+
+                    );
+
+                    doc.setStatusDocumentacao(StatusDocumentacao.APROVADA);
+                    doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                }
+
+                case REPROVADA -> {
+                    servicoEmail.enviarEmailTexto(
+                            email,
+                            "Solicitação de Medicação Reprovada",
+                            """
+                            Prezado(a) Sr(a). %s,
+        
+                            Informamos que, após avaliação médica, sua solicitação de medicação foi REPROVADA.
+        
+                            Para mais informações ou esclarecimentos, orientamos que procure a unidade de saúde onde realizou a solicitação.
+        
+                            Esta mensagem é automática e enviada pelo sistema de gerenciamento de solicitações de medicação.
+        
+                            Atenciosamente,
+                            Sistema GMAC
+                            """.formatted(nomePaciente)
+                                    .toUpperCase(Locale.forLanguageTag("pt-BR"))
+                    );
+
+                    doc.setStatusDocumentacao(StatusDocumentacao.REPROVADA);
+                    doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                }
+
+                case PERICIA -> {
+
+                    DateTimeFormatter formatter =
+                            DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+                    servicoEmail.enviarEmailTexto(
+                            email,
+                            "Perícia Médica Necessária – Solicitação de Medicação",
+                            """
+                            Prezado(a) Sr(a). %s,
+        
+                            Informamos que sua solicitação de medicação encontra-se em análise
+                            e foi identificada a necessidade de realização de perícia médica.
+        
+                            O agendamento da perícia foi realizado para dia %s.
+        
+                            Esta mensagem é automática e enviada pelo sistema de gerenciamento
+                            de solicitações de medicação.
+        
+                            Atenciosamente,
+                            Sistema GMAC
+                            """.formatted(nomePaciente, data.format(formatter)).toUpperCase(Locale.forLanguageTag("pt-BR")));
+
+                    doc.setStatusDocumentacao(StatusDocumentacao.PENDENTE);
+                    doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.PENDENTE);
+
+                    PericiaDTO periciaDTO = new PericiaDTO(
+                            data,
+                            StatusPericia.AGENDADA,
+                            doc.getPaciente(),
+                            usuario,
+                            doc
+                    );
+                    servicoMarcarPericia.marcarPericia(periciaDTO);
+                }
+            }
         }
+
     }
-}
