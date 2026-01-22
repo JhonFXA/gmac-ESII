@@ -11,9 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -40,20 +43,43 @@ public class DocumentacaoController {
             Page<DocumentoDTO> resultado = servicoListarDocumentacao.listarDocumentos(cpf, nome, status, decrescente, pagina, tamanhoPagina);
             return ResponseEntity.ok(new PagedModel<>(resultado));
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("Error", ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("erro", ex.getMessage()));
         }
     }
     @GetMapping("/url/{id}")
     public ResponseEntity<?> gerarUrlDocumentacao(@PathVariable UUID id) {
         try {
-            System.out.println("Teste");
+
             String urlDocumentacao = servicoTransformarDocumentacao.gerarPresignedUrl(id);
-            System.out.println(urlDocumentacao);
             return ResponseEntity.ok(urlDocumentacao);
+
+        }catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (S3Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "erro", "Erro ao acessar o S3",
+                            "detalhe", ex.awsErrorDetails().errorMessage()
+                    ));
+
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("Error", ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "erro", "Erro interno do servidor",
+                            "detalhe", ex.getMessage()
+                    ));
         }
     }
     @PostMapping("/validar")
@@ -63,10 +89,27 @@ public class DocumentacaoController {
         return ResponseEntity.ok(
                 Map.of("mensagem", "Documentação validada com sucesso")
         );
-        }catch (Exception ex) {
+        }catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro interno ao validar documentação"));
+                    .body(Map.of(
+                            "erro", "Erro interno ao validar documentação"
+                    ));
         }
     }
 }

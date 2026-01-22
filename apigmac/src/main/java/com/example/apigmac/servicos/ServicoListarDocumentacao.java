@@ -27,6 +27,15 @@ public class ServicoListarDocumentacao {
             boolean decrescente,
             int pagina,
             int tamanho) {
+
+        if (pagina < 0) {
+            throw new IllegalArgumentException("A página não pode ser negativa");
+        }
+
+        if (tamanho <= 0) {
+            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero");
+        }
+
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
 

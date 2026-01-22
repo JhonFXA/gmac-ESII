@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 
 import java.time.Duration;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,7 +77,7 @@ public class ServicoTransformarDocumentacao {
     public String gerarPresignedUrl(UUID id) {
         Optional<Documentacao> documentacao = repositorioDocumentacao.findById(id);
         if (documentacao.isEmpty()){
-            throw new RuntimeException("Documentacao não encontrada");
+            throw new NoSuchElementException("Documentação não encontrada");
         }
         String caminho = documentacao.get().getCaminho();
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
 
 @Service
@@ -111,7 +112,9 @@ public class ServicoCadastrarPaciente {
             cadastrarEndereco(dto,paciente.getCpf());
         }
 
-        cadastrarDocumento(documento,paciente.getCpf());
+        if (documento != null){
+            cadastrarDocumento(documento, paciente.getCpf());
+        }
 
         return paciente;
     }
@@ -151,7 +154,7 @@ public class ServicoCadastrarPaciente {
 
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if (paciente == null) {
-            throw new RuntimeException("Paciente não encontrado");
+            throw new NoSuchElementException("Paciente não encontrado");
         }
 
         Endereco endereco = new Endereco(
@@ -173,6 +176,12 @@ public class ServicoCadastrarPaciente {
 
     public void cadastrarDocumento(MultipartFile documento, String cpf){
 
+
+        if (documento == null || documento.isEmpty()) {
+            throw new IllegalArgumentException("Documento é obrigatório");
+        }
+
+
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
         if (!verificacao.pdfValido(documento)) {
@@ -181,7 +190,7 @@ public class ServicoCadastrarPaciente {
 
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if (paciente == null) {
-            throw new RuntimeException("Paciente não encontrado");
+            throw new NoSuchElementException("Paciente não encontrado");
         }
 
         String caminho = transformarDocumentacao

@@ -28,11 +28,21 @@ public class LoginController {
             LoginUsuarioDTO usuarioLogado = servicoLogin.login(loginDTO);
             return ResponseEntity.ok(usuarioLogado);
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("Erro", "Login ou senha inválidos"));
-        }catch (DisabledException ex) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("Erro", ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("erro", "Login ou senha inválidos"));
+
+        } catch (DisabledException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "erro", "Erro interno ao realizar login"
+                    ));
         }
     }
 }

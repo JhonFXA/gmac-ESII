@@ -28,7 +28,7 @@ public class ServicoMarcarPericia {
         }
 
         if(repositorioPericia.existsByDocumentacaoId(dto.documentacao().getId())){
-            throw new IllegalArgumentException("Documentacao com pericia ja marcada");
+            throw new IllegalStateException("Já existe uma perícia marcada para esta documentação");
         }
 
 //        Paciente paciente = repositorioPaciente.findById(dto.paciente())

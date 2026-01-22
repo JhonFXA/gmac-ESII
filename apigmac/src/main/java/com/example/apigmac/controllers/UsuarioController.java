@@ -2,10 +2,8 @@ package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.AlterarUsuarioDTO;
 import com.example.apigmac.DTOs.ExibeUsuarioDTO;
-import com.example.apigmac.DTOs.PaginaPericiaDTO;
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.modelo.enums.Perfil;
-import com.example.apigmac.modelo.enums.StatusPericia;
 import com.example.apigmac.servicos.ServicoAlterarUsuario;
 import com.example.apigmac.servicos.ServicoBuscarUsuario;
 import com.example.apigmac.servicos.ServicoListarUsuario;
@@ -40,9 +38,20 @@ public class UsuarioController {
         try {
             servicoAlterarUsuario.alterarUsuario(dto);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (IllegalArgumentException ex){
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("Error", ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao alterar usuário"));
         }
     }
 
@@ -51,8 +60,20 @@ public class UsuarioController {
         try {
             ExibeUsuarioDTO dto = servicoBuscarUsuario.buscarUsuario(cpf);
             return ResponseEntity.ok(dto);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(404).body(Map.of("erro", ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao buscar usuário"));
         }
     }
 
@@ -64,7 +85,14 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(Map.of("erro", ex.getMessage()));
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao cadastrar usuário"));
         }
     }
     @GetMapping("/listar")
@@ -77,9 +105,17 @@ public class UsuarioController {
         try {
             Page<ExibeUsuarioDTO> exibeUsuarioDTOS = servicoListarUsuario.listarUsuarios(nome,cpf,perfil,decrescente,pagina,tamanhoPagina);
             return ResponseEntity.ok(new PagedModel<>(exibeUsuarioDTOS));
-        }catch (Exception ex) {
+        }catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("Error", ex.getMessage()));
+                    .body(Map.of("erro", "Erro interno no servidor"));
         }
     }
 }
