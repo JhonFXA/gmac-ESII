@@ -1,13 +1,16 @@
 package com.example.apigmac.controllers;
 
-import com.example.apigmac.DTOs.AlterarPacienteDTO;
-import com.example.apigmac.DTOs.EnderecoDTO;
-import com.example.apigmac.DTOs.PacienteDTO;
+import com.example.apigmac.DTOs.*;
 import com.example.apigmac.entidades.Paciente;
+import com.example.apigmac.modelo.enums.Perfil;
+import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.servicos.ServicoAlterarPaciente;
 import com.example.apigmac.servicos.ServicoBuscarPaciente;
 import com.example.apigmac.servicos.ServicoCadastrarPaciente;
+import com.example.apigmac.servicos.ServicoListarPaciente;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,9 @@ public class PacienteController {
 
     @Autowired
     private ServicoBuscarPaciente servicoBuscarPaciente;
+
+    @Autowired
+    private ServicoListarPaciente servicoListarPaciente;
 
     @PostMapping(value = "/cadastrar",consumes = "multipart/form-data")
     public ResponseEntity<?> cadastrarPaciente(@RequestPart("dados") PacienteDTO dados, @RequestPart(value = "documento",required = false) MultipartFile documento)
@@ -83,6 +89,22 @@ public class PacienteController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("Error", ex.getMessage()));
+        }
+    }
+    @GetMapping("/listar")
+    public ResponseEntity<?> listarPaciente(@RequestParam(required = false) String nome,
+                                            @RequestParam(required = false) String cpf,
+                                            @RequestParam(required = false)StatusSolicitacao statusSolicitacao,
+                                            @RequestParam(defaultValue = "true") boolean decrescente,
+                                            @RequestParam(defaultValue = "0") int pagina,
+                                            @RequestParam(defaultValue = "10") int tamanhoPagina) {
+        try {
+            Page<PaginaPacienteDTO> exibePacientesDTOs = servicoListarPaciente.listarPacientes(nome,cpf,statusSolicitacao,decrescente,pagina,tamanhoPagina);
+            return ResponseEntity.ok(new PagedModel<>(exibePacientesDTOs));
+        }
+        catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("Error", ex.getMessage()));
         }
     }

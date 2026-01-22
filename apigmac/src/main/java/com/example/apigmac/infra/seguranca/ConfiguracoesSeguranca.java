@@ -42,6 +42,7 @@ public class ConfiguracoesSeguranca {
                         .requestMatchers(HttpMethod.POST, "/paciente/{cpf}/documento").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
                         .requestMatchers(HttpMethod.PUT,"/paciente/alterar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.GET,"/paciente/buscar/{cpf}").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
+                        .requestMatchers(HttpMethod.GET,"/paciente/listar").permitAll()
                         .requestMatchers(HttpMethod.GET,"/documentacao/buscar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.GET,"/documentacao/url/{id}").hasAnyRole("ADMINISTRADOR", "MEDICO")
                         .requestMatchers(HttpMethod.GET,"/documentacao/validar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")

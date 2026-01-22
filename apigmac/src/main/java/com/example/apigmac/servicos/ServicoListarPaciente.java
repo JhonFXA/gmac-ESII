@@ -1,0 +1,60 @@
+package com.example.apigmac.servicos;
+
+import com.example.apigmac.DTOs.ExibeUsuarioDTO;
+import com.example.apigmac.DTOs.PaginaPacienteDTO;
+import com.example.apigmac.entidades.Paciente;
+import com.example.apigmac.entidades.Usuario;
+import com.example.apigmac.modelo.enums.Perfil;
+import com.example.apigmac.modelo.enums.StatusSolicitacao;
+import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.utils.PacienteSpecs;
+import com.example.apigmac.utils.UsuarioSpecs;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ServicoListarPaciente {
+
+    @Autowired
+    private RepositorioPaciente repositorioPaciente;
+
+    public Page<PaginaPacienteDTO> listarPacientes(
+            String nome,
+            String cpf,
+            StatusSolicitacao statusSolicitacao,
+            boolean decrescente,
+            int pagina,
+            int tamanho) {
+
+//        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+//        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+
+        Sort sort = decrescente
+                ? Sort.by("nome").descending()
+                : Sort.by("nome").ascending();
+
+        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
+
+        Specification<Paciente> spec =
+                PacienteSpecs.filtrar(nome, cpf, statusSolicitacao);
+
+        Page<Paciente> paginaEntidades =
+                repositorioPaciente.findAll(spec, pageable);
+
+        return paginaEntidades.map(paciente ->
+                new PaginaPacienteDTO(
+                        paciente.getNome(),
+                        paciente.getCpf(),
+                        paciente.getStatusSolicitacao(),
+                        paciente.getDataNascimento()
+                )
+        );
+    }
+}

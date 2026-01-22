@@ -7,9 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum StatusSolicitacao {
     PENDENTE("Pendente"),
-    ANALISE("Em Análise"),
-    APROVADA("Aprovada"),
-    NEGADA("Negada"),
     FINALIZADA("Finalizada");
 
     private final String descricao;
