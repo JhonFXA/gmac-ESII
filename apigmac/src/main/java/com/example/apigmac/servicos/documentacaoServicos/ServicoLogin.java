@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.documentacaoServicos;
 
 import com.example.apigmac.DTOs.LoginDTO;
 import com.example.apigmac.DTOs.LoginUsuarioDTO;

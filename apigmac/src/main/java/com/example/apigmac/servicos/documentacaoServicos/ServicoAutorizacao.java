@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.documentacaoServicos;
 
 import com.example.apigmac.repositorios.RepositorioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;

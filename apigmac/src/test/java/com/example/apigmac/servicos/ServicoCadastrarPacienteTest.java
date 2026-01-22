@@ -2,15 +2,16 @@ package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.DTOs.PacienteDTO;
-import com.example.apigmac.entidades.Endereco;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.modelo.enums.EstadoCivil;
-import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.modelo.enums.Sexo;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioEndereco;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.servicos.documentacaoServicos.ServicoTransformarDocumentacao;
+import com.example.apigmac.servicos.pacientesServicos.ServicoCadastrarPaciente;
+import com.example.apigmac.utils.ServicoVerificacao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

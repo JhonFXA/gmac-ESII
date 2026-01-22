@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.usuariosServicos;
 
 import com.example.apigmac.DTOs.ExibeUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;

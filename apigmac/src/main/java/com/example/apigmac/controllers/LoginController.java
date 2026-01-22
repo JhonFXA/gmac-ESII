@@ -2,7 +2,7 @@ package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.LoginDTO;
 import com.example.apigmac.DTOs.LoginUsuarioDTO;
-import com.example.apigmac.servicos.ServicoLogin;
+import com.example.apigmac.servicos.documentacaoServicos.ServicoLogin;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,10 +1,9 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.pacientesServicos;
 
 import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.DTOs.PacienteDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.repositorios.RepositorioPaciente;
-import com.example.apigmac.repositorios.RepositorioUsuario;
 import com.example.apigmac.utils.CpfUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

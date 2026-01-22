@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.documentacaoServicos;
 
 import com.example.apigmac.DTOs.PericiaDTO;
 import com.example.apigmac.DTOs.ValidacaoDocumentacaoDTO;
@@ -8,6 +8,7 @@ import com.example.apigmac.entidades.ValidacaoDocumentacao;
 import com.example.apigmac.modelo.enums.*;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioValidacaoDocumentacao;
+import com.example.apigmac.servicos.periciaServicos.ServicoMarcarPericia;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,9 +18,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class ServicoValidarDocumentacao {
@@ -49,10 +49,12 @@ public class ServicoValidarDocumentacao {
                             new NoSuchElementException("Documentação não encontrada")
                     );
 
-            // 3. Validação de Regras de Perfil vs Ação
+            if (dto.status() == StatusValidacaoDocumentacao.PERICIA && dto.data() == null) {
+                throw new IllegalArgumentException("A data da perícia é obrigatória quando o status é PERICIA.");
+            }
+
             validarPermissao(usuario, dto.status());
 
-            // 4. Criação do registro de validação
             ValidacaoDocumentacao validacao = new ValidacaoDocumentacao();
             validacao.setDocumentacao(documentacao);
             validacao.setPaciente(documentacao.getPaciente());
@@ -60,7 +62,6 @@ public class ServicoValidarDocumentacao {
             validacao.setDataValidacao(LocalDate.now());
             validacao.setObservacao(dto.observacao());
             validacao.setStatusValidacaoDocumentacao(dto.status());
-            System.out.println(dto.status());
 
             // 5. Atualização dos Status conforme a escolha
             atualizarStatusRelacionados(documentacao, dto.status(),usuario,dto.data());
@@ -76,9 +77,8 @@ public class ServicoValidarDocumentacao {
     }
 
     private void validarPermissao(Usuario usuario, StatusValidacaoDocumentacao status) {
-        boolean ehMedico = usuario.getPerfil() == Perfil.MEDICO;
 
-        if (!ehMedico) {
+        if (!(usuario.getPerfil() == Perfil.MEDICO)) {
             if (status != StatusValidacaoDocumentacao.PERICIA) {
                 throw new AccessDeniedException(
                         "Apenas médicos podem APROVAR ou REPROVAR documentos. Seu perfil permite apenas solicitar PERÍCIA."
@@ -87,7 +87,7 @@ public class ServicoValidarDocumentacao {
         }
     }
 
-    private void atualizarStatusRelacionados(Documentacao doc, StatusValidacaoDocumentacao status, Usuario usuario, Date data) {
+    private void atualizarStatusRelacionados(Documentacao doc, StatusValidacaoDocumentacao status, Usuario usuario, LocalDateTime data) {
         switch (status) {
             case APROVADA:
                 doc.setStatusDocumentacao(StatusDocumentacao.APROVADA);

@@ -4,9 +4,10 @@ import com.example.apigmac.DTOs.PaginaPericiaDTO;
 import com.example.apigmac.DTOs.PericiaDTO;
 import com.example.apigmac.DTOs.ValidacaoPericiaDTO;
 import com.example.apigmac.modelo.enums.StatusPericia;
-import com.example.apigmac.servicos.ServicoListarPericia;
-import com.example.apigmac.servicos.ServicoMarcarPericia;
-import com.example.apigmac.servicos.ServicoRealizarPericia;
+import com.example.apigmac.servicos.periciaServicos.ServicoCancelarPericia;
+import com.example.apigmac.servicos.periciaServicos.ServicoListarPericia;
+import com.example.apigmac.servicos.periciaServicos.ServicoMarcarPericia;
+import com.example.apigmac.servicos.periciaServicos.ServicoRealizarPericia;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,8 +15,11 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("pericia")
@@ -29,6 +33,9 @@ public class PericiaController {
 
     @Autowired
     private ServicoListarPericia servicoListarPericia;
+
+    @Autowired
+    private ServicoCancelarPericia servicoCancelarPericia;
 
     @PostMapping("/marcar")
     public ResponseEntity<Map<String, String>> marcarPericia(@RequestBody @Valid PericiaDTO dados) {
@@ -105,6 +112,59 @@ public class PericiaController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("erro", "Erro interno ao validar perícia"));
+        }
+    }
+
+
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<Map<String, String>> cancelar(@PathVariable UUID id) {
+        try {
+            servicoCancelarPericia.cancelarPericia(id);
+            return ResponseEntity.ok(
+                    Map.of("mensagem", "Perícia cancelada e solicitação finalizada.")
+            );
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT) // Conflito de estado do objeto
+                    .body(Map.of("erro", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao cancelar perícia"));
+        }
+    }
+
+    @PutMapping("/{id}/remarcar")
+    public ResponseEntity<Map<String, String>> remarcar(
+            @PathVariable UUID id,
+            @RequestBody Map<String, LocalDateTime> payload) {
+        try {
+            LocalDateTime novaData = payload.get("data");
+            servicoCancelarPericia.remarcarPericia(id, novaData);
+
+            return ResponseEntity.ok(
+                    Map.of("mensagem", "Perícia remarcada com sucesso para " + novaData)
+            );
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(Map.of("erro", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao remarcar perícia"));
         }
     }
 

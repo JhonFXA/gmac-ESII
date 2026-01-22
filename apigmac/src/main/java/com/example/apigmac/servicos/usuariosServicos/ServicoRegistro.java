@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.usuariosServicos;
 import com.example.apigmac.DTOs.RegistroUsuarioDTO;
 import com.example.apigmac.entidades.Administrador;
 import com.example.apigmac.entidades.Medico;
@@ -9,6 +9,7 @@ import com.example.apigmac.repositorios.RepositorioAdm;
 import com.example.apigmac.repositorios.RepositorioMed;
 import com.example.apigmac.repositorios.RepositorioRecepicionista;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

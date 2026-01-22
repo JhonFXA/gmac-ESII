@@ -1,7 +1,8 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.documentacaoServicos;
 
 import com.example.apigmac.entidades.Documentacao;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
+import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +24,7 @@ public class Pericia {
     private UUID id;
 
     @Column(name = "data_pericia", nullable = false)
-    private Date dataPericia;
+    private LocalDateTime dataPericia;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status_pericia", nullable = false)

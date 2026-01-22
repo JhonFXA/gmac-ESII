@@ -2,8 +2,9 @@ package com.example.apigmac.servicos;
 
 import com.example.apigmac.DTOs.AlterarPacienteDTO;
 import com.example.apigmac.entidades.Paciente;
-import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.servicos.pacientesServicos.ServicoAlterarPaciente;
+import com.example.apigmac.utils.ServicoVerificacao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

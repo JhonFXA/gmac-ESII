@@ -7,6 +7,7 @@ import com.example.apigmac.modelo.enums.EstadoCivil;
 import com.example.apigmac.modelo.enums.Sexo;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.servicos.pacientesServicos.ServicoBuscarPaciente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

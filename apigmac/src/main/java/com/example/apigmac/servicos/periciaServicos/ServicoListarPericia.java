@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.periciaServicos;
 
 import com.example.apigmac.DTOs.PaginaPericiaDTO;
 import com.example.apigmac.entidades.Pericia;

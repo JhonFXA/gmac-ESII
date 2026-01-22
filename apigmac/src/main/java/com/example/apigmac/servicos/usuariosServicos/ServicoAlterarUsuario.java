@@ -1,8 +1,9 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.usuariosServicos;
 
 import com.example.apigmac.DTOs.AlterarUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

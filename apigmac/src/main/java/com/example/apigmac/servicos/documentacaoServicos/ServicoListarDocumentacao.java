@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.documentacaoServicos;
 
 import com.example.apigmac.DTOs.DocumentoDTO;
 import com.example.apigmac.entidades.Documentacao;

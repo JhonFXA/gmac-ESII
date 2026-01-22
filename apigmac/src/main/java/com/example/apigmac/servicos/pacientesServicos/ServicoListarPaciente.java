@@ -1,15 +1,10 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.pacientesServicos;
 
-import com.example.apigmac.DTOs.ExibeUsuarioDTO;
 import com.example.apigmac.DTOs.PaginaPacienteDTO;
 import com.example.apigmac.entidades.Paciente;
-import com.example.apigmac.entidades.Usuario;
-import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioPaciente;
-import com.example.apigmac.repositorios.RepositorioUsuario;
 import com.example.apigmac.utils.PacienteSpecs;
-import com.example.apigmac.utils.UsuarioSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

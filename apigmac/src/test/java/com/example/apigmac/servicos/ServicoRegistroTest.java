@@ -10,6 +10,8 @@ import com.example.apigmac.repositorios.RepositorioAdm;
 import com.example.apigmac.repositorios.RepositorioMed;
 import com.example.apigmac.repositorios.RepositorioRecepicionista;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.servicos.usuariosServicos.ServicoRegistro;
+import com.example.apigmac.utils.ServicoVerificacao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;

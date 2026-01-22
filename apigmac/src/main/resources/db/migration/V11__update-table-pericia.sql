@@ -1,0 +1,3 @@
+ALTER TABLE pericia
+    ALTER COLUMN data_pericia TYPE TIMESTAMP WITHOUT TIME ZONE
+    USING data_pericia::TIMESTAMP;

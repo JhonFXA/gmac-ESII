@@ -2,12 +2,11 @@ package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.*;
 import com.example.apigmac.entidades.Paciente;
-import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
-import com.example.apigmac.servicos.ServicoAlterarPaciente;
-import com.example.apigmac.servicos.ServicoBuscarPaciente;
-import com.example.apigmac.servicos.ServicoCadastrarPaciente;
-import com.example.apigmac.servicos.ServicoListarPaciente;
+import com.example.apigmac.servicos.pacientesServicos.ServicoAlterarPaciente;
+import com.example.apigmac.servicos.pacientesServicos.ServicoBuscarPaciente;
+import com.example.apigmac.servicos.pacientesServicos.ServicoCadastrarPaciente;
+import com.example.apigmac.servicos.pacientesServicos.ServicoListarPaciente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;

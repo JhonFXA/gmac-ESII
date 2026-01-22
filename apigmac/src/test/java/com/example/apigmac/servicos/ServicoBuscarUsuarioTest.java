@@ -4,6 +4,7 @@ import com.example.apigmac.DTOs.ExibeUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioUsuario;
+import com.example.apigmac.servicos.usuariosServicos.ServicoBuscarUsuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

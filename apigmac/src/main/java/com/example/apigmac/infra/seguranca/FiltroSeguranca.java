@@ -2,7 +2,7 @@ package com.example.apigmac.infra.seguranca;
 
 
 import com.example.apigmac.repositorios.RepositorioUsuario;
-import com.example.apigmac.servicos.ServicoToken;
+import com.example.apigmac.servicos.documentacaoServicos.ServicoToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

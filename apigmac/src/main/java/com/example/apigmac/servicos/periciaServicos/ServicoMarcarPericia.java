@@ -1,10 +1,9 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.periciaServicos;
 
 import com.example.apigmac.DTOs.PericiaDTO;
 import com.example.apigmac.entidades.*;
 import com.example.apigmac.modelo.enums.StatusPericia;
 import com.example.apigmac.repositorios.*;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class ServicoMarcarPericia {
         if (dto.paciente()== null ||
                 dto.documentacao()== null ||
                 dto.usuario() == null ||
-                dto.dataPericia()== null) {
+                dto.dataPericia() == null) {
 
             throw new IllegalArgumentException("Algum campo obrigatório está null no DTO");
         }

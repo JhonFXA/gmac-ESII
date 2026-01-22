@@ -1,9 +1,9 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.servicos.pacientesServicos;
 
 import com.example.apigmac.DTOs.AlterarPacienteDTO;
-import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

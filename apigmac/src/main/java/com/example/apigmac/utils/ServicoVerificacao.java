@@ -1,4 +1,4 @@
-package com.example.apigmac.servicos;
+package com.example.apigmac.utils;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
