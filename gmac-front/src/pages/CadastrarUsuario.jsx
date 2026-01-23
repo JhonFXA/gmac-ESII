@@ -9,7 +9,7 @@ import { data } from 'react-router-dom';
 export default function CadastrarUsuario(){
     const { token, perfil } = useAuth();
 
-    const [formData, setFormData] = useState({
+    const initialState = {
         nome: '',
         cpf: '',
         email: '',
@@ -18,14 +18,19 @@ export default function CadastrarUsuario(){
         username: '',
         password: '',
         repeatPassword: ''
-    });
+    };
+
+    const [formData, setFormData] = useState(initialState);
+
+    const [statusMessage, setStatusMessage] = useState('');
+    const [statusType, setStatusType] = useState(''); // 'success' ou 'error'
 
 
     function handleChange(e) {
         const { name, value } = e.target;
         setFormData(prev => ({
-        ...prev,
-        [name]: value
+            ...prev,
+            [name]: name === 'nome' ? value.toUpperCase() : value
         }));
     }
     
@@ -48,22 +53,29 @@ export default function CadastrarUsuario(){
         };
 
         try {
-        const response = await fetch('http://localhost:8080/usuario/registro', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(payload)
-        });
+            const response = await fetch('http://localhost:8080/usuario/registro', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
 
-        if (!response.ok) {
-            throw new Error('Erro ao cadastrar usuário');
-        }
+            if (!response.ok) {
+                const errorData = await response.json();
+                setStatusMessage(errorData.erro);
+                setStatusType('error');
+                return;
+            }
+            
+            setStatusMessage('Usuário cadastrado com sucesso!');
+            setStatusType('success');
 
-        alert('Usuário cadastrado com sucesso!');
+            setFormData(initialState);
         } catch (error) {
-        alert(error.message);
+            setStatusMessage('Erro inesperado ao cadastrar usuário.');
+            setStatusType('error');
         }
     }
 
@@ -75,6 +87,11 @@ export default function CadastrarUsuario(){
                 <p>
                     <a href="/painel-principal">Painel Principal</a> &gt; <a href="/painel-principal/cadastrar-usuario">Cadastrar Usuário</a></p>
             </div>
+            {statusMessage && (
+            <div className={`status-msg ${statusType}`}>
+                {statusMessage}
+            </div>
+            )}
             <div className="user-registration-container">
                 <form onSubmit={handleSubmit}>
                     <div className="field name-field">

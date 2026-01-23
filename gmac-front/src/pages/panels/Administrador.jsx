@@ -9,12 +9,15 @@ function Administrador() {
     <div className="container">
         <Header />
         <main className="main">
+          <div className="status-message">
+            <p></p>
+          </div>
           <div className="button-collection">
             <button className="main-button" onClick={() => navigate('/painel-principal/cadastrar-usuario')}>
               <i className="fas fa-user-plus"></i>
               <p>Cadastrar Usuário</p>
               </button>
-            <button className="main-button">
+            <button className="main-button" onClick={() => navigate('/painel-principal/gerenciar-usuarios')}>
               <i className="fas fa-users"></i>
               <p>Gerenciar Usuários</p>
               </button>
