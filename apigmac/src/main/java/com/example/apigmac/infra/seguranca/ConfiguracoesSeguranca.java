@@ -51,6 +51,8 @@ public class ConfiguracoesSeguranca {
                         .requestMatchers(HttpMethod.POST, "/pericia/listar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.PUT,"/pericia/{id}/cancelar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.PUT,"/pericia/{id}/remarcar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
+                        .requestMatchers(HttpMethod.GET,"/relatorio/dashboard").permitAll()
+
                         .anyRequest().authenticated()
         )
         .addFilterBefore(filtroSeguranca, UsernamePasswordAuthenticationFilter.class)

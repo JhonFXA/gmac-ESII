@@ -1,10 +1,9 @@
-package com.example.apigmac.servicos.documentacaoServicos;
+package com.example.apigmac.servicos.loginServicos;
 
 import com.example.apigmac.DTOs.LoginDTO;
 import com.example.apigmac.DTOs.LoginUsuarioDTO;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
-import com.example.apigmac.servicos.emailServicos.ServicoEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;

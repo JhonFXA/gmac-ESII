@@ -3,7 +3,7 @@ package com.example.apigmac.servicos;
 import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioUsuario;
-import com.example.apigmac.servicos.documentacaoServicos.ServicoAutorizacao;
+import com.example.apigmac.servicos.loginServicos.ServicoAutorizacao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
