@@ -1,8 +1,18 @@
-.main-nocentered-container {
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-direction: column;
-    background-color: var(--background-color);
+.status-msg {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.status-msg.success {
+  background-color: #e6fffa;
+  color: #065f46;
+}
+
+.status-msg.error {
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 .user-registration-container {
@@ -81,6 +91,15 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    transition: background-color ease-in-out 0.2s;
+}
+
+.submit-button:hover {
+    background-color: var(--secondary-color);
+}
+
+.submit-button:active {
+    background-color: var(--text-default-color);
 }
 
 .uppercase {

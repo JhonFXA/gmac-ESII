@@ -6,6 +6,13 @@
     background-color: var(--background-color);
 }
 
+.main-nocentered-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--background-color);
+}
+
 .button-collection {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

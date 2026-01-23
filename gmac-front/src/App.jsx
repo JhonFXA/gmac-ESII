@@ -4,6 +4,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 import Login from './pages/Login.jsx'
 import PainelPrincipal from './pages/PainelPrincipal.jsx';
 import CadastrarUsuario from './pages/CadastrarUsuario.jsx';
+import GerenciarUsuarios from './pages/GerenciarUsuarios.jsx';
 
 function App() {
   return (
@@ -21,7 +22,13 @@ function App() {
           <Route path='/painel-principal/cadastrar-usuario' element={
             <ProtectedRoute allowedProfiles={['ADMINISTRADOR']}>
               <CadastrarUsuario />
-            </ProtectedRoute>} />
+            </ProtectedRoute>}
+          />
+          <Route path='/painel-principal/gerenciar-usuarios' element={
+            <ProtectedRoute allowedProfiles={['ADMINISTRADOR']}>
+              <GerenciarUsuarios />
+            </ProtectedRoute>}
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
