@@ -14,27 +14,29 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ServicoListarDocumentacao {
 
     @Autowired
     private RepositorioDocumentacao repositorioDocumentacao;
 
-    public Page<DocumentoDTO> listarDocumentos(
+    public List<DocumentoDTO> listarDocumentos(
             String cpf,
             String nome,
             StatusDocumentacao status,
-            boolean decrescente,
-            int pagina,
-            int tamanho) {
+            boolean decrescente){
+//            int pagina,
+//            int tamanho) {
 
-        if (pagina < 0) {
-            throw new IllegalArgumentException("A página não pode ser negativa");
-        }
-
-        if (tamanho <= 0) {
-            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero");
-        }
+//        if (pagina < 0) {
+//            throw new IllegalArgumentException("A página não pode ser negativa");
+//        }
+//
+//        if (tamanho <= 0) {
+//            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero");
+//        }
 
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
@@ -46,9 +48,9 @@ public class ServicoListarDocumentacao {
         } else {
             sort = Sort.by("dataEnvio").ascending();
         }
-
-        // 2. Criando o objeto de Paginação
-        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
+//
+//        // 2. Criando o objeto de Paginação
+//        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
 
         // 3. Definindo o Status Default
         StatusDocumentacao statusParaFiltrar;
@@ -60,15 +62,16 @@ public class ServicoListarDocumentacao {
 
         // 4. Executando a busca paginada
         Specification<Documentacao> spec = DocumentacaoSpecs.filtrar(cpfNormalizado, nome, statusParaFiltrar);
-        Page<Documentacao> paginaEntidades = repositorioDocumentacao.findAll(spec, pageable);
+//        Page<Documentacao> paginaEntidades = repositorioDocumentacao.findAll(spec, pageable);
+        List<Documentacao> paginaEntidades = repositorioDocumentacao.findAll(spec,sort);
 
-        return paginaEntidades.map(doc -> new DocumentoDTO(
+        return paginaEntidades.stream().map(doc -> new DocumentoDTO(
                 doc.getId().toString(),
                 CpfUtils.formatar(doc.getPaciente().getCpf()),
                 doc.getPaciente().getNome(),
                 doc.getDataEnvio().toString(),
                 doc.getStatusDocumentacao().name()
-        ));
+        )).toList();
     }
 }
 

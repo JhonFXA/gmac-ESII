@@ -15,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -35,13 +36,13 @@ public class DocumentacaoController {
             @RequestParam(required = false) String cpf,
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) StatusDocumentacao status,
-            @RequestParam(defaultValue = "false") boolean decrescente,
-            @RequestParam(defaultValue = "0") int pagina,
-            @RequestParam(defaultValue = "10") int tamanhoPagina
+            @RequestParam(defaultValue = "false") boolean decrescente
+//            @RequestParam(defaultValue = "0") int pagina,
+//            @RequestParam(defaultValue = "10") int tamanhoPagina
     ) {
         try {
-            Page<DocumentoDTO> resultado = servicoListarDocumentacao.listarDocumentos(cpf, nome, status, decrescente, pagina, tamanhoPagina);
-            return ResponseEntity.ok(new PagedModel<>(resultado));
+            List<DocumentoDTO> resultado = servicoListarDocumentacao.listarDocumentos(cpf, nome, status, decrescente);
+            return ResponseEntity.ok(resultado);
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

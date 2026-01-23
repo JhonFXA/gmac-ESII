@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -99,12 +100,12 @@ public class UsuarioController {
     public ResponseEntity<?> listarUsuarios(@RequestParam(required = false) String nome,
                                             @RequestParam(required = false) String cpf,
                                             @RequestParam(required = false) Perfil perfil,
-                                            @RequestParam(defaultValue = "true") boolean decrescente,
-                                            @RequestParam(defaultValue = "0") int pagina,
-                                            @RequestParam(defaultValue = "10") int tamanhoPagina) {
+                                            @RequestParam(defaultValue = "true") boolean decrescente){
+//                                            @RequestParam(defaultValue = "0") int pagina,
+//                                            @RequestParam(defaultValue = "10") int tamanhoPagina) {
         try {
-            Page<ExibeUsuarioDTO> exibeUsuarioDTOS = servicoListarUsuario.listarUsuarios(nome,cpf,perfil,decrescente,pagina,tamanhoPagina);
-            return ResponseEntity.ok(new PagedModel<>(exibeUsuarioDTOS));
+            List<ExibeUsuarioDTO> exibeUsuarioDTOS = servicoListarUsuario.listarUsuarios(nome,cpf,perfil,decrescente);
+            return ResponseEntity.ok(exibeUsuarioDTOS);
         }catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest()
                     .body(Map.of("erro", ex.getMessage()));

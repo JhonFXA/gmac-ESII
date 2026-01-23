@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -63,12 +64,12 @@ public class PericiaController {
     public ResponseEntity<?> listarPericias(@RequestParam(required = false) String nomePaciente,
                                                                  @RequestParam(required = false) String nomeMedico,
                                                                  @RequestParam(required = false) StatusPericia statusPericia,
-                                                                 @RequestParam(defaultValue = "true") boolean decrescente,
-                                                                 @RequestParam(defaultValue = "0") int pagina,
-                                                                 @RequestParam(defaultValue = "10") int tamanhoPagina) {
+                                                                 @RequestParam(defaultValue = "true") boolean decrescente){
+//                                                                 @RequestParam(defaultValue = "0") int pagina,
+//                                                                 @RequestParam(defaultValue = "10") int tamanhoPagina) {
         try {
-        Page<PaginaPericiaDTO> paginaPericiaDTOS = servicoListarPericia.listarPericia(nomePaciente,nomeMedico,statusPericia,decrescente,pagina,tamanhoPagina);
-        return ResponseEntity.ok(new PagedModel<>(paginaPericiaDTOS));
+        List<PaginaPericiaDTO> paginaPericiaDTOS = servicoListarPericia.listarPericia(nomePaciente,nomeMedico,statusPericia,decrescente);
+        return ResponseEntity.ok(paginaPericiaDTOS);
         }catch (IllegalArgumentException ex) {
             return ResponseEntity
                     .badRequest()

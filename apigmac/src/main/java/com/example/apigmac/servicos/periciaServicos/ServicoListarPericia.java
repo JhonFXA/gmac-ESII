@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ServicoListarPericia {
 
@@ -25,13 +27,13 @@ public class ServicoListarPericia {
     @Autowired
     private RepositorioPericia repositorioPericia;
 
-    public Page<PaginaPericiaDTO> listarPericia(
+    public List<PaginaPericiaDTO> listarPericia(
             String nomePaciente,
             String nomeMedico,
             StatusPericia statusPericia,
-            boolean decrescente,
-            int pagina,
-            int tamanho) {
+            boolean decrescente){
+//            int pagina,
+//            int tamanho) {
 
         var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 
@@ -51,12 +53,12 @@ public class ServicoListarPericia {
         } else {
             sort = Sort.by("dataPericia").ascending();
         }
+//
+//        if (pagina < 0 || tamanho <= 0) {
+//            throw new IllegalArgumentException("Parâmetros de paginação inválidos");
+//        }
 
-        if (pagina < 0 || tamanho <= 0) {
-            throw new IllegalArgumentException("Parâmetros de paginação inválidos");
-        }
-
-        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
+//        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
 
         StatusPericia statusParaFiltrar;
         if (statusPericia == null) {
@@ -66,15 +68,17 @@ public class ServicoListarPericia {
         }
 
         Specification<Pericia> spec = PericiaSpecs.filtrar(nomePaciente, nomeMedico, statusParaFiltrar);
-        Page<Pericia> paginaEntidades = repositorioPericia.findAll(spec, pageable);
+//        Page<Pericia> paginaEntidades = repositorioPericia.findAll(spec, pageable);
+        List<Pericia> paginaEntidades = repositorioPericia.findAll(spec,sort);
 
-        return paginaEntidades.map(pericia -> new PaginaPericiaDTO(
+        return paginaEntidades.stream().map(pericia -> new PaginaPericiaDTO(
                 pericia.getId().toString(),
+                pericia.getDocumentacao().getId().toString(),
                 pericia.getPaciente().getNome(),
                 pericia.getUsuario().getNome(),
                 pericia.getStatusPericia(),
                 pericia.getDataPericia().toString()
-        ));
+        )).toList();
     }
 }
 

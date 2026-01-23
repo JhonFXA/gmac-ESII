@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -154,12 +155,12 @@ public class PacienteController {
     public ResponseEntity<?> listarPaciente(@RequestParam(required = false) String nome,
                                             @RequestParam(required = false) String cpf,
                                             @RequestParam(required = false)StatusSolicitacao statusSolicitacao,
-                                            @RequestParam(defaultValue = "true") boolean decrescente,
-                                            @RequestParam(defaultValue = "0") int pagina,
-                                            @RequestParam(defaultValue = "10") int tamanhoPagina) {
+                                            @RequestParam(defaultValue = "true") boolean decrescente){
+//                                            @RequestParam(defaultValue = "0") int pagina,
+//                                            @RequestParam(defaultValue = "10") int tamanhoPagina) {
         try {
-            Page<PaginaPacienteDTO> exibePacientesDTOs = servicoListarPaciente.listarPacientes(nome,cpf,statusSolicitacao,decrescente,pagina,tamanhoPagina);
-            return ResponseEntity.ok(new PagedModel<>(exibePacientesDTOs));
+            List<PaginaPacienteDTO> exibePacientesDTOs = servicoListarPaciente.listarPacientes(nome,cpf,statusSolicitacao,decrescente);
+            return ResponseEntity.ok(exibePacientesDTOs);
         }
         catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

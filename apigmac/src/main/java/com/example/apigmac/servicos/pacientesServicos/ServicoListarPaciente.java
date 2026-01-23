@@ -13,19 +13,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ServicoListarPaciente {
 
     @Autowired
     private RepositorioPaciente repositorioPaciente;
 
-    public Page<PaginaPacienteDTO> listarPacientes(
+    public List<PaginaPacienteDTO> listarPacientes(
             String nome,
             String cpf,
             StatusSolicitacao statusSolicitacao,
-            boolean decrescente,
-            int pagina,
-            int tamanho) {
+            boolean decrescente){
+//            int pagina,
+//            int tamanho) {
 
 //        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 //        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
@@ -35,21 +37,23 @@ public class ServicoListarPaciente {
                 ? Sort.by("nome").descending()
                 : Sort.by("nome").ascending();
 
-        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
+//        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
 
         Specification<Paciente> spec =
                 PacienteSpecs.filtrar(nome, cpf, statusSolicitacao);
 
-        Page<Paciente> paginaEntidades =
-                repositorioPaciente.findAll(spec, pageable);
+//        Page<Paciente> paginaEntidades =
+//                repositorioPaciente.findAll(spec, pageable);
+       List<Paciente> paginaEntidades =
+                repositorioPaciente.findAll(spec,sort);
 
-        return paginaEntidades.map(paciente ->
+        return paginaEntidades.stream().map(paciente ->
                 new PaginaPacienteDTO(
                         paciente.getNome(),
                         paciente.getCpf(),
                         paciente.getStatusSolicitacao(),
                         paciente.getDataNascimento()
                 )
-        );
+        ).toList();
     }
 }
