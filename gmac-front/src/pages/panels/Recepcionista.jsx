@@ -1,14 +1,17 @@
 import '../../css/App.css';
 import Header from '../../components/Header.jsx';
 import Footer from '../../components/Footer.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Recepcionista() {
+  const navigate = useNavigate();
+
   return (
     <div className="container">
         <Header />
         <main className="main">
           <div className="button-collection">
-            <button className="main-button">
+            <button className="main-button" onClick={()=> {navigate('/painel-principal/cadastrar-usuario')}}>
               <i className="fas fa-user-plus"></i>
               <p>Cadastrar Paciente</p>
               </button>

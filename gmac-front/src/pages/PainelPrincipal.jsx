@@ -9,7 +9,9 @@ import '../css/App.css';
 import '../css/main-panel.css';
 
 export default function PainelPrincipal() {
-  const { perfil } = useAuth();
+  const { perfil, token } = useAuth();
+
+  console.log(token);
 
   switch (perfil) {
     case 'RECEPCIONISTA':
