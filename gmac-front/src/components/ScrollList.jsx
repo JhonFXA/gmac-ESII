@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from '../context/AuthContext';
-import "../css/ScrollList.css";
 import { useNavigate } from 'react-router-dom';
 
 export default function ScrollList() {
@@ -38,7 +37,6 @@ export default function ScrollList() {
                 });
 
                 if (!response.ok) {
-                    console.log(token)
                     throw new Error(`HTTP ${response.status}`);
                 }
 
@@ -91,7 +89,6 @@ export default function ScrollList() {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
     
             const data = await response.json();
-
             setUsuarioSelecionado(data);
             setUserOpen(true);
         } catch (err){
@@ -135,7 +132,6 @@ export default function ScrollList() {
         return `${dia}/${mes}/${ano}`;
     }
 
-
     return (
         <div className="scroll-section">
             {userOpen && (
@@ -151,9 +147,12 @@ export default function ScrollList() {
                         <p><strong>Login:</strong> {usuarioSelecionado?.login ?? usuarioSelecionado?.username ?? "-"}</p>
                         <p><strong>Email:</strong> {usuarioSelecionado?.email ?? "-"}</p>
                         <p><strong>CPF:</strong> {usuarioSelecionado?.cpf ?? "-"}</p>
-                        <p><strong>Idade:</strong> {calcularIdade(usuarioSelecionado?.dataNascimento)} anos</p>
-                        <p><strong>Data de Nascimento:</strong> {formatarDataBR(usuarioSelecionado?.dataNascimento)}</p>
+                        <p><strong>Idade:</strong> {usuarioSelecionado?.dataNascimento? `${calcularIdade(usuarioSelecionado.dataNascimento)} anos`: "-"}</p>
+                        <p><strong>Data de Nascimento:</strong> {usuarioSelecionado?.dataNascimento? formatarDataBR(usuarioSelecionado.dataNascimento): "-"}</p>
                         <p><strong>Perfil:</strong> {usuarioSelecionado?.perfil ?? "-"}</p>
+                        {usuarioSelecionado?.especializacao && (
+                            <p><strong>Especialização:</strong> {usuarioSelecionado.especializacao}</p>
+                        )}
                     </div>
                 </div>
             )}
@@ -174,7 +173,6 @@ export default function ScrollList() {
                     <button type="button" className="filter-btn" onClick={() => setFilterOpen(v => !v)} >
                         <i className={`fa-solid ${filterOpen ? "fa-xmark" : "fa-angle-down"}`}></i>
                     </button>
-
 
                     {filterOpen && (
                         <div className="filter-menu">

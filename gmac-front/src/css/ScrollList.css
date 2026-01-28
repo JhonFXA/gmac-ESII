@@ -173,6 +173,10 @@
     color: #696969;
 }
 
+.search-attributes-pericia p{
+    width: 220px;
+}
+
 .list-section {
     display: flex;
     flex-direction: column;

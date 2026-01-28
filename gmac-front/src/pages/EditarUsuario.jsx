@@ -22,11 +22,11 @@ export default function EditarUsuario() {
     role: '',
     birthdate: '',
     username: '',
+    specialty: '',
     password: '',
     repeatPassword: ''
   });
 
-  // ✅ carregar dados do usuário ao abrir a página
   useEffect(() => {
     let mounted = true;
 
@@ -46,7 +46,6 @@ export default function EditarUsuario() {
 
         if (!mounted) return;
 
-        // ⚠️ Ajuste os nomes conforme seu backend retornar
         setFormData(prev => ({
           ...prev,
           nome: data.nome ?? '',
@@ -55,6 +54,7 @@ export default function EditarUsuario() {
           role: data.perfil ?? data.role ?? '',
           birthdate: (data.dataNascimento ?? data.birthdate ?? '').slice(0, 10),
           username: data.login ?? '',
+          specialty: data.especializacao ?? data.specialty ?? '',
           password: '',
           repeatPassword: ''
         }));
@@ -110,6 +110,7 @@ export default function EditarUsuario() {
         perfil: formData.role,
         dataNascimento: formData.birthdate,
         senha: formData.password,
+        ...(formData.role === "MEDICO" && formData.specialty?.trim()? { especializacao: formData.specialty.trim() }: {})
     };
 
     const payload = cleanPayload(payloadBase);
@@ -149,7 +150,7 @@ export default function EditarUsuario() {
           <p>
             <Link to="/painel-principal">Painel Principal</Link> &gt;
             <Link to="/painel-principal/gerenciar-usuarios"> Gerenciar Usuários</Link> &gt;
-            <Link to="/painel-principal/gerenciar-usuarios/editar-usuario"> Editar Usuário</Link>;
+            <Link to=""> Editar Usuário</Link>
           </p>
         </div>
 
@@ -181,12 +182,20 @@ export default function EditarUsuario() {
 
               <div className="role-field">
                 <label>Função</label>
-                <select className="input" name="role" value={formData.role} onChange={handleChange}>
-                  <option value="" disabled>Selecione a função</option>
-                  <option value="ADMINISTRADOR">Administrador</option>
-                  <option value="RECEPCIONISTA">Recepcionista</option>
-                  <option value="MEDICO">Médico</option>
-                </select>
+                <select className="input role-input" name="role" value={formData.role} 
+                      onChange={(e) => {
+                          handleChange(e); 
+                          const isMedico = e.target.value === "MEDICO";
+                          if (!isMedico) {
+                              setFormData(prev => ({ ...prev, specialty: '' })); // ✅ limpa
+                          }
+
+                      }} required>
+                      <option value="" disabled>Selecione a função</option>
+                      <option value="ADMINISTRADOR">Administrador</option>
+                      <option value="RECEPCIONISTA">Recepcionista</option>
+                      <option value="MEDICO">Médico</option>
+                  </select>
               </div>
 
               <div className="birthdate-field">
@@ -194,11 +203,26 @@ export default function EditarUsuario() {
                 <input className="input" value={formData.birthdate} onChange={handleChange} type="date" name="birthdate"/>
               </div>
 
-              <div className="username-field">
-                <label>Nome de Usuário</label>
-                <input className="input" value={formData.username} onChange={handleChange} type="text" name="username"/>
-              </div>
+              <div className="user-spec-row">
+                <div className="username-field">
+                  <label>Nome de Usuário</label>
+                  <input className="input" value={formData.username} onChange={handleChange} type="text" name="username"/>
+                </div>
 
+                {formData.role == "MEDICO" && (
+                    <div className="specialty-field">
+                    <label>Especialização</label>
+                    <input
+                        type="text"
+                        placeholder="Insira a especialização do médico"
+                        className="input"
+                        name="specialty"
+                        value={formData.specialty ?? ""}
+                        onChange={handleChange}
+                    required/>
+                    </div>
+                )}
+              </div>
               <div className="password-field">
                 <label>Nova Senha (opcional)</label>
                 <input className="input" value={formData.password} onChange={handleChange} type="password" name="password"/>

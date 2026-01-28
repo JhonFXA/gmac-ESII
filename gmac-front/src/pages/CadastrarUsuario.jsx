@@ -4,11 +4,10 @@ import '../css/user-registration-form.css';
 
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';   
-import { data } from 'react-router-dom';
 
 export default function CadastrarUsuario(){
     const { token, perfil } = useAuth();
-
+    
     const initialState = {
         nome: '',
         cpf: '',
@@ -17,13 +16,15 @@ export default function CadastrarUsuario(){
         birthdate: '',
         username: '',
         password: '',
-        repeatPassword: ''
+        repeatPassword: '',
+        specialty: ''
     };
-
+    
     const [formData, setFormData] = useState(initialState);
-
+    
     const [statusMessage, setStatusMessage] = useState('');
     const [statusType, setStatusType] = useState(''); // 'success' ou 'error'
+    const [specialty, setSpecialty] = useState(false);
 
 
     function handleChange(e) {
@@ -50,6 +51,7 @@ export default function CadastrarUsuario(){
             nome: formData.nome,
             perfil: formData.role,
             dataNascimento: formData.birthdate,
+            ...(formData.role == "MEDICO" && formData.specialty?.trim()? { especializacao: formData.specialty.trim() }: {})
         };
 
         try {
@@ -81,63 +83,97 @@ export default function CadastrarUsuario(){
 
     return (
         <div className="container">
-        <Header />
-        <main className="main-nocentered-container">
-            <div className="breadcumb">
-                <p>
-                    <a href="/painel-principal">Painel Principal</a> &gt; <a href="/painel-principal/cadastrar-usuario">Cadastrar Usuário</a></p>
-            </div>
-            {statusMessage && (
-            <div className={`status-msg ${statusType}`}>
-                {statusMessage}
-            </div>
-            )}
-            <div className="user-registration-container">
-                <form onSubmit={handleSubmit}>
-                    <div className="field name-field">
-                        <label>Nome Completo</label>
-                        <input placeholder="Insira o nome completo" className="input name-input uppercase" value={formData.nome} onChange={handleChange} type="text" name="nome" required />
-                    </div>
-                    <div className="field cpf-field">
-                        <label>CPF</label>
-                        <input placeholder="000.000.000-00" className="input cpf-input" value={formData.cpf} onChange={handleChange} type="text" name="cpf" required />
-                    </div>
-                    <div className="field email-field">
-                        <label>Email</label>
-                        <input placeholder="Insira o email" className="input email-input" value={formData.email} onChange={handleChange} type="email" name="email" required />
-                    </div>
-                    <div className="role-field">
-                        <label>Função</label>
-                        <select className="input role-input" name="role" value={formData.role} onChange={handleChange} required>
-                            <option value="" disabled>Selecione a função</option>
-                            <option value="ADMINISTRADOR">Administrador</option>
-                            <option value="RECEPCIONISTA">Recepcionista</option>
-                            <option value="MEDICO">Médico</option>
-                        </select>
-                    </div>
-                    <div className="birthdate-field">
-                        <label>Data de Nascimento</label>
-                        <input placeholder="__/__/____" className="input birthdate-input" value={formData.birthdate} onChange={handleChange} type="date" name="birthdate" required />
-                    </div>
-                    <div className="username-field">
-                        <label>Nome de Usuário</label>
-                        <input placeholder="Insira o nome de usuário" className="input username-input" value={formData.username} onChange={handleChange} type="text" name="username" required />
-                    </div>
-                    <div className="password-field">
-                        <label>Senha</label>
-                        <input placeholder="Insira a senha" className="input password-input" value={formData.password} onChange={handleChange} type="password" name="password" required />
-                    </div>
-                    <div className="repeat-password-field">
-                        <label>Repetir Senha</label>
-                        <input placeholder="Repita a senha" className="input repeat-password-input" value={formData.repeatPassword} onChange={handleChange} type="password" name="repeatPassword" required />
-                    </div>
-                    <div className="submit-button-container">
-                        <button className="submit-button" type="submit">Cadastrar</button>
-                    </div>
-                </form>
-            </div>
-        </main>
-        <Footer />
+            <Header />
+            <main className="main-nocentered-container">
+                <div className="breadcumb">
+                    <p>
+                        <a href="/painel-principal">Painel Principal</a> &gt; <a href="/painel-principal/cadastrar-usuario">Cadastrar Usuário</a></p>
+                </div>
+                {statusMessage && (
+                <div className={`status-msg ${statusType}`}>
+                    {statusMessage}
+                </div>
+                )}
+                <div className="user-registration-container">
+                    <form onSubmit={handleSubmit}>
+                        <div className="field name-field">
+                            <label>Nome Completo</label>
+                            <input placeholder="Insira o nome completo" className="input name-input uppercase" value={formData.nome} onChange={handleChange} type="text" name="nome" required />
+                        </div>
+                        <div className="field cpf-field">
+                            <label>CPF</label>
+                            <input placeholder="000.000.000-00" className="input cpf-input" value={formData.cpf} onChange={handleChange} type="text" name="cpf" required />
+                        </div>
+                        <div className="field email-field">
+                            <label>Email</label>
+                            <input placeholder="Insira o email" className="input email-input" value={formData.email} onChange={handleChange} type="email" name="email" required />
+                        </div>
+                        <div className="role-field">
+                            <label>Função</label>
+                            <select className="input role-input" name="role" value={formData.role} 
+                                onChange={(e) => {
+                                    handleChange(e); 
+                                    const isMedico = e.target.value === "MEDICO";
+                                    setSpecialty(isMedico);
+
+                                    if (!isMedico) {
+                                        setFormData(prev => ({ ...prev, specialty: '' })); // ✅ limpa
+                                    }
+
+                                }} required>
+                                <option value="" disabled>Selecione a função</option>
+                                <option value="ADMINISTRADOR">Administrador</option>
+                                <option value="RECEPCIONISTA">Recepcionista</option>
+                                <option value="MEDICO">Médico</option>
+                            </select>
+                        </div>
+                        <div className="birthdate-field">
+                            <label>Data de Nascimento</label>
+                            <input placeholder="__/__/____" className="input birthdate-input" value={formData.birthdate} onChange={handleChange} type="date" name="birthdate" required />
+                        </div>
+                        <div className="user-spec-row">
+                            <div className="username-field">
+                                <label>Nome de Usuário</label>
+                                <input
+                                placeholder="Insira o nome de usuário"
+                                className="input username-input"
+                                value={formData.username}
+                                onChange={handleChange}
+                                type="text"
+                                name="username"
+                                required
+                                />
+                            </div>
+
+                            {specialty && (
+                                <div className="specialty-field">
+                                <label>Especialização</label>
+                                <input
+                                    type="text"
+                                    placeholder="Insira a especialização do médico"
+                                    className="input"
+                                    name="specialty"
+                                    value={formData.specialty ?? ""}
+                                    onChange={handleChange}
+                                required/>
+                                </div>
+                            )}
+                        </div>
+                        <div className="password-field">
+                            <label>Senha</label>
+                            <input placeholder="Insira a senha" className="input password-input" value={formData.password} onChange={handleChange} type="password" name="password" required />
+                        </div>
+                        <div className="repeat-password-field">
+                            <label>Repetir Senha</label>
+                            <input placeholder="Repita a senha" className="input repeat-password-input" value={formData.repeatPassword} onChange={handleChange} type="password" name="repeatPassword" required />
+                        </div>
+                        <div className="submit-button-container">
+                            <button className="submit-button" type="submit">Cadastrar</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+            <Footer />
         </div>
     )
 }

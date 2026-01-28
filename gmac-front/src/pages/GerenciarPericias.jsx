@@ -1,6 +1,7 @@
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import ScrollListPericia from '../components/ScrollListPericias.jsx';
+import { Link } from 'react-router-dom';
 
 export default function GerenciarPericias(){
     return (
@@ -9,7 +10,8 @@ export default function GerenciarPericias(){
             <main className="main-nocentered-container">
                 <div className="breadcumb">
                     <p>
-                        <a href="/painel-principal">Painel Principal</a> &gt; <a href="/painel-principal/gerenciar-pericias">Gerenciar Pericias</a>
+                        <Link to="/painel-principal">Painel Principal</Link> &gt; 
+                        <Link to=""> Gerenciar Pericias</Link>
                     </p>
                 </div>
                 <ScrollListPericia />

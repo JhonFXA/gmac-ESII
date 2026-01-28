@@ -134,12 +134,12 @@ export default function ScrollListPericia() {
             <div className="scroll-list">
                 <div className="search-section">
                     <input className="search-input" type="text" placeholder="Pesquisar..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                    <div className="search-attributes header-grid">
+                    <div className="search-attributes search-attributes-pericia">
                         <p>Paciente</p><p>Médico</p><p>Status</p><p>Data</p>
                     </div>
                 </div>
                 <ul className="list-section">
-                    {periciasFiltradas.map((p) => (
+                    {/* {periciasFiltradas.map((p) => (
                         <li className="list-item" key={p.id}>
                             <div className="item-info grid-layout">
                                 <p>{p.nomePaciente}</p>
@@ -152,7 +152,20 @@ export default function ScrollListPericia() {
                                 <button onClick={() => { setPericiaParaCancelar(p); setConfirmText(""); setCancelOpen(true); }} className="delete-btn"><i className="fa-solid fa-circle-xmark"></i></button>
                             </div>
                         </li>
-                    ))}
+                    ))} */}
+                       {/* <li className="list-item" key={p.id}> */}
+                       <li className="list-item">
+                            <div className="item-info">
+                                <p>Josefastos Mirios</p>
+                                <p>Asfolto Farias</p>
+                                <p>Pendente</p>
+                                <p>12/09/2026 15:25</p>
+                            </div>
+                            <div className="item-btns">
+                                <button onClick={() => {setEditOpen(true); }} className="edit-btn"><i className="fa-solid fa-pen"></i></button>
+                                <button onClick={() => {setConfirmText(""); setCancelOpen(true); }} className="delete-btn"><i className="fa-solid fa-circle-xmark"></i></button>
+                            </div>
+                        </li>
                 </ul>
             </div>
         </div>

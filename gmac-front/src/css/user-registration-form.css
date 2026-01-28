@@ -1,20 +1,3 @@
-.status-msg {
-  margin-bottom: 16px;
-  padding: 12px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-.status-msg.success {
-  background-color: #e6fffa;
-  color: #065f46;
-}
-
-.status-msg.error {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
-
 .user-registration-container {
     padding: 20px;
     border-radius: 10px;
@@ -68,9 +51,16 @@
     font-size: 18px;
 }
 
+.user-spec-row {
+  flex-basis: 80%;
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
 
-.username-field {
-    flex-basis: 100%;
+.user-spec-row .username-field,
+.user-spec-row .specialty-field {
+  flex: 1;
 }
 
 .username-field input {
