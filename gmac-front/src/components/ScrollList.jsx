@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from '../context/AuthContext';
 import "../css/ScrollList.css";
+import { useNavigate } from 'react-router-dom';
 
 export default function ScrollList() {
     const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -17,6 +18,8 @@ export default function ScrollList() {
 
     const [filterOpen, setFilterOpen] = useState(false);
     const [perfisSelecionados, setPerfisSelecionados] = useState(new Set());
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         let isMounted = true;
@@ -121,7 +124,9 @@ export default function ScrollList() {
                         <p><strong>Login:</strong> {usuarioSelecionado?.login ?? usuarioSelecionado?.username ?? "-"}</p>
                         <p><strong>Email:</strong> {usuarioSelecionado?.email ?? "-"}</p>
                         <p><strong>CPF:</strong> {usuarioSelecionado?.cpf ?? "-"}</p>
-                        <p><strong>Perfil:</strong> {usuarioSelecionado?.perfil ?? usuarioSelecionado?.role ?? "-"}</p>
+                        <p><strong>Idade:</strong> {usuarioSelecionado?.idade ?? "-"}</p>
+                        <p><strong>Perfil:</strong> {usuarioSelecionado?.perfil ?? "-"}</p>
+                        <p><strong>Data de Nascimento:</strong> {usuarioSelecionado?.dataNascimento ?? "-"}</p>
                     </div>
                 </div>
             )}
@@ -207,7 +212,7 @@ export default function ScrollList() {
                     </div>
 
                     <div className="item-btns">
-                        <button className="edit-btn" type="button">
+                        <button onClick={() => navigate(`/painel-principal/gerenciar-usuarios/editar-usuario/${u.cpf}`)} className="edit-btn" type="button">
                             <i className="fa-solid fa-pen-to-square"></i>
                         </button>
                         <button onClick={() => listarUsuario(u.cpf)} className="view-btn" type="button">

@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx'
 import PainelPrincipal from './pages/PainelPrincipal.jsx';
 import CadastrarUsuario from './pages/CadastrarUsuario.jsx';
 import GerenciarUsuarios from './pages/GerenciarUsuarios.jsx';
+import EditarUsuario from './pages/EditarUsuario.jsx';
 import CadastrarPaciente from './pages/CadastrarPaciente.jsx';
 
 function App() {
@@ -28,6 +29,11 @@ function App() {
           <Route path='/painel-principal/gerenciar-usuarios' element={
             <ProtectedRoute allowedProfiles={['ADMINISTRADOR']}>
               <GerenciarUsuarios />
+            </ProtectedRoute>}
+          />
+          <Route path='/painel-principal/gerenciar-usuarios/editar-usuario/:cpf' element={
+            <ProtectedRoute allowedProfiles={['ADMINISTRADOR']}>
+              <EditarUsuario />
             </ProtectedRoute>}
           />
           <Route path='/painel-principal/cadastrar-paciente' element={
