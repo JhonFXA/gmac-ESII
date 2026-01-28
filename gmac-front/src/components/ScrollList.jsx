@@ -97,7 +97,6 @@ export default function ScrollList() {
         } catch (err){
             console.log(err);
         }
-
     }
 
     function togglePerfil(perfil) {
@@ -108,6 +107,34 @@ export default function ScrollList() {
             return next;
         });
     }
+
+    function calcularIdade(dataNascimento) {
+        if (!dataNascimento) return null;
+
+        const nascimento = new Date(dataNascimento);
+        const hoje = new Date();
+
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mesAtual = hoje.getMonth();
+        const mesNascimento = nascimento.getMonth();
+
+        if (
+            mesAtual < mesNascimento ||
+            (mesAtual === mesNascimento && hoje.getDate() < nascimento.getDate())
+        ) {
+            idade--;
+        }
+
+        return idade;
+    }
+
+    function formatarDataBR(dataISO) {
+        if (!dataISO) return null;
+
+        const [ano, mes, dia] = dataISO.slice(0, 10).split("-");
+        return `${dia}/${mes}/${ano}`;
+    }
+
 
     return (
         <div className="scroll-section">
@@ -124,9 +151,9 @@ export default function ScrollList() {
                         <p><strong>Login:</strong> {usuarioSelecionado?.login ?? usuarioSelecionado?.username ?? "-"}</p>
                         <p><strong>Email:</strong> {usuarioSelecionado?.email ?? "-"}</p>
                         <p><strong>CPF:</strong> {usuarioSelecionado?.cpf ?? "-"}</p>
-                        <p><strong>Idade:</strong> {usuarioSelecionado?.idade ?? "-"}</p>
+                        <p><strong>Idade:</strong> {calcularIdade(usuarioSelecionado?.dataNascimento)} anos</p>
+                        <p><strong>Data de Nascimento:</strong> {formatarDataBR(usuarioSelecionado?.dataNascimento)}</p>
                         <p><strong>Perfil:</strong> {usuarioSelecionado?.perfil ?? "-"}</p>
-                        <p><strong>Data de Nascimento:</strong> {usuarioSelecionado?.dataNascimento ?? "-"}</p>
                     </div>
                 </div>
             )}
