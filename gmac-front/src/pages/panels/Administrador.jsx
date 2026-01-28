@@ -21,7 +21,7 @@ function Administrador() {
               <i className="fas fa-users"></i>
               <p>Gerenciar Usuários</p>
               </button>
-            <button className="main-button">
+            <button className="main-button" onClick={() => navigate('/painel-principal/gerenciar-pericias')}>
               <i className="fa-regular fa-calendar"></i>
               <p>Gerenciar Perícias</p>
               </button>
