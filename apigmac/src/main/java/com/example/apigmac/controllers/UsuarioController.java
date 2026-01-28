@@ -34,10 +34,10 @@ public class UsuarioController {
     @Autowired
     private ServicoListarUsuario servicoListarUsuario;
 
-    @PutMapping("/alterar")
-    public ResponseEntity<?> alterarUsuario(@RequestBody AlterarUsuarioDTO dto){
+    @PutMapping("/alterar/{cpfAtual}")
+    public ResponseEntity<?> alterarUsuario(@RequestBody AlterarUsuarioDTO dto, @PathVariable String cpfAtual){
         try {
-            servicoAlterarUsuario.alterarUsuario(dto);
+            servicoAlterarUsuario.alterarUsuario(dto, cpfAtual);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (IllegalArgumentException ex){
             return ResponseEntity

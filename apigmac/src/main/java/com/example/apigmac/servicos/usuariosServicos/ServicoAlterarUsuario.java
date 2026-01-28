@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ServicoAlterarUsuario {
+public class ServicoAlterarUsuario{
     @Autowired
     ServicoVerificacao verificacao;
 
@@ -22,18 +22,25 @@ public class ServicoAlterarUsuario {
     private PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void alterarUsuario(AlterarUsuarioDTO dto){
+    public void alterarUsuario(AlterarUsuarioDTO dto, String cpfAtual){
 
         if (dto == null) {
             throw new IllegalArgumentException("Digite o Campo que quer mudar");
         }
-        String cpfNormalizado = CpfUtils.normalizar((dto.cpf()));
+        String cpfNormalizado = CpfUtils.normalizar(cpfAtual);
 
 
         Usuario usuario = (Usuario) repositorioUsuario.findByCpf(cpfNormalizado);
 
         if (usuario == null) {
             throw new RuntimeException("Usuario não encontrado");
+        }
+
+        if (dto.cpf() != null) {
+            if (!verificacao.cpfValido(dto.cpf())) {
+                throw new IllegalArgumentException("CPF invalido");
+            }
+            usuario.setCpf(CpfUtils.normalizar(dto.cpf()));
         }
 
         if (dto.nome() != null) {

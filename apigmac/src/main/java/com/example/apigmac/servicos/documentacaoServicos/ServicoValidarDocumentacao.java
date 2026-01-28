@@ -143,7 +143,6 @@ private void atualizarStatusRelacionados(
                             Atenciosamente,
                             Sistema GMAC
                             """.formatted(nomePaciente)
-                                    .toUpperCase(Locale.forLanguageTag("pt-BR"))
                     );
 
                     doc.setStatusDocumentacao(StatusDocumentacao.REPROVADA);

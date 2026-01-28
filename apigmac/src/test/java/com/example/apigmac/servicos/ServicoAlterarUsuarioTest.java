@@ -59,7 +59,7 @@ class ServicoAlterarUsuarioTest {
         when(repositorioUsuario.findByLogin("novo.login")).thenReturn(null);
 
         // Act
-        servico.alterarUsuario(dto);
+        servico.alterarUsuario(dto, CPF_TESTE);
 
         // Assert
         assertEquals("Novo Nome", usuarioExistente.getNome());
@@ -80,7 +80,7 @@ class ServicoAlterarUsuarioTest {
         when(passwordEncoder.encode(novaSenha)).thenReturn("hash_seguro");
 
         // Act
-        servico.alterarUsuario(dto);
+        servico.alterarUsuario(dto, CPF_TESTE);
 
         // Assert
         assertEquals("hash_seguro", usuarioExistente.getSenha());
@@ -101,7 +101,7 @@ class ServicoAlterarUsuarioTest {
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                servico.alterarUsuario(dto)
+                servico.alterarUsuario(dto, CPF_TESTE)
         );
         assertEquals("Email já cadastrado", ex.getMessage());
     }
@@ -118,7 +118,7 @@ class ServicoAlterarUsuarioTest {
         when(verificacao.dataNascimentoValida(dataValida)).thenReturn(true);
 
         // Act
-        servico.alterarUsuario(dto);
+        servico.alterarUsuario(dto, CPF_TESTE);
 
         // Assert
         assertEquals(Perfil.ADMINISTRADOR, usuarioExistente.getPerfil());
@@ -132,6 +132,6 @@ class ServicoAlterarUsuarioTest {
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(null, null, null, "000", null, null, null);
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> servico.alterarUsuario(dto));
+        assertThrows(RuntimeException.class, () -> servico.alterarUsuario(dto, CPF_TESTE));
     }
 }

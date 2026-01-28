@@ -21,22 +21,29 @@ public class ServicoAlterarPaciente {
     private ServicoVerificacao verificacao;
 
     @Transactional
-    public void alterarPaciente(AlterarPacienteDTO dto) {
+    public void alterarPaciente(AlterarPacienteDTO dto, String cpfAtual) {
 
         if (dto == null) {
             throw new IllegalArgumentException("Digite o Campo que quer mudar");
         }
 
-        if (dto.cpf() == null) {
+        if (cpfAtual == null) {
             throw new IllegalArgumentException("CPF é obrigatório para alteração");
         }
 
-        String cpfNormalizado = CpfUtils.normalizar((dto.cpf()));
+        String cpfNormalizado = CpfUtils.normalizar(cpfAtual);
 
 
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if(paciente == null) {
             throw new NoSuchElementException("Paciente não encontrado");
+        }
+
+        if (dto.cpf() != null) {
+            if (!verificacao.cpfValido(dto.cpf())) {
+                throw new IllegalArgumentException("CPF inválido");
+            }
+            paciente.setCpf(CpfUtils.normalizar(dto.cpf()));
         }
 
         if (dto.nome() != null) {

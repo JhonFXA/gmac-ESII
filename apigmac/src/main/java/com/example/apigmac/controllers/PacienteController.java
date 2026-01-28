@@ -55,10 +55,10 @@ public class PacienteController {
         }
     }
 
-    @PutMapping("/alterar")
-    public ResponseEntity<?> alterarPaciente(@RequestBody AlterarPacienteDTO dto){
+    @PutMapping("/alterar/{cpfAtual}")
+    public ResponseEntity<?> alterarPaciente(@RequestBody AlterarPacienteDTO dto, @PathVariable String cpfAtual){
         try {
-            servicoAlterarPaciente.alterarPaciente(dto);
+            servicoAlterarPaciente.alterarPaciente(dto, cpfAtual);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (IllegalArgumentException ex) {
             // Dados inválidos enviados pelo cliente

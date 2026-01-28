@@ -37,7 +37,8 @@ public class ServicoCancelarPericia {
         }
 
         String nomePaciente = pericia.getPaciente().getNome().toUpperCase(Locale.forLanguageTag("pt-BR"));
-        String email = pericia.getPaciente().getEmail();
+        //String email = pericia.getPaciente().getEmail();
+        String email = "anaclaudiagonzaga346@gmail.com";
         servicoEmail.enviarEmailTexto(
                 email,
                 "Perícia Médica Cancelada – Solicitação de Medicação",
@@ -57,7 +58,6 @@ public class ServicoCancelarPericia {
                 Atenciosamente,
                 Sistema GMAC
                 """.formatted(nomePaciente)
-                        .toUpperCase(Locale.forLanguageTag("pt-BR"))
 
         );
         pericia.setStatusPericia(StatusPericia.CANCELADA);

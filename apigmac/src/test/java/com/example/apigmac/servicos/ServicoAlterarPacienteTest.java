@@ -58,7 +58,7 @@ class ServicoAlterarPacienteTest {
         when(verificacao.telefoneValido(anyString())).thenReturn(true);
 
         // Act
-        servico.alterarPaciente(dto);
+        servico.alterarPaciente(dto, CPF_TESTE);
 
         // Assert
         assertEquals("Novo Nome", pacienteExistente.getNome());
@@ -85,7 +85,7 @@ class ServicoAlterarPacienteTest {
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                servico.alterarPaciente(dto)
+                servico.alterarPaciente(dto, CPF_TESTE)
         );
         assertEquals("Email já cadastrado", ex.getMessage());
     }
@@ -101,7 +101,7 @@ class ServicoAlterarPacienteTest {
         when(repositorioPaciente.findByCpf(CPF_TESTE)).thenReturn(pacienteExistente);
 
         // Act
-        servico.alterarPaciente(dto);
+        servico.alterarPaciente(dto, CPF_TESTE);
 
         // Assert
         // O método não deve chamar a verificação nem o repositório se o e-mail for idêntico
@@ -121,7 +121,7 @@ class ServicoAlterarPacienteTest {
         when(verificacao.dataNascimentoValida(dataInvalida)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> servico.alterarPaciente(dto));
+        assertThrows(IllegalArgumentException.class, () -> servico.alterarPaciente(dto, CPF_TESTE));
     }
 
     @Test
@@ -135,6 +135,6 @@ class ServicoAlterarPacienteTest {
         when(verificacao.textoObrigatorioValido("Ab", 3)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> servico.alterarPaciente(dto));
+        assertThrows(IllegalArgumentException.class, () -> servico.alterarPaciente(dto, CPF_TESTE));
     }
 }
