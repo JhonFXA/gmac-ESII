@@ -2,12 +2,71 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
     flex: 1;
     width: 100%;
     padding: 20px;
 }
 
-.scroll-list {
+.scroll-section .user_container {
+    border: solid 1px black;
+    border-radius: 8px;
+    position: absolute;
+    top: 40px;
+    height: 400px;
+    width: 500px;
+    background-color: rgb(232, 232, 232);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.scroll-section .user_container .user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    background-color: var(--primary-color);
+    padding: 10px;
+}
+
+.scroll-section .user_container .user-header p {
+    font-size: 20px;
+    color: var(--text-light-color);
+    font-weight: bold;
+}
+
+.scroll-section .user_container .user-close-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background: rgb(255, 255, 255);
+    border: solid red 4px;
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all ease-in-out 0.1s;
+}
+
+.scroll-section .user_container .user-close-btn:hover {
+    background: rgb(255, 183, 183);
+}
+
+.scroll-section .user_container .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+}
+
+.scroll-section .user_container .user-info p {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.scroll-section .scroll-list {
     display: flex;
     flex-direction: column;
     width: 1225px;
@@ -16,6 +75,62 @@
     background-color: #CBCBCB;
     border-radius: 4px;
     border: solid var(--border-color) 1px;
+}
+
+.perfil-filter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-menu {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-width: 180px;
+  z-index: 999;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.filter-actions .clear-filter-btn {
+    border-top: solid 1px var(--border-color);
+    width: 100%;
+    height: 100%;
+    padding: 4px;
+    font-weight: bold;
+}
+.filter-actions .clear-filter-btn:hover {
+    background-color: rgb(138, 138, 138);
+    color: white;
+}
+
+.filter-btn i {
+  transition: transform 0.2s ease;
+}
+
+.filter-btn i.fa-angle-down {
+  transform: rotate(0deg);
+}
+
+.filter-btn i.fa-xmark {
+  transform: rotate(90deg);
 }
 
 .search-section {
@@ -41,10 +156,21 @@
 }
 
 .search-attributes p {
+    display: flex;
+    justify-content: space-between;
     font-size: 18px;
     color: #696969;
     border-right: solid 2px var(--border-color);
-    padding-inline: 10px 240px;
+    width: 290px;
+    padding: 0 10px;
+}
+.search-attributes p button{
+    background: none;
+    cursor: pointer;
+}
+.search-attributes p i{
+    font-size: 14px;
+    color: #696969;
 }
 
 .list-section {
@@ -94,6 +220,6 @@
     background-color: #bfbfbf;
 }
 .list-item .item-btns i {
-    color: rgb(77, 77, 77);
+    color: var(--primary-color);
     font-size: 28px;
 }
