@@ -98,7 +98,7 @@ export default function ScrollListPericia({
 
   // PUT /pericia/{id}/cancelar
   const confirmarCancelamento = async () => {
-    if (confirmText !== "cancelar pericia" || !periciaParaCancelar) return;
+    if (confirmText !== "CANCELAR PERÍCIA" || !periciaParaCancelar) return;
 
     try {
       const response = await fetch(
@@ -182,20 +182,20 @@ export default function ScrollListPericia({
     <>
       {/* MODAL CANCELAR */}
       {cancelOpen && (
-        <div className="user_container">
-          <div className="user-header">
+        <div className="popup-container cancel-pericia-container">
+          <div className="popup-header">
             <p>Cancelar Perícia</p>
             <button
-              className="user-close-btn"
+              className="popup-close-btn"
               onClick={() => setCancelOpen(false)}
             >
               <i className="fa-solid fa-xmark"></i>
             </button>
           </div>
 
-          <div className="user-info">
+          <div className="cancel-pericia">
             <p>
-              Digite <strong>cancelar pericia</strong> para confirmar:
+              Digite <strong>CANCELAR PERÍCIA</strong> para confirmar:
             </p>
             <input
               className="confirm-input"
@@ -203,10 +203,9 @@ export default function ScrollListPericia({
               onChange={(e) => setConfirmText(e.target.value)}
             />
             <button
-              className="delete-btn"
-              style={{ width: "100%" }}
+              className="confirm-delete-btn"
               onClick={confirmarCancelamento}
-              disabled={confirmText !== "cancelar pericia"}
+              disabled={confirmText !== "CANCELAR PERÍCIA"}
             >
               Confirmar Cancelamento
             </button>
@@ -216,27 +215,26 @@ export default function ScrollListPericia({
 
       {/* MODAL REMARCAR */}
       {editOpen && (
-        <div className="user_container">
-          <div className="user-header">
+        <div className="popup-container edit-pericia-container">
+          <div className="popup-header">
             <p>Remarcar Perícia</p>
             <button
-              className="user-close-btn"
+              className="popup-close-btn"
               onClick={() => setEditOpen(false)}
             >
               <i className="fa-solid fa-xmark"></i>
             </button>
           </div>
 
-          <div className="user-info">
+          <div className="pericia-info">
             <input
               type="datetime-local"
-              className="confirm-input"
+              className="new-date-input"
               value={novaData}
               onChange={(e) => setNovaData(e.target.value)}
             />
             <button
-              className="view-btn"
-              style={{ width: "100%", marginTop: "10px" }}
+              className="confirm-date-btn"
               onClick={confirmarRemarcacao}
             >
               Salvar Nova Data
