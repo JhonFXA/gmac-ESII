@@ -1,0 +1,209 @@
+/* ---------- MODAIS ---------- */
+.popupContainer {
+  border: solid 1px black;
+  border-radius: 8px;
+  position: absolute;
+  top: 40px;
+  height: 400px;
+  width: 500px;
+  background-color: rgb(232, 232, 232);
+  overflow: hidden;
+  z-index: 10;
+  box-shadow: rgba(0, 0, 0, 0.216) 2px 2px 10px;
+}
+
+.cancelContainer {
+  height: 200px;
+}
+
+.editContainer {
+  height: 200px;
+}
+
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  background-color: var(--primary-color);
+  padding: 10px;
+}
+
+.popupTitle {
+  font-size: 20px;
+  color: var(--text-light-color);
+  font-weight: bold;
+  margin: 0;
+}
+
+.popupCloseBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: rgb(255, 255, 255);
+  border: solid red 4px;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all ease-in-out 0.1s;
+}
+
+.popupCloseBtn:hover {
+  background: rgb(255, 183, 183);
+}
+
+.cancelBody {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.periciaInfo {
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.newDateInput {
+  flex: 1;
+  padding: 10px;
+  font-size: 18px;
+}
+
+.confirmInput {
+  padding: 10px;
+  border: solid 1px var(--border-color);
+  border-radius: 4px;
+}
+
+.confirmDeleteBtn {
+  padding: 10px;
+  width: 200px;
+  cursor: pointer;
+  background-color: rgb(255, 255, 255);
+  border: solid 1px red;
+  border-radius: 4px;
+  color: red;
+  font-size: 16px;
+}
+
+.confirmDeleteBtn:hover {
+  background-color: rgb(255, 210, 210);
+}
+
+.confirmDeleteBtn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.confirmDateBtn {
+  padding: 10px;
+  width: 200px;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  border-radius: 4px;
+  color: rgb(255, 255, 255);
+  font-size: 16px;
+}
+
+.confirmDateBtn:hover {
+  background-color: var(--secondary-color);
+}
+
+.errorText {
+  padding: 0 10px 10px;
+  font-weight: 600;
+  color: var(--text-error-color);
+}
+
+/* ---------- LISTA ---------- */
+.scrollList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 50vh;
+  padding: 10px;
+  background-color: #cbcbcb;
+  border-radius: 4px;
+  border: solid var(--border-color) 1px;
+}
+
+.listSection {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  gap: 10px;
+  min-height: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--background-color);
+  width: 100%;
+  min-height: 50px;
+  box-shadow: 2px 2px 5px rgb(136, 136, 136);
+  flex-shrink: 0;
+}
+
+.itemInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: center;
+  flex: 1;
+  padding: 10px;
+  gap: 10px;
+}
+
+.itemInfo p {
+  font-size: 18px;
+  width: 100%;
+  margin: 0;
+}
+
+.itemBtns {
+  display: flex;
+  justify-content: flex-end;
+  width: 300px;
+}
+
+.itemBtns button {
+  width: 50px;
+  cursor: pointer;
+}
+
+.itemBtns button:hover {
+  background-color: #bfbfbf;
+}
+
+.itemBtns i {
+  color: var(--primary-color);
+  font-size: 28px;
+}
+
+.emptyRow {
+  padding: 10px;
+}
+
+/* status classes usadas pelo component */
+.statusagendada {
+  font-weight: 700;
+}
+
+.statuspendente {
+  font-weight: 700;
+}
+
+.statuscancelada {
+  font-weight: 700;
+}

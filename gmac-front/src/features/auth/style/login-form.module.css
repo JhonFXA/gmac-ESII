@@ -1,0 +1,70 @@
+.formContainer {
+  border: solid 1px var(--border-color);
+  border-radius: 8px;
+  width: 510px;
+  padding: 20px;
+}
+
+
+.label {
+  font-weight: 500;
+  color: var(--text-default-color);
+  display: block;
+}
+
+
+.inputTxt {
+  border: solid 1px var(--border-color);
+  border-radius: 8px;
+  width: 100%;
+  height: 48px;
+  padding: 10px;
+  font-size: 18px;
+  margin-top: 8px;
+}
+
+.passwordField {
+  position: relative;
+  margin-top: 20px;
+}
+
+.viewIcon {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  color: rgb(100, 100, 100);
+  cursor: pointer;
+}
+
+.errorMessage {
+  font-weight: 600;
+  color: var(--text-error-color);
+  padding-block: 10px;
+}
+
+.buttonDiv {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.loginButton {
+    border-radius: 8px;
+    padding: 12px;
+    width: 11em;
+    height: 80px;
+    font-size: 20px;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: var(--text-light-color);
+    cursor: pointer;
+    transition: background-color ease-in-out 0.2s;
+}
+
+.loginButton:hover {
+    background-color: var(--secondary-color);
+}
+
+.loginButton:active {
+    background-color: var(--text-default-color);
+}

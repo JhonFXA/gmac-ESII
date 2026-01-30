@@ -1,4 +1,4 @@
-import '../css/App.css';
+import '';
 
 import logo from "../assets/gmac-logo.png";
 import illustration from "../assets/illustration.svg";

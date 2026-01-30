@@ -1,0 +1,32 @@
+.footer {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--primary-color);
+    height: 100px;
+    padding-inline: 20px;
+    color: var(--text-light-color);
+}
+
+.footer .footerInfo{
+    display: flex;
+    align-items: center;
+}
+
+.footer .footerInfo img {
+    margin-right: 20px;
+}
+
+.footer .footerInfo p:nth-child(2) {
+    margin-right: 80px;
+} 
+
+.footer .footerLinks {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 400px;
+}
+.footer .footerLinks a{
+    color: var(--text-light-color);
+    font-weight: 600;
+}
