@@ -27,7 +27,7 @@ export default function AdministradorPanel() {
             className={styles.mainButton}
             onClick={() => navigate("/painel-principal/gerenciar-pericias")}
           >
-            <i className="fa-regular fa-calendar"></i>
+            <i class="fa-solid fa-stethoscope"></i>
             <p>Gerenciar Perícias</p>
           </button>
           <button className={styles.mainButton}>

@@ -11,7 +11,8 @@ import ManageUsersPage from "@/features/users/pages/ManageUsersPage.jsx";
 import EditUserPage from "@/features/users/pages/EditUserPage.jsx";
 import ManagePericiasPage from "@/features/pericias/pages/ManagePericiasPage.jsx";
 import CreatePacientePage from "@/features/pacientes/pages/CreatePacientePage.jsx";
-// import CadastrarPaciente from './pages/CadastrarPaciente.jsx';
+import ManagePacientesPage from "@/features/pacientes/pages/ManagePacientesPage.jsx";
+import EditPacientePage from "@/features/pacientes/pages/editPacientePage.jsx";
 
 function App() {
   return (
@@ -68,6 +69,22 @@ function App() {
                 element={
                   <ProtectedRoute allowedProfiles={["RECEPCIONISTA"]}>
                     <CreatePacientePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/painel-principal/consultar-cadastro"
+                element={
+                  <ProtectedRoute allowedProfiles={["RECEPCIONISTA"]}>
+                    <ManagePacientesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/painel-principal/consultar-cadastro/editar-paciente/:cpf"
+                element={
+                  <ProtectedRoute allowedProfiles={["RECEPCIONISTA"]}>
+                    <EditPacientePage />
                   </ProtectedRoute>
                 }
               />

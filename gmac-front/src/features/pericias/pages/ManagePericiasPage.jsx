@@ -18,7 +18,7 @@ export default function ManagePericiasPage() {
         <div className="breadcumb">
           <p>
             <Link to="/painel-principal">Painel Principal</Link> &gt;{" "}
-            <span>Gerenciar Perícias</span>
+            <Link to="">Gerenciar Perícias</Link>
           </p>
         </div>
 
