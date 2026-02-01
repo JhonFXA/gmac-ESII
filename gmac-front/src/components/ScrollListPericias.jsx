@@ -10,7 +10,8 @@ export default function ScrollListPericia({
   setErro,
 }) {
   const API_BASE_URL = import.meta.env.VITE_API_URL;
-  const { token } = useAuth();
+  const { token,perfil } = useAuth();
+  console.log(perfil);
 
   const [pericias, setPericias] = useState([]);
 
@@ -265,6 +266,19 @@ export default function ScrollListPericia({
               </div>
 
               <div className="item-btns">
+                {/* VISÍVEL APENAS PARA MÉDICOS */}
+            '   {perfil === "MEDICO" && (
+                <button
+                    onClick={() => {
+                      // Lógica para abrir detalhes ou navegar para a página da perícia
+                      console.log("Ver detalhes da perícia:", p.id);
+                    }}
+                    className="view-btn" // Certifique-se de ter esse estilo no CSS
+                    type="button"
+                  >
+                    <i className="fa-solid fa-magnifying-glass"></i>
+                </button>
+                )}'
                 <button
                   onClick={() => {
                     setPericiaParaEditar(p);

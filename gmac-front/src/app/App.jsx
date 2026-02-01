@@ -58,7 +58,7 @@ function App() {
               <Route
                 path="/painel-principal/gerenciar-pericias"
                 element={
-                  <ProtectedRoute allowedProfiles={["ADMINISTRADOR"]}>
+                  <ProtectedRoute allowedProfiles={["ADMINISTRADOR", "MEDICO", "RECEPCIONISTA"]}>
                     <ManagePericiasPage />
                   </ProtectedRoute>
                 }

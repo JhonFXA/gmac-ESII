@@ -23,6 +23,14 @@ export function remarcarPericiaRequest(id, novaDataISO, { token, signal } = {}) 
   });
 }
 
+export function visualizarDocumentacao(id, { token, signal } = {}) {
+  return http(`/documentacao/url/${encodeURIComponent(id)}`, {
+    method: "GET",
+    token,
+    signal,
+  });
+}
+
 export function normalizePericiasResponse(data) {
   const lista = Array.isArray(data) ? data : data?.pericias ?? [];
   return lista;

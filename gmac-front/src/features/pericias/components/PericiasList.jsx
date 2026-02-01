@@ -4,6 +4,8 @@ import { useAuth } from "@/app/providers/AuthContext";
 import { usePericias } from "../hooks/usePericias";
 import { useCancelPericia } from "../hooks/useCancelPericia";
 import { useRemarcarPericia } from "../hooks/useRemarcarPericia";
+import { useGerarUrlDocumentacao } from "../hooks/useGerarUrlDocumentacao";
+
 
 import styles from "../style/pericias-list.module.css";
 
@@ -39,11 +41,12 @@ const MOCK_PERICIAS = [
 ];
 
 export default function PericiasList({ search }) {
-  const { token } = useAuth();
+  const { token,perfil } = useAuth();
 
   const { data: pericias = [], isLoading, error } = usePericias(token);
   const cancelMutation = useCancelPericia(token);
   const remarcarMutation = useRemarcarPericia(token);
+  const visualizarMutation = useGerarUrlDocumentacao(token);
 
   // modal remarcar
   const [editOpen, setEditOpen] = useState(false);
@@ -93,6 +96,7 @@ export default function PericiasList({ search }) {
 
   return (
     <>
+      
       {/* MODAL CANCELAR */}
       {cancelOpen && (
         <div className={`${styles.popupContainer} ${styles.cancelContainer}`}>
@@ -208,6 +212,17 @@ export default function PericiasList({ search }) {
               </div>
 
               <div className={styles.itemBtns}>
+                {perfil === "MEDICO" && (
+                <button
+                  type="button"
+                  className={styles.viewBtn}
+                  title="Ver Documentação"
+                  disabled={visualizarMutation.isPending}
+                  onClick={() => visualizarMutation.mutate({ id: p.idDocumentacao })}
+                >
+                  <i className="fa-solid fa-magnifying-glass"></i>
+                </button>
+                )}
                 <button
                   type="button"
                   className={styles.editBtn}
