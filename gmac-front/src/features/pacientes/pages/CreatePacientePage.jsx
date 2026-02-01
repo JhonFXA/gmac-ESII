@@ -9,6 +9,16 @@ import { useCreatePaciente } from "../hooks/useCreatePaciente";
 
 import styles from "@/features/users/style/create-user.module.css";
 
+const emptyEndereco = () => ({
+  cep: "",
+  cidade: "",
+  estado: "",
+  bairro: "",
+  logradouro: "",
+  numero: "",
+  complemento: "",
+});
+
 export default function CreatePacientePage() {
   const { token } = useAuth();
   const createMutation = useCreatePaciente(token);
@@ -21,6 +31,8 @@ export default function CreatePacientePage() {
     dataNascimento: "",
     sexo: "",
     estadoCivil: "",
+    enderecos: [emptyEndereco()], // ✅ agora é lista
+    documento: null,
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -28,27 +40,88 @@ export default function CreatePacientePage() {
   function handleChange(e) {
     const { name, value } = e.target;
 
+    // campos aninhados: enderecos.{index}.{campo}
+    if (name.startsWith("enderecos.")) {
+      const [, idxStr, field] = name.split(".");
+      const idx = Number(idxStr);
+
+      setFormData((prev) => ({
+        ...prev,
+        enderecos: prev.enderecos.map((end, i) => {
+          if (i !== idx) return end;
+          return {
+            ...end,
+            [field]: field === "estado" ? value.toUpperCase() : value,
+          };
+        }),
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: name === "nome" ? value.toUpperCase() : value,
     }));
   }
 
+  function handleDocumentoChange(e) {
+    const file = e.target.files?.[0] ?? null;
+    setFormData((prev) => ({ ...prev, documento: file }));
+  }
+
+  function addEndereco() {
+    setFormData((prev) => ({
+      ...prev,
+      enderecos: [...prev.enderecos, emptyEndereco()],
+    }));
+  }
+
+  function removeEndereco(index) {
+    setFormData((prev) => {
+      // mantém pelo menos 1 endereço (backend exige)
+      if (prev.enderecos.length <= 1) return prev;
+      return {
+        ...prev,
+        enderecos: prev.enderecos.filter((_, i) => i !== index),
+      };
+    });
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const payload = {
+    const dados = {
       nome: formData.nome,
       cpf: formData.cpf,
-      email: formData.email,
-      telefone: formData.telefone,
       dataNascimento: formData.dataNascimento,
+      telefone: formData.telefone,
+      email: formData.email,
       sexo: formData.sexo,
       estadoCivil: formData.estadoCivil,
+      enderecos: formData.enderecos.map((end) => ({
+        cep: end.cep,
+        cidade: end.cidade,
+        estado: end.estado,
+        bairro: end.bairro,
+        logradouro: end.logradouro,
+        numero: end.numero,
+        complemento: end.complemento?.trim() ? end.complemento : null,
+      })),
     };
 
+    const fd = new FormData();
+
+    fd.append(
+      "dados",
+      new Blob([JSON.stringify(dados)], { type: "application/json" })
+    );
+
+    if (formData.documento) {
+      fd.append("documento", formData.documento);
+    }
+
     try {
-      await createMutation.mutateAsync({ payload });
+      await createMutation.mutateAsync({ payload: fd });
       setFormData(initialState);
     } catch {
       // erro já fica em createMutation.error
@@ -147,8 +220,7 @@ export default function CreatePacientePage() {
               />
             </div>
 
-            {/* ✅ faltava onChange */}
-            <div className={styles.sexoField ?? styles.roleField}>
+            <div className={styles.sexoField}>
               <label>Sexo</label>
               <select
                 className={styles.select ?? styles.input}
@@ -160,12 +232,12 @@ export default function CreatePacientePage() {
                 <option value="" disabled>
                   Selecione uma opção
                 </option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMININO">Feminino</option>
+                <option value="NAO_INFORMADO">Não Informado</option>
               </select>
             </div>
 
-            {/* ✅ name corrigido + onChange */}
             <div className={styles.estadoCivilField}>
               <label>Estado Civil</label>
               <select
@@ -173,18 +245,144 @@ export default function CreatePacientePage() {
                 value={formData.estadoCivil}
                 onChange={handleChange}
                 name="estadoCivil"
+                required
               >
                 <option value="" disabled>
                   Selecione uma opção
                 </option>
-                <option value="Solteiro">Solteiro</option>
-                <option value="Casado">Casado</option>
-                <option value="Divorciado">Divorciado</option>
-                <option value="Separado Judicialmente">
-                  Separado Judicialmente
-                </option>
-                <option value="Viúvo">Viúvo</option>
+                <option value="SOLTEIRO">Solteiro(a)</option>
+                <option value="CASADO">Casado(a)</option>
+                <option value="DIVORCIADO">Divorciado(a)</option>
+                <option value="VIUVO">Viúvo(a)</option>
+                <option value="UNIAO_ESTAVEL">União Estável</option>
+                <option value="OUTROS">Outros</option>
               </select>
+            </div>
+
+            {formData.enderecos.map((end, idx) => (
+              <div key={idx} style={{ borderTop: "1px solid #ccc", paddingTop: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <strong>Endereço {idx + 1}</strong>
+
+                  <button
+                    type="button"
+                    onClick={() => removeEndereco(idx)}
+                    disabled={formData.enderecos.length <= 1}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Remover
+                  </button>
+                </div>
+
+                <div>
+                  <label>CEP</label>
+                  <input
+                    placeholder="00000-000"
+                    className={styles.input}
+                    value={end.cep}
+                    onChange={handleChange}
+                    type="text"
+                    name={`enderecos.${idx}.cep`}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label>Logradouro</label>
+                  <input
+                    placeholder="Rua / Avenida"
+                    className={styles.input}
+                    value={end.logradouro}
+                    onChange={handleChange}
+                    type="text"
+                    name={`enderecos.${idx}.logradouro`}
+                    required
+                  />
+                </div>
+
+                <div className={styles.cpfField}>
+                  <label>Número</label>
+                  <input
+                    placeholder="Nº"
+                    className={styles.input}
+                    value={end.numero}
+                    onChange={handleChange}
+                    type="text"
+                    name={`enderecos.${idx}.numero`}
+                    required
+                  />
+                </div>
+
+                <div className={styles.emailField}>
+                  <label>Complemento</label>
+                  <input
+                    placeholder="Apto, bloco, etc."
+                    className={styles.input}
+                    value={end.complemento}
+                    onChange={handleChange}
+                    type="text"
+                    name={`enderecos.${idx}.complemento`}
+                  />
+                </div>
+
+                <div className={styles.emailField}>
+                  <label>Bairro</label>
+                  <input
+                    placeholder="Bairro"
+                    className={styles.input}
+                    value={end.bairro}
+                    onChange={handleChange}
+                    type="text"
+                    name={`enderecos.${idx}.bairro`}
+                    required
+                  />
+                </div>
+
+                <div className={styles.emailField}>
+                  <label>Cidade</label>
+                  <input
+                    placeholder="Cidade"
+                    className={styles.input}
+                    value={end.cidade}
+                    onChange={handleChange}
+                    type="text"
+                    name={`enderecos.${idx}.cidade`}
+                    required
+                  />
+                </div>
+
+                <div className={styles.cpfField}>
+                  <label>Estado (UF)</label>
+                  <input
+                    placeholder="UF"
+                    className={styles.input}
+                    value={end.estado}
+                    onChange={handleChange}
+                    type="text"
+                    name={`enderecos.${idx}.estado`}
+                    maxLength={2}
+                    required
+                  />
+                </div>
+              </div>
+            ))}
+
+            <div style={{ marginTop: 12 }}>
+              <button type="button" onClick={addEndereco} style={{ cursor: "pointer" }}>
+                + Adicionar outro endereço
+              </button>
+            </div>
+
+            <div style={{ marginTop: 12 }}>
+              <label>Documento (PDF)</label>
+              <input
+                className={styles.input}
+                type="file"
+                accept="application/pdf"
+                onChange={handleDocumentoChange}
+                required
+              />
+              {formData.documento?.name && <small>{formData.documento.name}</small>}
             </div>
 
             <div className={styles.submitButtonContainer}>

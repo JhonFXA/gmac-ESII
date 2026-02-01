@@ -6,6 +6,7 @@ import com.example.apigmac.entidades.Documentacao;
 import com.example.apigmac.entidades.Endereco;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.modelo.enums.StatusDocumentacao;
+import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioEndereco;
 import com.example.apigmac.repositorios.RepositorioPaciente;
@@ -84,9 +85,9 @@ public class ServicoCadastrarPaciente {
             throw new IllegalArgumentException("Estado civil é obrigatório");
         }
 
-        if (dados.statusSolicitacao() == null) {
-            throw new IllegalArgumentException("Status da solicitação é obrigatório");
-        }
+//        if (dados.statusSolicitacao() == null) {
+//            throw new IllegalArgumentException("Status da solicitação é obrigatório");
+//        }
 
         if (dados.enderecos() == null || dados.enderecos().isEmpty()) {
             throw new IllegalArgumentException("É obrigatório informar pelo menos um endereço");
@@ -103,7 +104,7 @@ public class ServicoCadastrarPaciente {
                 dados.email(),
                 dados.sexo(),
                 dados.estadoCivil(),
-                dados.statusSolicitacao(),
+                StatusSolicitacao.PENDENTE,
                 dados.dataNascimento()
         );
 
