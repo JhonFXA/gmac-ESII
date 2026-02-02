@@ -13,6 +13,7 @@ import ManagePericiasPage from "@/features/pericias/pages/ManagePericiasPage.jsx
 import CreatePacientePage from "@/features/pacientes/pages/CreatePacientePage.jsx";
 import ManagePacientesPage from "@/features/pacientes/pages/ManagePacientesPage.jsx";
 import EditPacientePage from "@/features/pacientes/pages/editPacientePage.jsx";
+import ManageDocumentacoesPage from "@/features/documentacoes/pages/ManageDocumentacoesPage.jsx"
 
 function App() {
   return (
@@ -61,6 +62,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedProfiles={["ADMINISTRADOR", "MEDICO", "RECEPCIONISTA"]}>
                     <ManagePericiasPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/painel-principal/gerenciar-documentacoes"
+                element={
+                  <ProtectedRoute allowedProfiles={["ADMINISTRADOR", "MEDICO", "RECEPCIONISTA"]}>
+                    <ManageDocumentacoesPage />
                   </ProtectedRoute>
                 }
               />

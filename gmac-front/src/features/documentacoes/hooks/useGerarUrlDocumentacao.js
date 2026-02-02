@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { visualizarDocumentacao } from "../services/periciasApi";
+import { visualizarDocumentacao } from "../../documentacoes/services/documentacoesApi";
 
 export function useGerarUrlDocumentacao(token) {
   return useMutation({

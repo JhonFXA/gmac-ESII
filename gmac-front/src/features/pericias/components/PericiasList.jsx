@@ -4,7 +4,7 @@ import { useAuth } from "@/app/providers/AuthContext";
 import { usePericias } from "../hooks/usePericias";
 import { useCancelPericia } from "../hooks/useCancelPericia";
 import { useRemarcarPericia } from "../hooks/useRemarcarPericia";
-import { useGerarUrlDocumentacao } from "../hooks/useGerarUrlDocumentacao";
+import { useGerarUrlDocumentacao } from "../../documentacoes/hooks/useGerarUrlDocumentacao";
 
 
 import styles from "../style/pericias-list.module.css";
