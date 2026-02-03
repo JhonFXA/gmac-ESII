@@ -94,7 +94,7 @@ public class ServicoVerificacao {
        ========================= */
 
     public boolean dataNascimentoValida(LocalDate data) {
-        return data != null && data.isBefore(LocalDate.now());
+        return data != null && data.isBefore(LocalDate.now()) && data.isAfter(LocalDate.of(1900, 1, 1));
     }
 
     /* =========================
