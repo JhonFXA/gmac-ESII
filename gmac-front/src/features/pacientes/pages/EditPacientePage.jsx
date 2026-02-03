@@ -67,19 +67,14 @@ export default function EditPacientePage() {
     dataNascimento: "",
     sexo: "",
     estadoCivil: "",
-
-    // ✅ EXISTENTES (somente leitura)
     enderecosExistentes: [],
-
-    // ✅ NOVOS (editáveis)
     enderecosNovos: [emptyEndereco()],
-
     documento: null,
   };
 
   const [formData, setFormData] = useState(initialState);
+  const [localStatus, setLocalStatus] = useState(null);
 
-  // Preenche form quando carregar paciente
   useEffect(() => {
     const data = pacienteQuery.data;
     if (!data) return;
@@ -95,7 +90,6 @@ export default function EditPacientePage() {
       dataNascimento: (data.dataNascimento ?? "").slice(0, 10),
       sexo: data.sexo ?? "",
       estadoCivil: data.estadoCivil ?? "",
-
       enderecosExistentes: existentes.map((e) => ({
         cep: e.cep ?? "",
         cidade: e.cidade ?? "",
@@ -105,8 +99,6 @@ export default function EditPacientePage() {
         numero: e.numero ?? "",
         complemento: e.complemento ?? "",
       })),
-
-      // reset dos NOVOS ao carregar
       enderecosNovos: [emptyEndereco()],
       documento: null,
     }));
@@ -115,7 +107,6 @@ export default function EditPacientePage() {
   function handleChange(e) {
     const { name, value } = e.target;
 
-    // NOVOS endereços: enderecosNovos.{index}.{campo}
     if (name.startsWith("enderecosNovos.")) {
       const [, idxStr, field] = name.split(".");
       const idx = Number(idxStr);
@@ -164,6 +155,12 @@ export default function EditPacientePage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    setLocalStatus(null);
+
+    updateMutation.reset();
+    addEnderecoMutation.reset();
+    addDocumentoMutation.reset();
+
     const cpfNovo = formData.cpf;
 
     const payloadBase = {
@@ -179,21 +176,21 @@ export default function EditPacientePage() {
 
     const payload = cleanPayload(payloadBase);
 
-    // validação: não deixar “novo endereço” incompleto
     const temEnderecoNovoIncompleto = formData.enderecosNovos.some(
       (e) => !isEnderecoVazio(e) && !isEnderecoCompleto(e)
     );
     if (temEnderecoNovoIncompleto) {
-      // você pode trocar por status na tela se quiser
-      throw new Error(
-        "Há um novo endereço incompleto. Preencha todos os campos obrigatórios ou remova o bloco."
-      );
+      setLocalStatus({
+        type: "error",
+        message:
+          "Há um novo endereço incompleto. Preencha todos os campos obrigatórios ou remova o bloco.",
+      });
+      return;
     }
 
     try {
       await updateMutation.mutateAsync({ payload });
 
-      //envia SOMENTE os NOVOS (completos e não vazios)
       const novosParaEnviar = formData.enderecosNovos
         .filter((e) => !isEnderecoVazio(e))
         .filter(isEnderecoCompleto)
@@ -228,41 +225,26 @@ export default function EditPacientePage() {
 
       await pacienteQuery.refetch();
 
-      //limpa novos endereços após salvar
       setFormData((prev) => ({ ...prev, enderecosNovos: [emptyEndereco()] }));
-    } catch {
-      // erros já ficam nas mutations
+
+      setLocalStatus({
+        type: "success",
+        message: "Paciente editado com sucesso!",
+      });
+    } catch (err) {
+      setLocalStatus({
+        type: "error",
+        message: err?.message || "Erro ao salvar alterações.",
+      });
     }
   }
 
   const status = useMemo(() => {
-    if (updateMutation.isSuccess) {
-      return { type: "success", message: "Paciente editado com sucesso!" };
-    }
-    if (updateMutation.isError) {
-      return { type: "error", message: updateMutation.error.message };
-    }
-    if (addEnderecoMutation.isError) {
-      return { type: "error", message: addEnderecoMutation.error.message };
-    }
-    if (addDocumentoMutation.isError) {
-      return { type: "error", message: addDocumentoMutation.error.message };
-    }
-    if (pacienteQuery.isError) {
+    if (localStatus) return localStatus;
+    if (pacienteQuery.isError)
       return { type: "error", message: pacienteQuery.error.message };
-    }
     return null;
-  }, [
-    updateMutation.isSuccess,
-    updateMutation.isError,
-    updateMutation.error,
-    addEnderecoMutation.isError,
-    addEnderecoMutation.error,
-    addDocumentoMutation.isError,
-    addDocumentoMutation.error,
-    pacienteQuery.isError,
-    pacienteQuery.error,
-  ]);
+  }, [localStatus, pacienteQuery.isError, pacienteQuery.error]);
 
   const isSaving =
     updateMutation.isPending ||
@@ -277,7 +259,9 @@ export default function EditPacientePage() {
         <div className="breadcumb">
           <p>
             <Link to="/painel-principal">Painel Principal</Link> &gt;{" "}
-            <Link to="/painel-principal/consultar-cadastro">Consultar Cadastro</Link>{" "}
+            <Link to="/painel-principal/consultar-cadastro">
+              Consultar Cadastro
+            </Link>{" "}
             &gt; <Link to="">Editar Paciente</Link>
           </p>
         </div>
@@ -291,7 +275,6 @@ export default function EditPacientePage() {
         ) : (
           <div className={styles.userRegistrationContainer}>
             <form className={styles.form} onSubmit={handleSubmit}>
-              {/* básicos */}
               <div className={styles.nameField}>
                 <label>Nome Completo</label>
                 <input
@@ -395,12 +378,32 @@ export default function EditPacientePage() {
                 <div style={{ borderTop: "1px solid #ccc", paddingTop: 12 }}>
                   <strong>Endereços cadastrados</strong>
                   {formData.enderecosExistentes.map((e, i) => (
-                    <div key={i} style={{ marginTop: 8, padding: 8, background: "#f3f3f3" }}>
-                      <div><strong>CEP:</strong> {e.cep}</div>
-                      <div><strong>Logradouro:</strong> {e.logradouro}, {e.numero}</div>
-                      <div><strong>Bairro:</strong> {e.bairro}</div>
-                      <div><strong>Cidade/UF:</strong> {e.cidade} - {e.estado}</div>
-                      {e.complemento ? <div><strong>Complemento:</strong> {e.complemento}</div> : null}
+                    <div
+                      key={`${e.cep}-${e.logradouro}-${e.numero}-${i}`}
+                      style={{
+                        marginTop: 8,
+                        padding: 8,
+                        background: "#f3f3f3",
+                      }}
+                    >
+                      <div>
+                        <strong>CEP:</strong> {e.cep}
+                      </div>
+                      <div>
+                        <strong>Logradouro:</strong> {e.logradouro},{" "}
+                        {e.numero}
+                      </div>
+                      <div>
+                        <strong>Bairro:</strong> {e.bairro}
+                      </div>
+                      <div>
+                        <strong>Cidade/UF:</strong> {e.cidade} - {e.estado}
+                      </div>
+                      {e.complemento ? (
+                        <div>
+                          <strong>Complemento:</strong> {e.complemento}
+                        </div>
+                      ) : null}
                     </div>
                   ))}
                 </div>
@@ -411,7 +414,13 @@ export default function EditPacientePage() {
 
                 {formData.enderecosNovos.map((end, idx) => (
                   <div key={idx} style={{ marginTop: 12 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
                       <span>Endereço novo {idx + 1}</span>
                       <button
                         type="button"
@@ -504,7 +513,11 @@ export default function EditPacientePage() {
                 ))}
 
                 <div style={{ marginTop: 12 }}>
-                  <button type="button" onClick={addNovoEndereco} style={{ cursor: "pointer" }}>
+                  <button
+                    type="button"
+                    onClick={addNovoEndereco}
+                    style={{ cursor: "pointer" }}
+                  >
                     + Adicionar outro endereço
                   </button>
                 </div>
@@ -518,11 +531,17 @@ export default function EditPacientePage() {
                   accept="application/pdf"
                   onChange={handleDocumentoChange}
                 />
-                {formData.documento?.name && <small>{formData.documento.name}</small>}
+                {formData.documento?.name && (
+                  <small>{formData.documento.name}</small>
+                )}
               </div>
 
               <div className={styles.submitButtonContainer}>
-                <button className={styles.submitButton} type="submit" disabled={isSaving}>
+                <button
+                  className={styles.submitButton}
+                  type="submit"
+                  disabled={isSaving}
+                >
                   {isSaving ? "Salvando..." : "Salvar alterações"}
                 </button>
               </div>

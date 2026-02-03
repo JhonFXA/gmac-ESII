@@ -14,7 +14,7 @@ export default function PacienteDetailsModal({ cpf, onClose }) {
 
   const { data: paciente, isLoading, error } = usePacienteDetails(cpf, token);
 
-  const enderecoPrincipal = paciente?.enderecos?.[0]; // primeiro endereço
+  const enderecos = paciente?.enderecos ?? [];
 
   return (
     <div className={styles.popupContainer} role="dialog" aria-modal="true">
@@ -73,41 +73,53 @@ export default function PacienteDetailsModal({ cpf, onClose }) {
               <strong>Estado Civil:</strong> {paciente?.estadoCivil ?? "-"}
             </p>
 
-            {/* 📍 ENDEREÇO */}
             <div className={styles.addressSection}>
               <p className={styles.sectionTitle}>
-                <strong>Endereço</strong>
+                <strong>Endereços</strong>
               </p>
 
-              {enderecoPrincipal ? (
-                <>
-                  <p>
-                    <strong>Logradouro:</strong>{" "}
-                    {enderecoPrincipal.logradouro}, {enderecoPrincipal.numero}
-                  </p>
-
-                  {enderecoPrincipal.complemento && (
+              {enderecos.length > 0 ? (
+                enderecos.map((end, idx) => (
+                  <div
+                    key={`${end.cep}-${end.logradouro}-${end.numero}-${idx}`}
+                    className={styles.addressCard ?? undefined}
+                    style={{
+                      padding: 10,
+                      border: "1px solid rgba(0,0,0,0.15)",
+                      borderRadius: 8,
+                      marginTop: 10,
+                      background: "rgba(255,255,255,0.6)",
+                    }}
+                  >
                     <p>
-                      <strong>Complemento:</strong>{" "}
-                      {enderecoPrincipal.complemento}
+                      <strong>Endereço {idx + 1}</strong>
                     </p>
-                  )}
 
-                  <p>
-                    <strong>Bairro:</strong>{" "}
-                    {enderecoPrincipal.bairro}
-                  </p>
-                  <p>
-                    <strong>Cidade / UF:</strong>{" "}
-                    {enderecoPrincipal.cidade} /{" "}
-                    {enderecoPrincipal.estado}
-                  </p>
-                  <p>
-                    <strong>CEP:</strong> {enderecoPrincipal.cep}
-                  </p>
-                </>
+                    <p>
+                      <strong>Logradouro:</strong> {end.logradouro}, {end.numero}
+                    </p>
+
+                    {end.complemento && (
+                      <p>
+                        <strong>Complemento:</strong> {end.complemento}
+                      </p>
+                    )}
+
+                    <p>
+                      <strong>Bairro:</strong> {end.bairro}
+                    </p>
+
+                    <p>
+                      <strong>Cidade / UF:</strong> {end.cidade} / {end.estado}
+                    </p>
+
+                    <p>
+                      <strong>CEP:</strong> {end.cep}
+                    </p>
+                  </div>
+                ))
               ) : (
-                <p>- Endereço não informado -</p>
+                <p>- Nenhum endereço informado -</p>
               )}
             </div>
           </>
