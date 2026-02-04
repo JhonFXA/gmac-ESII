@@ -4,6 +4,7 @@ import com.example.apigmac.DTOs.PaginaPacienteDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioPaciente;
+import com.example.apigmac.utils.CpfUtils;
 import com.example.apigmac.utils.PacienteSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,10 +48,12 @@ public class ServicoListarPaciente {
        List<Paciente> paginaEntidades =
                 repositorioPaciente.findAll(spec,sort);
 
+
+
         return paginaEntidades.stream().map(paciente ->
                 new PaginaPacienteDTO(
                         paciente.getNome(),
-                        paciente.getCpf(),
+                        CpfUtils.formatar(paciente.getCpf()),
                         paciente.getStatusSolicitacao(),
                         paciente.getDataNascimento()
                 )

@@ -124,7 +124,17 @@ private void atualizarStatusRelacionados(
                     );
 
                     doc.setStatusDocumentacao(StatusDocumentacao.APROVADA);
-                    doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+
+                    boolean existePendenteOuPericia = doc.getPaciente()
+                            .getDocumentacoes()
+                            .stream()
+                            .anyMatch(d -> d.getStatusDocumentacao() == StatusDocumentacao.PENDENTE
+                                    || d.getStatusDocumentacao() == StatusDocumentacao.PERICIA);
+
+
+                    if (!existePendenteOuPericia){
+                        doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                    }
                 }
 
                 case REPROVADA -> {
@@ -146,7 +156,17 @@ private void atualizarStatusRelacionados(
                     );
 
                     doc.setStatusDocumentacao(StatusDocumentacao.REPROVADA);
-                    doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+
+                    boolean existePendenteOuPericia = doc.getPaciente()
+                            .getDocumentacoes()
+                            .stream()
+                            .anyMatch(d -> d.getStatusDocumentacao() == StatusDocumentacao.PENDENTE
+                                    || d.getStatusDocumentacao() == StatusDocumentacao.PERICIA);
+
+
+                    if (!existePendenteOuPericia){
+                        doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                    }
                 }
 
                 case PERICIA -> {
@@ -171,7 +191,7 @@ private void atualizarStatusRelacionados(
                             Sistema GMAC
                             """.formatted(nomePaciente, data.format(formatter)).toUpperCase(Locale.forLanguageTag("pt-BR")));
 
-                    doc.setStatusDocumentacao(StatusDocumentacao.PENDENTE);
+                    doc.setStatusDocumentacao(StatusDocumentacao.PERICIA);
                     doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.PENDENTE);
 
                     PericiaDTO periciaDTO = new PericiaDTO(
