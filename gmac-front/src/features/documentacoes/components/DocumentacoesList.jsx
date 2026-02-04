@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "@/app/providers/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import { useListarDocumentacao } from "../hooks/useListarDocumentacao";
 import { useGerarUrlDocumentacao } from "../hooks/useGerarUrlDocumentacao";
@@ -9,6 +10,8 @@ import styles from "@/features/pericias/style/pericias-list.module.css";
 
 export default function DocumentacoesList({ search, statusDocumentacao }) {
   const { token } = useAuth();
+
+  const navigate = useNavigate();
 
   const {
     data: documentacoes = [],
@@ -34,7 +37,7 @@ export default function DocumentacoesList({ search, statusDocumentacao }) {
     return documentacoes.filter((d) => {
       const nome = (d.nome ?? "").toLowerCase();
       const cpf = (d.cpf ?? "");
-      return !query || nome.includes(query) || cpf.includes(query);
+      return !q || nome.includes(q) || cpf.includes(q);
     });
   }, [documentacoes, search]);
 
@@ -146,7 +149,7 @@ export default function DocumentacoesList({ search, statusDocumentacao }) {
                     title="Validar Documentação"
                     disabled={visualizarMutation.isPending}
                     onClick={() =>
-                      visualizarMutation.mutate({ id: d.id })
+                      navigate(`/painel-principal/validar-documentacoes/${d.id}`)
                     }
                   >
                     <i className="fa-solid fa-magnifying-glass"></i>
