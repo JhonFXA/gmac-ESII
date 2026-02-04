@@ -11,6 +11,9 @@ import { useUpdatePaciente } from "../hooks/useUpdatePaciente";
 import { useAddPacienteEndereco } from "../hooks/useAddPacienteEndereco";
 import { useAddPacienteDocumento } from "../hooks/useAddPacienteDocumento";
 
+import { buscarCep } from "@/features/pacientes/services/buscaViaCep";
+
+
 import styles from "@/features/users/style/create-user.module.css";
 
 function cleanPayload(obj) {
@@ -31,6 +34,7 @@ const emptyEndereco = () => ({
   logradouro: "",
   numero: "",
   complemento: "",
+  readonlyViaCep: false,
 });
 
 function isEnderecoCompleto(e) {
@@ -51,6 +55,7 @@ function isEnderecoVazio(e) {
 export default function EditPacientePage() {
   const { token } = useAuth();
   const { cpf } = useParams();
+  const [cepErrors, setCepErrors] = useState({});
   const queryClient = useQueryClient();
 
   const pacienteQuery = usePacienteDetails(cpf, token);
@@ -104,6 +109,47 @@ export default function EditPacientePage() {
     }));
   }, [pacienteQuery.data, cpf]);
 
+
+  const handleCepBlur = async (cep, idx) => {
+    const dadosEndereco = await buscarCep(cep);
+
+    if (!dadosEndereco) {
+      setCepErrors((prev) => ({
+        ...prev,
+        [idx]: "CEP inválido ou não encontrado",
+      }));
+
+      setLocalStatus({
+        type: "error",
+        message: "CEP inválido ou não encontrado. Verifique e tente novamente.",
+      });
+
+      return;
+    }
+
+    //  CEP válido → limpa erro do CEP
+    setCepErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[idx];
+      return copy;
+    });
+
+    //  LIMPA a mensagem global de erro
+    setLocalStatus(null);
+
+    setFormData((prev) => ({
+      ...prev,
+      enderecosNovos: prev.enderecosNovos.map((end, i) =>
+        i === idx
+          ? { ...end, ...dadosEndereco, readonlyViaCep: true }
+          : end
+      ),
+    }));
+  };
+
+
+
+
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -121,7 +167,33 @@ export default function EditPacientePage() {
           };
         }),
       }));
-      return;
+      if (field === "cep" && value.replace(/\D/g, "").length === 8) {
+        const cepLimpo = value.replace(/\D/g, "");
+        handleCepBlur(cepLimpo, idx)
+
+        
+        if (!cepLimpo) {
+          setFormData((prev) => ({
+            ...prev,
+            enderecosNovos: prev.enderecosNovos.map((end, i) =>
+              i === idx
+                ? {
+                  ...emptyEndereco(),
+                }
+                : end
+            ),
+          }));
+
+          setCepErrors((prev) => {
+            const copy = { ...prev };
+            delete copy[idx];
+            return copy;
+          });
+
+          setLocalStatus(null);
+          return;
+        }
+      }
     }
 
     setFormData((prev) => ({
@@ -187,6 +259,14 @@ export default function EditPacientePage() {
       });
       return;
     }
+    if (Object.keys(cepErrors).length > 0) {
+      setLocalStatus({
+        type: "error",
+        message: "Existe CEP inválido nos endereços adicionados.",
+      });
+      return;
+    }
+
 
     try {
       await updateMutation.mutateAsync({ payload });
@@ -443,11 +523,13 @@ export default function EditPacientePage() {
                       />
                     </div>
 
+
                     <div className={styles.nameField}>
                       <label>Logradouro</label>
                       <input
                         className={styles.input}
                         value={end.logradouro}
+                        readOnly={end.readonlyViaCep}
                         onChange={handleChange}
                         type="text"
                         name={`enderecosNovos.${idx}.logradouro`}
@@ -481,6 +563,7 @@ export default function EditPacientePage() {
                       <input
                         className={styles.input}
                         value={end.bairro}
+                        readOnly={end.readonlyViaCep}
                         onChange={handleChange}
                         type="text"
                         name={`enderecosNovos.${idx}.bairro`}
@@ -492,6 +575,7 @@ export default function EditPacientePage() {
                       <input
                         className={styles.input}
                         value={end.cidade}
+                        readOnly={end.readonlyViaCep}
                         onChange={handleChange}
                         type="text"
                         name={`enderecosNovos.${idx}.cidade`}
@@ -503,6 +587,7 @@ export default function EditPacientePage() {
                       <input
                         className={styles.input}
                         value={end.estado}
+                        readOnly={end.readonlyViaCep}
                         onChange={handleChange}
                         type="text"
                         name={`enderecosNovos.${idx}.estado`}

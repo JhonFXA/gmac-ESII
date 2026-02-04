@@ -7,6 +7,8 @@ import { useAuth } from "@/app/providers/AuthContext";
 
 import { useCreatePaciente } from "../hooks/useCreatePaciente";
 
+import { buscarCep } from "@/features/pacientes/services/buscaViaCep";
+
 import styles from "@/features/users/style/create-user.module.css";
 
 const emptyEndereco = () => ({
@@ -17,11 +19,16 @@ const emptyEndereco = () => ({
   logradouro: "",
   numero: "",
   complemento: "",
+  readonlyViaCep: false,
 });
 
 export default function CreatePacientePage() {
   const { token } = useAuth();
   const createMutation = useCreatePaciente(token);
+  const [cepErrors, setCepErrors] = useState({});
+  const [localStatus, setLocalStatus] = useState(null);
+
+
 
   const initialState = {
     nome: "",
@@ -31,9 +38,42 @@ export default function CreatePacientePage() {
     dataNascimento: "",
     sexo: "",
     estadoCivil: "",
-    enderecos: [emptyEndereco()], // ✅ agora é lista
+    enderecos: [emptyEndereco()],
     documento: null,
   };
+
+  const handleCepBlur = async (cep, idx) => {
+    const dadosEndereco = await buscarCep(cep);
+
+    if (!dadosEndereco) {
+      setCepErrors((prev) => ({
+        ...prev,
+        [idx]: "CEP inválido ou não encontrado",
+      }));
+      setLocalStatus({
+        type: "error",
+        message: "CEP inválido ou não encontrado. Verifique e tente novamente.",
+      });
+      return;
+    }
+
+    // Se deu certo, limpa erro
+    setCepErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[idx];
+      return copy;
+    });
+    setLocalStatus(null);
+
+    setFormData((prev) => ({
+      ...prev,
+      enderecos: prev.enderecos.map((end, i) =>
+        i === idx ? { ...end, ...dadosEndereco, readonlyViaCep: true, } : end
+      ),
+    }));
+  };
+
+
 
   const [formData, setFormData] = useState(initialState);
 
@@ -55,7 +95,34 @@ export default function CreatePacientePage() {
           };
         }),
       }));
-      return;
+
+      if (field === "cep" && value.replace(/\D/g, "").length === 8) {
+        const cepLimpo = value.replace(/\D/g, "");
+        handleCepBlur(cepLimpo, idx)
+
+        // se apagou o CEP
+        if (!cepLimpo) {
+          setFormData((prev) => ({
+            ...prev,
+            enderecos: prev.enderecos.map((end, i) =>
+              i === idx
+                ? {
+                  ...emptyEndereco(), // limpa tudo
+                }
+                : end
+            ),
+          }));
+
+          setCepErrors((prev) => {
+            const copy = { ...prev };
+            delete copy[idx];
+            return copy;
+          });
+
+          setLocalStatus(null);
+          return;
+        }
+      }
     }
 
     setFormData((prev) => ({
@@ -119,6 +186,14 @@ export default function CreatePacientePage() {
     if (formData.documento) {
       fd.append("documento", formData.documento);
     }
+    if (Object.keys(cepErrors).length > 0) {
+      setLocalStatus({
+        type: "error",
+        message: "Existe um CEP inválido nos endereços informados.",
+      });
+      return;
+    }
+
 
     try {
       await createMutation.mutateAsync({ payload: fd });
@@ -129,14 +204,24 @@ export default function CreatePacientePage() {
   }
 
   const status = useMemo(() => {
+    if (localStatus) return localStatus;
+
     if (createMutation.isSuccess) {
       return { type: "success", message: "Paciente cadastrado com sucesso!" };
     }
+
     if (createMutation.isError) {
       return { type: "error", message: createMutation.error.message };
     }
+
     return null;
-  }, [createMutation.isSuccess, createMutation.isError, createMutation.error]);
+  }, [
+    localStatus,
+    createMutation.isSuccess,
+    createMutation.isError,
+    createMutation.error,
+  ]);
+
 
   return (
     <div className={styles.container}>
@@ -293,7 +378,9 @@ export default function CreatePacientePage() {
                     placeholder="Rua / Avenida"
                     className={styles.input}
                     value={end.logradouro}
+                    readOnly={end.readonlyViaCep}
                     onChange={handleChange}
+
                     type="text"
                     name={`enderecos.${idx}.logradouro`}
                     required
@@ -331,7 +418,9 @@ export default function CreatePacientePage() {
                     placeholder="Bairro"
                     className={styles.input}
                     value={end.bairro}
+                    readOnly={end.readonlyViaCep}
                     onChange={handleChange}
+
                     type="text"
                     name={`enderecos.${idx}.bairro`}
                     required
@@ -344,7 +433,9 @@ export default function CreatePacientePage() {
                     placeholder="Cidade"
                     className={styles.input}
                     value={end.cidade}
+                    readOnly={end.readonlyViaCep}
                     onChange={handleChange}
+
                     type="text"
                     name={`enderecos.${idx}.cidade`}
                     required
@@ -357,7 +448,9 @@ export default function CreatePacientePage() {
                     placeholder="UF"
                     className={styles.input}
                     value={end.estado}
+                    readOnly={end.readonlyViaCep}
                     onChange={handleChange}
+
                     type="text"
                     name={`enderecos.${idx}.estado`}
                     maxLength={2}

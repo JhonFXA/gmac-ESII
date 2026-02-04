@@ -14,6 +14,7 @@ import CreatePacientePage from "@/features/pacientes/pages/CreatePacientePage.js
 import ManagePacientesPage from "@/features/pacientes/pages/ManagePacientesPage.jsx";
 import EditPacientePage from "@/features/pacientes/pages/editPacientePage.jsx";
 import ManageDocumentacoesPage from "@/features/documentacoes/pages/ManageDocumentacoesPage.jsx"
+import RelatorioPage from "@/features/relatorios/pages/RelatorioPage.jsx";
 
 function App() {
   return (
@@ -94,6 +95,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedProfiles={["RECEPCIONISTA"]}>
                     <EditPacientePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/painel-principal/gerar-relatorio"
+                element={
+                  <ProtectedRoute allowedProfiles={["ADMINISTRADOR"]}>
+                    <RelatorioPage />
                   </ProtectedRoute>
                 }
               />
