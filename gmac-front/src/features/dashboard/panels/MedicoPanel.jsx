@@ -12,7 +12,7 @@ export default function MedicoPanel() {
     <>
       <div className={styles.buttonCollection}>
         <button className={styles.mainButton}
-          onClick={() => navigate("/painel-principal/gerenciar-documentacoes")}>
+          onClick={() => navigate("/painel-principal/validar-documentacoes")}>
           <i className="fa-solid fa-clipboard-check"></i>
           <p>Validar Documentação</p>
         </button>
