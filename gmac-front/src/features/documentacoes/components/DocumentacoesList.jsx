@@ -22,8 +22,9 @@ export default function DocumentacoesList({ search }) {
     const query = (search ?? "").trim().toLowerCase();
 
     return documentacoes.filter((d) => {
-      const paciente = (d.nomePaciente ?? "").toLowerCase();
-      return !query || paciente.includes(query);
+      const nome = (d.nome ?? "").toLowerCase();
+      const cpf = (d.cpf ?? "");
+      return !query || nome.includes(query) || cpf.includes(query);
     });
   }, [documentacoes, search]);
 

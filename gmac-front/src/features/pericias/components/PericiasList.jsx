@@ -16,30 +16,6 @@ function formatarDataHoraBR(dataISO) {
   return d.toLocaleString("pt-BR");
 }
 
-const MOCK_PERICIAS = [
-  {
-    id: 1,
-    nomePaciente: "João Silva",
-    nomeMedico: "Dra. Mariana Costa",
-    statusPericia: "AGENDADA",
-    data: "2026-09-12T15:25:00",
-  },
-  {
-    id: 2,
-    nomePaciente: "Carla Souza",
-    nomeMedico: "Dr. Roberto Lima",
-    statusPericia: "PENDENTE",
-    data: "2026-09-13T10:00:00",
-  },
-  {
-    id: 3,
-    nomePaciente: "Lucas Ferreira",
-    nomeMedico: "Dr. André Gomes",
-    statusPericia: "CANCELADA",
-    data: "2026-09-14T09:40:00",
-  },
-];
-
 export default function PericiasList({ search }) {
   const { token,perfil } = useAuth();
 
@@ -61,9 +37,7 @@ export default function PericiasList({ search }) {
   const periciasFiltradas = useMemo(() => {
     const q = (search ?? "").trim().toLowerCase();
 
-    const source = pericias.length > 0 ? pericias : MOCK_PERICIAS;
-
-    return source.filter((p) => {
+    return pericias.filter((p) => {
       const paciente = (p.nomePaciente ?? "").toLowerCase();
       const medico = (p.nomeMedico ?? "").toLowerCase();
 
