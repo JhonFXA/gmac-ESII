@@ -5,19 +5,21 @@ import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.repositorios.RepositorioPaciente;
 import com.example.apigmac.servicos.pacientesServicos.ServicoAlterarPaciente;
 import com.example.apigmac.utils.ServicoVerificacao;
+import com.example.apigmac.utils.CpfUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ServicoAlterarPacienteTest {
 
     @Mock
@@ -30,111 +32,137 @@ class ServicoAlterarPacienteTest {
     private ServicoAlterarPaciente servico;
 
     private Paciente pacienteExistente;
+
     private final UUID ID_PACIENTE = UUID.randomUUID();
-    private final String CPF_TESTE = "123.456.789-01";
+    private final String CPF_COM_MASCARA = "123.456.789-01";
+    private final String CPF_NORMALIZADO = "12345678901";
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        // Criando o paciente que já existe no sistema
         pacienteExistente = new Paciente();
-        pacienteExistente.setId(ID_PACIENTE); // ID UUID
+        pacienteExistente.setId(ID_PACIENTE);
         pacienteExistente.setNome("Nome Antigo");
-        pacienteExistente.setCpf(CPF_TESTE);
+        pacienteExistente.setCpf(CPF_NORMALIZADO);
         pacienteExistente.setEmail("antigo@email.com");
         pacienteExistente.setTelefone("(79) 90000-0000");
     }
 
     @Test
     void deveAlterarNomeETelefoneComSucesso() {
-        // Arrange
         AlterarPacienteDTO dto = new AlterarPacienteDTO(
-                CPF_TESTE, "Novo Nome", "(79) 91111-1111", null, null, null, null, null
+                CPF_COM_MASCARA, "Novo Nome", "(79) 91111-1111",
+                null, null, null, null, null
         );
 
-        when(repositorioPaciente.findByCpf(CPF_TESTE)).thenReturn(pacienteExistente);
-        when(verificacao.textoObrigatorioValido(anyString(), anyInt())).thenReturn(true);
-        when(verificacao.telefoneValido(anyString())).thenReturn(true);
+        when(repositorioPaciente.findByCpf(CPF_NORMALIZADO)).thenReturn(pacienteExistente);
+        when(verificacao.cpfValido(CPF_COM_MASCARA)).thenReturn(true); // <- adiciona
+        when(verificacao.textoObrigatorioValido("Novo Nome", 3)).thenReturn(true);
+        when(verificacao.telefoneValido("(79) 91111-1111")).thenReturn(true);
 
-        // Act
-        servico.alterarPaciente(dto, CPF_TESTE);
+        servico.alterarPaciente(dto, CPF_COM_MASCARA);
 
-        // Assert
         assertEquals("Novo Nome", pacienteExistente.getNome());
         assertEquals("(79) 91111-1111", pacienteExistente.getTelefone());
-        // Garante que o email não foi tocado
         assertEquals("antigo@email.com", pacienteExistente.getEmail());
     }
 
+
     @Test
     void deveLancarExcecaoQuandoEmailJaCadastradoPorOutroPaciente() {
-        // Arrange
         String novoEmail = "outro@email.com";
         AlterarPacienteDTO dto = new AlterarPacienteDTO(
-                CPF_TESTE, null, null, novoEmail, null, null, null, null
+                CPF_COM_MASCARA, null, null,
+                novoEmail, null, null, null, null
         );
 
         Paciente outroPaciente = new Paciente();
-        outroPaciente.setId(UUID.randomUUID()); // ID diferente do ID_PACIENTE
+        outroPaciente.setId(UUID.randomUUID());
         outroPaciente.setEmail(novoEmail);
 
-        when(repositorioPaciente.findByCpf(CPF_TESTE)).thenReturn(pacienteExistente);
+        when(repositorioPaciente.findByCpf(CPF_NORMALIZADO)).thenReturn(pacienteExistente);
+        when(verificacao.cpfValido(CPF_COM_MASCARA)).thenReturn(true); // <- Adicionado
         when(verificacao.emailValido(novoEmail)).thenReturn(true);
         when(repositorioPaciente.findByEmail(novoEmail)).thenReturn(outroPaciente);
 
-        // Act & Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                servico.alterarPaciente(dto, CPF_TESTE)
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servico.alterarPaciente(dto, CPF_COM_MASCARA)
         );
+
         assertEquals("Email já cadastrado", ex.getMessage());
     }
 
     @Test
     void devePermitirAlterarEmailSeForOMesmoEmailDoProprioPaciente() {
-        // Arrange
-        String mesmoEmail = "antigo@email.com";
         AlterarPacienteDTO dto = new AlterarPacienteDTO(
-                CPF_TESTE, null, null, mesmoEmail, null, null, null, null
+                CPF_COM_MASCARA, null, null,
+                "antigo@email.com", null, null, null, null
         );
 
-        when(repositorioPaciente.findByCpf(CPF_TESTE)).thenReturn(pacienteExistente);
+        when(repositorioPaciente.findByCpf(CPF_NORMALIZADO)).thenReturn(pacienteExistente);
+        when(verificacao.cpfValido(CPF_COM_MASCARA)).thenReturn(true); // <- Adicionado
 
-        // Act
-        servico.alterarPaciente(dto, CPF_TESTE);
+        servico.alterarPaciente(dto, CPF_COM_MASCARA);
 
-        // Assert
-        // O método não deve chamar a verificação nem o repositório se o e-mail for idêntico
+        // Email não precisa ser validado novamente se for o mesmo do paciente
         verify(verificacao, never()).emailValido(anyString());
-        assertEquals(mesmoEmail, pacienteExistente.getEmail());
+        assertEquals("antigo@email.com", pacienteExistente.getEmail());
     }
+
 
     @Test
     void deveLancarExcecaoParaDataNascimentoFutura() {
-        // Arrange
         LocalDate dataInvalida = LocalDate.now().plusDays(1);
         AlterarPacienteDTO dto = new AlterarPacienteDTO(
-                CPF_TESTE, null, null, null, null, null, null, dataInvalida
+                CPF_COM_MASCARA, null, null,
+                null, null, null, null, dataInvalida
         );
 
-        when(repositorioPaciente.findByCpf(CPF_TESTE)).thenReturn(pacienteExistente);
+        when(repositorioPaciente.findByCpf(CPF_NORMALIZADO)).thenReturn(pacienteExistente);
+        when(verificacao.cpfValido(CPF_COM_MASCARA)).thenReturn(true); // <- Adicionado
         when(verificacao.dataNascimentoValida(dataInvalida)).thenReturn(false);
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> servico.alterarPaciente(dto, CPF_TESTE));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servico.alterarPaciente(dto, CPF_COM_MASCARA)
+        );
+
+        assertEquals("Data de nascimento inválida", ex.getMessage());
     }
 
     @Test
     void deveRejeitarNomeCurtoDemais() {
-        // Arrange
         AlterarPacienteDTO dto = new AlterarPacienteDTO(
-                CPF_TESTE, "Ab", null, null, null, null, null, null
+                CPF_COM_MASCARA, "Ab", null,
+                null, null, null, null, null
         );
 
-        when(repositorioPaciente.findByCpf(CPF_TESTE)).thenReturn(pacienteExistente);
+        when(repositorioPaciente.findByCpf(CPF_NORMALIZADO)).thenReturn(pacienteExistente);
+        when(verificacao.cpfValido(CPF_COM_MASCARA)).thenReturn(true); // <- Adicionado
         when(verificacao.textoObrigatorioValido("Ab", 3)).thenReturn(false);
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> servico.alterarPaciente(dto, CPF_TESTE));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servico.alterarPaciente(dto, CPF_COM_MASCARA)
+        );
+
+        assertEquals("Nome inválido", ex.getMessage());
+    }
+
+
+    @Test
+    void deveAlterarCPFComSucesso() {
+        String novoCpf = "987.654.321-00";
+        AlterarPacienteDTO dto = new AlterarPacienteDTO(
+                novoCpf, null, null,
+                null, null, null, null, null
+        );
+
+        when(repositorioPaciente.findByCpf(CPF_NORMALIZADO)).thenReturn(pacienteExistente);
+        when(verificacao.cpfValido(novoCpf)).thenReturn(true);
+
+        servico.alterarPaciente(dto, CPF_COM_MASCARA);
+
+        assertEquals(CpfUtils.normalizar(novoCpf), pacienteExistente.getCpf());
     }
 }

@@ -58,7 +58,7 @@ public class ServicoCadastrarPaciente {
         }
 
         if (repositorioPaciente.findByCpf(cpfNormalizado) != null) {
-            throw new IllegalArgumentException("Usuário já cadastrado");
+            throw new IllegalArgumentException("Paciente já cadastrado");
         }
 
         if (!verificacao.emailValido(dados.email())) {

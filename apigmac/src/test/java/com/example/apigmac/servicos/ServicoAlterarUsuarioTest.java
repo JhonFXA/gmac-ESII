@@ -5,20 +5,21 @@ import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioUsuario;
 import com.example.apigmac.servicos.usuariosServicos.ServicoAlterarUsuario;
+import com.example.apigmac.utils.CpfUtils;
 import com.example.apigmac.utils.ServicoVerificacao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-
+@ExtendWith(MockitoExtension.class)
 class ServicoAlterarUsuarioTest {
 
     @Mock
@@ -34,104 +35,127 @@ class ServicoAlterarUsuarioTest {
     private ServicoAlterarUsuario servico;
 
     private Usuario usuarioExistente;
-    private final String CPF_TESTE = "123.456.789-01";
+
+    private final String CPF_COM_MASCARA = "123.456.789-01";
+    private final String CPF_NORMALIZADO = "12345678901";
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         usuarioExistente = new Usuario();
         usuarioExistente.setNome("Usuario Original");
-        usuarioExistente.setCpf(CPF_TESTE);
+        usuarioExistente.setCpf(CPF_NORMALIZADO);
         usuarioExistente.setLogin("login.original");
         usuarioExistente.setEmail("original@email.com");
     }
 
     @Test
     void deveAlterarNomeELoginComSucesso() {
-        // Ordem do DTO: login, email, senha, cpf, nome, perfil, dataNascimento
+
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
-                "novo.login", null, null, CPF_TESTE, "Novo Nome", null, null
+                "novo.login", null, null,
+                CPF_COM_MASCARA,
+                "Novo Nome", null, null
         );
 
-        when(repositorioUsuario.findByCpf(CPF_TESTE)).thenReturn(usuarioExistente);
-        when(verificacao.textoObrigatorioValido("Novo Nome", 3)).thenReturn(true);
-        when(repositorioUsuario.findByLogin("novo.login")).thenReturn(null);
+        when(verificacao.cpfValido(anyString())).thenReturn(true);
+        when(repositorioUsuario.findByCpf(CPF_NORMALIZADO))
+                .thenReturn(usuarioExistente);
+        when(verificacao.textoObrigatorioValido("Novo Nome", 3))
+                .thenReturn(true);
+        when(repositorioUsuario.findByLogin("novo.login"))
+                .thenReturn(null);
 
-        // Act
-        servico.alterarUsuario(dto, CPF_TESTE);
+        servico.alterarUsuario(dto, CPF_COM_MASCARA);
 
-        // Assert
         assertEquals("Novo Nome", usuarioExistente.getNome());
         assertEquals("novo.login", usuarioExistente.getLogin());
-        verify(repositorioUsuario).findByLogin("novo.login");
     }
 
     @Test
     void deveCriptografarSenhaQuandoInformada() {
-        // Ordem do DTO: login, email, senha, cpf, nome, perfil, dataNascimento
+
         String novaSenha = "Forte@123Password";
+
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
-                null, null, novaSenha, CPF_TESTE, null, null, null
+                null, null, novaSenha,
+                CPF_COM_MASCARA,
+                null, null, null
         );
 
-        when(repositorioUsuario.findByCpf(CPF_TESTE)).thenReturn(usuarioExistente);
+        when(verificacao.cpfValido(anyString())).thenReturn(true);
+        when(repositorioUsuario.findByCpf(CPF_NORMALIZADO))
+                .thenReturn(usuarioExistente);
         when(verificacao.senhaValida(novaSenha)).thenReturn(true);
         when(passwordEncoder.encode(novaSenha)).thenReturn("hash_seguro");
 
-        // Act
-        servico.alterarUsuario(dto, CPF_TESTE);
+        servico.alterarUsuario(dto, CPF_COM_MASCARA);
 
-        // Assert
         assertEquals("hash_seguro", usuarioExistente.getSenha());
         verify(passwordEncoder).encode(novaSenha);
     }
 
     @Test
     void deveLancarExcecaoQuandoEmailJaCadastrado() {
+
         String emailExistente = "ja@existe.com";
-        // Ordem do DTO: login, email, senha, cpf, nome, perfil, dataNascimento
+
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
-                null, emailExistente, null, CPF_TESTE, null, null, null
+                null, emailExistente, null,
+                CPF_COM_MASCARA,
+                null, null, null
         );
 
-        when(repositorioUsuario.findByCpf(CPF_TESTE)).thenReturn(usuarioExistente);
-        // Simula que o repositório achou outro usuário com esse e-mail
-        when(repositorioUsuario.findByEmail(emailExistente)).thenReturn(new Usuario());
+        when(verificacao.cpfValido(anyString())).thenReturn(true);
+        when(repositorioUsuario.findByCpf(CPF_NORMALIZADO))
+                .thenReturn(usuarioExistente);
+        when(repositorioUsuario.findByEmail(emailExistente))
+                .thenReturn(new Usuario());
 
-        // Act & Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                servico.alterarUsuario(dto, CPF_TESTE)
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servico.alterarUsuario(dto, CPF_COM_MASCARA)
         );
+
         assertEquals("Email já cadastrado", ex.getMessage());
     }
 
     @Test
     void deveAlterarPerfilEDataNascimento() {
+
         LocalDate dataValida = LocalDate.of(1990, 5, 15);
-        // Ordem do DTO: login, email, senha, cpf, nome, perfil, dataNascimento
+
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
-                null, null, null, CPF_TESTE, null, Perfil.ADMINISTRADOR, dataValida
+                null, null, null,
+                CPF_COM_MASCARA,
+                null, Perfil.ADMINISTRADOR, dataValida
         );
 
-        when(repositorioUsuario.findByCpf(CPF_TESTE)).thenReturn(usuarioExistente);
-        when(verificacao.dataNascimentoValida(dataValida)).thenReturn(true);
+        when(verificacao.cpfValido(anyString())).thenReturn(true);
+        when(repositorioUsuario.findByCpf(CPF_NORMALIZADO))
+                .thenReturn(usuarioExistente);
+        when(verificacao.dataNascimentoValida(dataValida))
+                .thenReturn(true);
 
-        // Act
-        servico.alterarUsuario(dto, CPF_TESTE);
+        servico.alterarUsuario(dto, CPF_COM_MASCARA);
 
-        // Assert
         assertEquals(Perfil.ADMINISTRADOR, usuarioExistente.getPerfil());
         assertEquals(dataValida, usuarioExistente.getDataNascimento());
     }
 
     @Test
     void deveLancarExcecaoQuandoCpfNaoEncontrado() {
-        // Arrange
-        when(repositorioUsuario.findByCpf(anyString())).thenReturn(null);
-        AlterarUsuarioDTO dto = new AlterarUsuarioDTO(null, null, null, "000", null, null, null);
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> servico.alterarUsuario(dto, CPF_TESTE));
+        when(repositorioUsuario.findByCpf(anyString()))
+                .thenReturn(null);
+
+        AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
+                null, null, null,
+                CPF_COM_MASCARA,
+                null, null, null
+        );
+
+        assertThrows(RuntimeException.class,
+                () -> servico.alterarUsuario(dto, CPF_COM_MASCARA));
     }
+
 }
