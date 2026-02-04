@@ -5,6 +5,8 @@ import { usePericias } from "../hooks/usePericias";
 import { useCancelPericia } from "../hooks/useCancelPericia";
 import { useRemarcarPericia } from "../hooks/useRemarcarPericia";
 import { useGerarUrlDocumentacao } from "../../documentacoes/hooks/useGerarUrlDocumentacao";
+import { useValidacaoDocumentacaoDetails } from "@/features/documentacoes/hooks/useValidacaoDetails";
+
 
 
 import styles from "../style/pericias-list.module.css";
@@ -16,10 +18,14 @@ function formatarDataHoraBR(dataISO) {
   return d.toLocaleString("pt-BR");
 }
 
-export default function PericiasList({ search }) {
-  const { token,perfil } = useAuth();
+export default function PericiasList({ search, statusPericia }) {
+  const { token, perfil } = useAuth();
 
-  const { data: pericias = [], isLoading, error } = usePericias(token);
+  const { data: pericias = [], isLoading, error } = usePericias({
+    token,
+    statusPericia,
+  });
+
   const cancelMutation = useCancelPericia(token);
   const remarcarMutation = useRemarcarPericia(token);
   const visualizarMutation = useGerarUrlDocumentacao(token);
@@ -34,9 +40,20 @@ export default function PericiasList({ search }) {
   const [periciaParaCancelar, setPericiaParaCancelar] = useState(null);
   const [confirmText, setConfirmText] = useState("");
 
+  // modal info 
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [documentacaoId, setDocumentacaoId] = useState(null);
+
+
+  const {
+    data: validacao,
+    isLoading: infoLoading,
+    error: infoError,
+  } = useValidacaoDocumentacaoDetails(documentacaoId, token);
+
   const periciasFiltradas = useMemo(() => {
     const q = (search ?? "").trim().toLowerCase();
-
+    
     return pericias.filter((p) => {
       const paciente = (p.nomePaciente ?? "").toLowerCase();
       const medico = (p.nomeMedico ?? "").toLowerCase();
@@ -70,7 +87,7 @@ export default function PericiasList({ search }) {
 
   return (
     <>
-      
+
       {/* MODAL CANCELAR */}
       {cancelOpen && (
         <div className={`${styles.popupContainer} ${styles.cancelContainer}`}>
@@ -155,6 +172,65 @@ export default function PericiasList({ search }) {
           )}
         </div>
       )}
+      {/* MODAL INFO */}
+      {infoOpen && (
+        <div className={`${styles.popupContainer} ${styles.infoContainer}`}>
+          <div className={styles.popupHeader}>
+            <p className={styles.popupTitle}>Detalhes da Documentação</p>
+
+            <button
+              type="button"
+              className={styles.popupCloseBtn}
+              onClick={() => {
+                setInfoOpen(false);
+                setDocumentacaoId(null);
+              }}
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div className={styles.infoBody}>
+            {infoLoading && <p>Carregando informações...</p>}
+
+            {infoError && (
+              <p className={styles.errorText}>
+                Erro ao carregar: {infoError.message}
+              </p>
+            )}
+
+            {validacao && (
+              <ul className={styles.infoList}>
+                <li>
+                  <strong>Usuário:</strong> {validacao.usuario}
+                </li>
+                <li>
+                  <strong>Paciente:</strong> {validacao.paciente}
+                </li>
+                <li>
+                  <strong>Status da Validação:</strong>{" "}
+                  {validacao.statusValidacaoDocumentacao}
+                </li>
+                <li>
+                  <strong>Status da Documentação:</strong>{" "}
+                  {validacao.statusDocumentacao}
+                </li>
+                <li>
+                  <strong>Observação:</strong>{" "}
+                  {validacao.observacao || "-"}
+                </li>
+                <li>
+                  <strong>Data:</strong>{" "}
+                  {validacao.data
+                    ? new Date(validacao.data).toLocaleDateString("pt-BR")
+                    : "-"}
+                </li>
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+
 
       <div className={styles.scrollList}>
         <ul className={styles.listSection}>
@@ -186,43 +262,65 @@ export default function PericiasList({ search }) {
               </div>
 
               <div className={styles.itemBtns}>
-                {perfil === "MEDICO" && (
-                <button
-                  type="button"
-                  className={styles.viewBtn}
-                  title="Ver Documentação"
-                  disabled={visualizarMutation.isPending}
-                  onClick={() => visualizarMutation.mutate({ id: p.idDocumentacao })}
-                >
-                  <i className="fa-solid fa-magnifying-glass"></i>
-                </button>
-                )}
-                <button
-                  type="button"
-                  className={styles.editBtn}
-                  title="Remarcar"
-                  onClick={() => {
-                    setPericiaParaEditar(p);
-                    setNovaData(p.data?.substring(0, 16) || "");
-                    setEditOpen(true);
-                  }}
-                >
-                  <i className="fa-solid fa-pen"></i>
-                </button>
+                
 
-                <button
-                  type="button"
-                  className={styles.deleteBtn}
-                  title="Cancelar"
-                  onClick={() => {
-                    setPericiaParaCancelar(p);
-                    setConfirmText("");
-                    setCancelOpen(true);
-                  }}
-                >
-                  <i className="fa-solid fa-circle-xmark"></i>
-                </button>
+                {p.statusPericia === "AGENDADA" ? (
+                  <>
+                  {perfil === "MEDICO" && (
+                  <button
+                    type="button"
+                    className={styles.viewBtn}
+                    title="Ver Documentação"
+                    disabled={visualizarMutation.isPending}
+                    onClick={() =>
+                      visualizarMutation.mutate({ id: p.idDocumentacao })
+                    }
+                  >
+                    <i className="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                )}
+                    <button
+                      type="button"
+                      className={styles.editBtn}
+                      title="Remarcar"
+                      onClick={() => {
+                        setPericiaParaEditar(p);
+                        setNovaData(p.data?.substring(0, 16) || "");
+                        setEditOpen(true);
+                      }}
+                    >
+                      <i className="fa-solid fa-pen"></i>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.deleteBtn}
+                      title="Cancelar"
+                      onClick={() => {
+                        setPericiaParaCancelar(p);
+                        setConfirmText("");
+                        setCancelOpen(true);
+                      }}
+                    >
+                      <i className="fa-solid fa-circle-xmark"></i>
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.infoBtn}
+                    title="Ver detalhes da perícia"
+                    onClick={() => {
+                      setDocumentacaoId(p.idDocumentacao);
+                      setInfoOpen(true);
+
+                    }}
+                  >
+                    <i className="fa-solid fa-circle-info"></i>
+                  </button>
+                )}
               </div>
+
             </li>
           ))}
         </ul>

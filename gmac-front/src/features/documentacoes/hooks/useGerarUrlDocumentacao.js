@@ -5,5 +5,6 @@ export function useGerarUrlDocumentacao(token) {
   return useMutation({
     mutationFn: ({ id, signal }) =>
       visualizarDocumentacao(id, { token, signal }),
-  });
+  }
+);
 }

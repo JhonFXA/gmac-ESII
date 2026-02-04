@@ -1,25 +1,35 @@
+import { useMemo, useState } from "react";
 import { useAuth } from "@/app/providers/AuthContext";
-import { useGerarUrlDocumentacao } from "../hooks/useGerarUrlDocumentacao";
-import { useMemo } from "react";
+
 import { useListarDocumentacao } from "../hooks/useListarDocumentacao";
-import { useNavigate } from "react-router-dom";
+import { useGerarUrlDocumentacao } from "../hooks/useGerarUrlDocumentacao";
+import { useValidacaoDocumentacaoDetails } from "@/features/documentacoes/hooks/useValidacaoDetails";
+
 import styles from "@/features/pericias/style/pericias-list.module.css";
 
-export default function DocumentacoesList({ search }) {
+export default function DocumentacoesList({ search, statusDocumentacao }) {
   const { token } = useAuth();
-
-  const navigate = useNavigate();
 
   const {
     data: documentacoes = [],
     isLoading,
     error,
-  } = useListarDocumentacao(token);
+  } = useListarDocumentacao({ token, statusDocumentacao, });
 
   const visualizarMutation = useGerarUrlDocumentacao(token);
 
+  // modal info
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [documentacaoId, setDocumentacaoId] = useState(null);
+
+  const {
+    data: validacao,
+    isLoading: infoLoading,
+    error: infoError,
+  } = useValidacaoDocumentacaoDetails(documentacaoId, token);
+
   const documentacoesFiltradas = useMemo(() => {
-    const query = (search ?? "").trim().toLowerCase();
+    const q = (search ?? "").trim().toLowerCase();
 
     return documentacoes.filter((d) => {
       const nome = (d.nome ?? "").toLowerCase();
@@ -29,49 +39,136 @@ export default function DocumentacoesList({ search }) {
   }, [documentacoes, search]);
 
   return (
-    <div className={styles.scrollList}>
-      <ul className={styles.listSection}>
-        {isLoading && <li className={styles.emptyRow}>Carregando...</li>}
+    <>
+      {/* MODAL INFO */}
+      {infoOpen && (
+        <div className={`${styles.popupContainer} ${styles.infoContainer}`}>
+          <div className={styles.popupHeader}>
+            <p className={styles.popupTitle}>Detalhes da Documentação</p>
 
-        {error && <li className={styles.emptyRow}>Erro: {error.message}</li>}
+            <button
+              type="button"
+              className={styles.popupCloseBtn}
+              onClick={() => {
+                setInfoOpen(false);
+                setDocumentacaoId(null);
+              }}
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
 
-        {!isLoading && !error && documentacoesFiltradas.length === 0 && (
-          <li className={styles.listItem}>
-            <div className={styles.itemInfo}>
-              <p>Nenhuma Documentação encontrada.</p>
-            </div>
-          </li>
-        )}
+          <div className={styles.infoBody}>
+            {infoLoading && <p>Carregando informações...</p>}
 
-        {documentacoesFiltradas.map((d) => (
-          <li className={styles.listItem} key={d.id}>
-            <div className={styles.itemInfo}>
-              <p>{d.nome ?? "-"}</p>
-              <p>{d.cpf ?? "-"}</p>
-              <p className={styles[`status${(d.status ?? "").toLowerCase()}`]}>
-                {d.status ?? "-"}
+            {infoError && (
+              <p className={styles.errorText}>
+                Erro ao carregar: {infoError.message}
               </p>
-              <p>
-                {d.dataEnvio
-                  ? new Date(d.dataEnvio).toLocaleDateString("pt-BR")
-                  : "-"}
-              </p>
-            </div>
+            )}
 
-            <div className={styles.itemBtns}>
-              <button
-                type="button"
-                className={styles.viewBtn}
-                title="Ver Documentação"
-                disabled={visualizarMutation.isPending}
-                onClick={() => navigate(`/painel-principal/validar-documentacoes/${d.id}`)}
-              >
-                <i className="fa-solid fa-magnifying-glass"></i>
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+            {validacao && (
+              <ul className={styles.infoList}>
+                <li>
+                  <strong>Usuário:</strong> {validacao.usuario}
+                </li>
+                <li>
+                  <strong>Paciente:</strong> {validacao.paciente}
+                </li>
+                <li>
+                  <strong>Status da Documentação:</strong>{" "}
+                  {validacao.statusDocumentacao}
+                </li>
+                <li>
+                  <strong>Status da Validação:</strong>{" "}
+                  {validacao.statusValidacaoDocumentacao}
+                </li>
+                <li>
+                  <strong>Observação:</strong>{" "}
+                  {validacao.observacao || "-"}
+                </li>
+                <li>
+                  <strong>Data:</strong>{" "}
+                  {validacao.data
+                    ? new Date(validacao.data).toLocaleDateString("pt-BR")
+                    : "-"}
+                </li>
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className={styles.scrollList}>
+        <ul className={styles.listSection}>
+          {isLoading && (
+            <li className={styles.emptyRow}>Carregando...</li>
+          )}
+
+          {error && (
+            <li className={styles.emptyRow}>
+              Erro: {error.message}
+            </li>
+          )}
+
+          {!isLoading && !error && documentacoesFiltradas.length === 0 && (
+            <li className={styles.listItem}>
+              <div className={styles.itemInfo}>
+                <p>Nenhuma documentação encontrada.</p>
+              </div>
+            </li>
+          )}
+
+          {documentacoesFiltradas.map((d) => (
+            <li className={styles.listItem} key={d.id}>
+              <div className={styles.itemInfo}>
+                <p>{d.nome ?? "-"}</p>
+                <p>{d.cpf ?? "-"}</p>
+                <p
+                  className={
+                    styles[`status${(d.status ?? "").toLowerCase()}`]
+                  }
+                >
+                  {d.status ?? "-"}
+                </p>
+                <p>
+                  {d.dataEnvio
+                    ? new Date(d.dataEnvio).toLocaleDateString("pt-BR")
+                    : "-"}
+                </p>
+              </div>
+
+              <div className={styles.itemBtns}>
+                {d.status === "PENDENTE" ? (
+                  <button
+                    type="button"
+                    className={styles.viewBtn}
+                    title="Validar Documentação"
+                    disabled={visualizarMutation.isPending}
+                    onClick={() =>
+                      visualizarMutation.mutate({ id: d.id })
+                    }
+                  >
+                    <i className="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.infoBtn}
+                    title="Ver detalhes da documentação"
+                    onClick={() => {
+                      setDocumentacaoId(d.id);
+                      setInfoOpen(true);
+                    }}
+                  >
+                    <i className="fa-solid fa-circle-info"></i>
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }

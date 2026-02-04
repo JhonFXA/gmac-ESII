@@ -7,7 +7,7 @@ import PacientesDetailsModal from "./PacienteDetailsModal";
 
 import styles from "@/features/users/style/users-scroll-list.module.css";
 
-export default function PacientesScrollList({ search, pacientesSelecionados }) {
+export default function PacientesScrollList({ search, pacientesSelecionados,ordemNome }) {
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -16,23 +16,36 @@ export default function PacientesScrollList({ search, pacientesSelecionados }) {
 
   const [cpfSelecionado, setCpfSelecionado] = useState(null);
 
-  const pacientesFiltrados = useMemo(() => {
-    const q = search.trim().toLowerCase();
+ const pacientesFiltrados = useMemo(() => {
+  const q = search.trim().toLowerCase();
 
-    return pacientes.filter((u) => {
-      const nome = (u.nome ?? "").toLowerCase();
-      const status = (u.statusSolicitacao ?? "").toUpperCase();
-      const cpf = (u.cpf ?? "").toLowerCase();
+  let lista = pacientes.filter((u) => {
+    const nome = (u.nome ?? "").toLowerCase();
+    const status = (u.statusSolicitacao ?? "").toUpperCase();
+    const cpf = (u.cpf ?? "").toLowerCase();
 
-      const matchTexto = !q || nome.includes(q) || cpf.includes(q);
-      const matchPerfil =
-        !pacientesSelecionados ||
-        pacientesSelecionados.size === 0 ||
-        pacientesSelecionados.has(status);
+    const matchTexto = !q || nome.includes(q) || cpf.includes(q);
+    const matchPerfil =
+      !pacientesSelecionados ||
+      pacientesSelecionados.size === 0 ||
+      pacientesSelecionados.has(status);
 
-      return matchTexto && matchPerfil;
+    return matchTexto && matchPerfil;
+  });
+
+  if (ordemNome) {
+    lista = [...lista].sort((a, b) => {
+      const nomeA = (a.nome ?? "").toLowerCase();
+      const nomeB = (b.nome ?? "").toLowerCase();
+
+      return ordemNome === "ASC"
+        ? nomeA.localeCompare(nomeB, "pt-BR")
+        : nomeB.localeCompare(nomeA, "pt-BR");
     });
-  }, [pacientes, search, pacientesSelecionados]);
+  }
+
+  return lista;
+}, [pacientes, search, pacientesSelecionados, ordemNome]);
 
   return (
     <>

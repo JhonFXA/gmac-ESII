@@ -44,6 +44,8 @@ public class ConfiguracoesSeguranca {
                         .requestMatchers(HttpMethod.GET,"/paciente/buscar/{cpf}").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.GET,"/paciente/listar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.GET,"/documentacao/buscar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
+                        .requestMatchers(HttpMethod.GET,"/documentacao/buscar/{id}").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
+                        .requestMatchers(HttpMethod.GET,"/documentacao/buscar/validacao/{id}").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.GET,"/documentacao/url/{id}").hasAnyRole("ADMINISTRADOR", "MEDICO")
                         .requestMatchers(HttpMethod.POST,"/documentacao/validar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")
                         .requestMatchers(HttpMethod.POST, "/pericia/marcar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "MEDICO")

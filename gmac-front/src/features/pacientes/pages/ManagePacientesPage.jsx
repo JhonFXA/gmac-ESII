@@ -8,6 +8,7 @@ import PacientesScrollList from "../components/PacientesScrollList";
 import styles from "@/features/users/style/manage-users.module.css";
 
 export default function ManagePacientesPage() {
+  const [ordemNome, setOrdemNome] = useState(null);
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [pacientesSelecionados, setPacientesSelecionados] = useState(new Set());
@@ -18,6 +19,13 @@ export default function ManagePacientesPage() {
       if (next.has(status)) next.delete(status);
       else next.add(status);
       return next;
+    });
+  }
+  function toggleOrdenacaoNome() {
+    setOrdemNome((prev) => {
+      if (prev === null) return "ASC";
+      if (prev === "ASC") return "DESC";
+      return null;
     });
   }
 
@@ -47,7 +55,20 @@ export default function ManagePacientesPage() {
 
             <div className={styles.searchAttributes}>
               <div className={styles.attrList}>
-                <div className={styles.attr}>Nome</div>
+                 <div
+                                  className={`${styles.attr} ${styles.clickableAttr}`}
+                                  onClick={toggleOrdenacaoNome}
+                                >
+                                  Nome
+                                  <i
+                                    className={`fa-solid ${ordemNome === "ASC"
+                                        ? "fa-arrow-up"
+                                        : ordemNome === "DESC"
+                                          ? "fa-arrow-down"
+                                          : ""
+                                      } ${styles.sortIcon}`}
+                                  />
+                                </div>
                 <div className={`${styles.attr} ${styles.attrPerfil}`}>
                   Status
                   <button
@@ -98,6 +119,7 @@ export default function ManagePacientesPage() {
           <PacientesScrollList
             search={search}
             pacientesSelecionados={pacientesSelecionados}
+            ordemNome={ordemNome}
           />
         </div>
       </main>
