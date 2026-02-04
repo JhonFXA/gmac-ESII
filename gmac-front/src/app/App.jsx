@@ -12,9 +12,11 @@ import EditUserPage from "@/features/users/pages/EditUserPage.jsx";
 import ManagePericiasPage from "@/features/pericias/pages/ManagePericiasPage.jsx";
 import CreatePacientePage from "@/features/pacientes/pages/CreatePacientePage.jsx";
 import ManagePacientesPage from "@/features/pacientes/pages/ManagePacientesPage.jsx";
-import EditPacientePage from "@/features/pacientes/pages/editPacientePage.jsx";
+import EditPacientePage from "@/features/pacientes/pages/EditPacientePage.jsx";
 import ManageDocumentacoesPage from "@/features/documentacoes/pages/ManageDocumentacoesPage.jsx"
+import PaginaDocumentacao from "@/features/documentacoes/pages/PaginaDocumentacao.jsx";
 import RelatorioPage from "@/features/relatorios/pages/RelatorioPage.jsx";
+
 
 function App() {
   return (
@@ -67,7 +69,7 @@ function App() {
                 }
               />
               <Route
-                path="/painel-principal/gerenciar-documentacoes"
+                path="/painel-principal/validar-documentacoes"
                 element={
                   <ProtectedRoute allowedProfiles={["ADMINISTRADOR", "MEDICO", "RECEPCIONISTA"]}>
                     <ManageDocumentacoesPage />
@@ -103,6 +105,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedProfiles={["ADMINISTRADOR"]}>
                     <RelatorioPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/painel-principal/validar-documentacoes/:id"
+                element={
+                  <ProtectedRoute allowedProfiles={["MEDICO"]}>
+                    <PaginaDocumentacao />
                   </ProtectedRoute>
                 }
               />

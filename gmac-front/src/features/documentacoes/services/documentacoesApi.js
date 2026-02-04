@@ -16,6 +16,14 @@ export function listarDocumentacoesRequest({ token, signal } = {}) {
   });
 }
 
+export function buscarDocumentacaoPorId(id, { token, signal } = {}) {
+  return http(`/documentacao/${encodeURIComponent(id)}`, {
+    method: "GET",
+    token,
+    signal,
+  });
+}
+
 export function normalizeDocumentacoesResponse(data) {
   const lista = Array.isArray(data) ? data : data?.documentacoes ?? [];
   return lista;
