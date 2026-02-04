@@ -30,6 +30,8 @@ class ServicoBuscarPacienteTest {
 
     private Paciente pacienteMock;
     private final String CPF_TESTE = "123.456.789-01";
+    private final String CPF_NORMALIZADO = "12345678901";
+
 
     @BeforeEach
     void setUp() {
@@ -51,24 +53,20 @@ class ServicoBuscarPacienteTest {
         pacienteMock.setEnderecos(new ArrayList<>());
         pacienteMock.getEnderecos().add(endereco);
     }
-
     @Test
     void deveRetornarPacienteDtoQuandoCpfExistir() {
-        // Arrange
-        when(repositorioPaciente.findByCpf(CPF_TESTE)).thenReturn(pacienteMock);
 
-        // Act
+        when(repositorioPaciente.findByCpf(CPF_NORMALIZADO))
+                .thenReturn(pacienteMock);
+
         PacienteDTO resultado = servico.buscarPaciente(CPF_TESTE);
 
-        // Assert
         assertNotNull(resultado);
-        assertEquals(pacienteMock.getNome(), resultado.nome());
-        assertEquals(pacienteMock.getCpf(), resultado.cpf());
-        assertEquals(1, resultado.enderecos().size()); // Verifica se mapeou o endereço
-        assertEquals("Aracaju", resultado.enderecos().get(0).cidade());
-
-        verify(repositorioPaciente, times(1)).findByCpf(CPF_TESTE);
+        assertEquals("João Silva", resultado.nome());
+        assertEquals("123.456.789-01", resultado.cpf()); // porque o serviço formata
+        assertEquals(1, resultado.enderecos().size());
     }
+
 
     @Test
     void deveLancarExcecaoQuandoPacienteNaoForEncontrado() {

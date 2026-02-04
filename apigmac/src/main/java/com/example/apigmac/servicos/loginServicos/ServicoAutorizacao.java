@@ -15,7 +15,7 @@ public class ServicoAutorizacao implements UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         UserDetails usuario = repositorio.findByLogin(login);
         if (usuario == null) {
-            throw new UsernameNotFoundException("Usuário não encontrado: " + login);
+            throw new UsernameNotFoundException("Usuário não encontrado");
         }
         return usuario;
     }

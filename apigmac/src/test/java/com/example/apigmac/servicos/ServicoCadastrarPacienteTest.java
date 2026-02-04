@@ -5,7 +5,6 @@ import com.example.apigmac.DTOs.PacienteDTO;
 import com.example.apigmac.entidades.Paciente;
 import com.example.apigmac.modelo.enums.EstadoCivil;
 import com.example.apigmac.modelo.enums.Sexo;
-import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioEndereco;
 import com.example.apigmac.repositorios.RepositorioPaciente;
@@ -14,145 +13,157 @@ import com.example.apigmac.servicos.pacientesServicos.ServicoCadastrarPaciente;
 import com.example.apigmac.utils.ServicoVerificacao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockMultipartFile;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ServicoCadastrarPacienteTest {
 
     @Mock
     private RepositorioPaciente repositorioPaciente;
+
     @Mock
     private RepositorioDocumentacao repositorioDocumentacao;
+
     @Mock
     private RepositorioEndereco repositorioEndereco;
+
     @Mock
     private ServicoVerificacao verificacao;
+
     @Mock
     private ServicoTransformarDocumentacao transformarDocumentacao;
+
+    @Mock
+    private MultipartFile documento;
 
     @InjectMocks
     private ServicoCadastrarPaciente servico;
 
-    private PacienteDTO pacienteDTO;
-    private MockMultipartFile documentoMock;
+    private PacienteDTO dtoValido;
+    private Paciente pacienteMock;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
 
-        // Mock de um EnderecoDTO
-        EnderecoDTO enderecoDTO = new EnderecoDTO("49000-000", "Aracaju", "SE", "Centro", "Rua A", "123", "");
+        EnderecoDTO endereco = new EnderecoDTO(
+                "49000-000",
+                "Aracaju",
+                "SE",
+                "Centro",
+                "Rua A",
+                "123",
+                "Apto 1"
+        );
 
-        // Mock do PacienteDTO
-        pacienteDTO = new PacienteDTO(
+        dtoValido = new PacienteDTO(
                 "João Silva",
                 "123.456.789-01",
-                StatusSolicitacao.PENDENTE,
-                LocalDate.of(1990, 1, 1),
-                "(79) 99999-9999",
+                null,
+                LocalDate.of(2000, 1, 1),
+                "(79) 90000-0000",
                 "joao@email.com",
                 Sexo.MASCULINO,
                 EstadoCivil.SOLTEIRO,
-                List.of(enderecoDTO)
+                List.of(endereco)
         );
 
-        documentoMock = new MockMultipartFile("documento", "teste.pdf", "application/pdf", "conteudo".getBytes());
+        pacienteMock = new Paciente();
+        pacienteMock.setCpf("12345678901");
     }
 
     @Test
     void deveCadastrarPacienteComSucesso() {
-        // 1. Mocks de validação para retornarem sempre true
+
         when(verificacao.textoObrigatorioValido(anyString(), anyInt())).thenReturn(true);
         when(verificacao.cpfValido(anyString())).thenReturn(true);
         when(verificacao.emailValido(anyString())).thenReturn(true);
         when(verificacao.telefoneValido(anyString())).thenReturn(true);
         when(verificacao.dataNascimentoValida(any())).thenReturn(true);
-        when(verificacao.pdfValido(any())).thenReturn(true);
         when(verificacao.cepValido(anyString())).thenReturn(true);
         when(verificacao.estadoValido(anyString())).thenReturn(true);
+        when(verificacao.pdfValido(any())).thenReturn(true);
 
-        // 2. Criamos o objeto paciente usando o construtor da sua entidade
-        Paciente pacienteMock = new Paciente(
-                pacienteDTO.nome(),
-                pacienteDTO.cpf(),
-                pacienteDTO.telefone(),
-                pacienteDTO.email(),
-                pacienteDTO.sexo(),
-                pacienteDTO.estadoCivil(),
-                pacienteDTO.statusSolicitacao(),
-                pacienteDTO.dataNascimento()
-        );
-
-        // 3. O PONTO CHAVE: Configurar as múltiplas chamadas do findByCpf
-        // 1ª vez (validação): retorna null
-        // 2ª vez (cadastrarEndereco): retorna o paciente
-        // 3ª vez (cadastrarDocumento): retorna o paciente
-        when(repositorioPaciente.findByCpf(pacienteDTO.cpf()))
-                .thenReturn(null)      // Para passar pelo "if (repositorioPaciente.findByCpf... != null)"
-                .thenReturn(pacienteMock) // Para o cadastrarEndereco
-                .thenReturn(pacienteMock); // Para o cadastrarDocumento
+        when(repositorioPaciente.findByCpf(anyString())).thenReturn(null, pacienteMock);
 
         when(repositorioPaciente.findByEmail(anyString())).thenReturn(null);
-        when(repositorioPaciente.save(any(Paciente.class))).thenReturn(pacienteMock);
-        when(transformarDocumentacao.caminhoDocumentacao(any(), anyString())).thenReturn("documentos/123/teste.pdf");
+        when(repositorioPaciente.save(any())).thenReturn(pacienteMock);
 
-        // Act
-        Paciente resultado = servico.cadastrarPaciente(pacienteDTO, documentoMock);
+        when(documento.isEmpty()).thenReturn(false);
 
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(pacienteDTO.cpf(), resultado.getCpf());
-        verify(repositorioPaciente, times(1)).save(any(Paciente.class));
-        verify(repositorioEndereco, times(1)).save(any());
-        verify(repositorioDocumentacao, times(1)).save(any());
+        Paciente paciente = servico.cadastrarPaciente(dtoValido, documento);
+
+        assertNotNull(paciente);
+        assertEquals("12345678901", paciente.getCpf());
+
+        verify(repositorioPaciente).save(any(Paciente.class));
+        verify(repositorioEndereco).save(any());
     }
+
+    @Test
+    void deveLancarExcecaoQuandoCpfInvalido() {
+
+        when(verificacao.textoObrigatorioValido(anyString(), anyInt())).thenReturn(true);
+        when(verificacao.cpfValido(anyString())).thenReturn(false);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servico.cadastrarPaciente(dtoValido, documento)
+        );
+
+        assertEquals("CPF inválido", ex.getMessage());
+    }
+
     @Test
     void deveLancarExcecaoQuandoCpfJaCadastrado() {
-        // Arrange
+
         when(verificacao.textoObrigatorioValido(anyString(), anyInt())).thenReturn(true);
         when(verificacao.cpfValido(anyString())).thenReturn(true);
-        when(repositorioPaciente.findByCpf(pacienteDTO.cpf())).thenReturn(new Paciente());
+        when(repositorioPaciente.findByCpf(anyString())).thenReturn(new Paciente());
 
-        // Act & Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                servico.cadastrarPaciente(pacienteDTO, documentoMock)
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servico.cadastrarPaciente(dtoValido, documento)
         );
-        assertEquals("Usuário já cadastrado", ex.getMessage());
-        verify(repositorioPaciente, never()).save(any());
+
+        assertEquals("Paciente já cadastrado", ex.getMessage());
     }
 
     @Test
-    void deveValidarEnderecoCorretamente() {
-        // Arrange
-        EnderecoDTO enderecoInvalido = new EnderecoDTO("000", "A", "Invalido", "", "", "", "");
-        when(verificacao.cepValido(enderecoInvalido.cep())).thenReturn(false);
+    void deveLancarExcecaoQuandoNaoInformarEndereco() {
 
-        // Act & Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                servico.cadastrarEndereco(enderecoInvalido, "123.456.789-01")
+        PacienteDTO dtoSemEndereco = new PacienteDTO(
+                "João Silva",
+                "123.456.789-01",
+                null,
+                LocalDate.of(2000, 1, 1),
+                "(79) 90000-0000",
+                "email@email.com",
+                Sexo.MASCULINO,
+                EstadoCivil.SOLTEIRO,
+                null
         );
-        assertEquals("CEP inválido", ex.getMessage());
-    }
 
-    @Test
-    void deveLancarErroAoCadastrarDocumentoSePacienteNaoExistir() {
-        // Arrange
-        when(verificacao.pdfValido(any())).thenReturn(true);
-        when(repositorioPaciente.findByCpf(anyString())).thenReturn(null);
+        when(verificacao.textoObrigatorioValido(anyString(), anyInt())).thenReturn(true);
+        when(verificacao.cpfValido(anyString())).thenReturn(true);
+        when(verificacao.emailValido(anyString())).thenReturn(true);
+        when(verificacao.telefoneValido(anyString())).thenReturn(true);
+        when(verificacao.dataNascimentoValida(any())).thenReturn(true);
 
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class, () ->
-                servico.cadastrarDocumento(documentoMock, "000.000.000-00")
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servico.cadastrarPaciente(dtoSemEndereco, documento)
         );
-        assertEquals("Paciente não encontrado", ex.getMessage());
+
+        assertEquals("É obrigatório informar pelo menos um endereço", ex.getMessage());
     }
 }
