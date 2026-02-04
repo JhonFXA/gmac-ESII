@@ -1,8 +1,22 @@
 import { http } from "@/services/api/http";
 
-export function listPericiasRequest({ token, signal } = {}) {
-  return http("/pericia/listar", { method: "GET", token, signal });
+export function listPericiasRequest({ token, statusPericia, signal } = {}) {
+  const params = new URLSearchParams();
+
+  if (statusPericia) {
+    params.append("statusPericia", statusPericia);
+  }
+
+  const query = params.toString();
+  const url = query ? `/pericia/listar?${query}` : "/pericia/listar";
+
+  return http(url, {
+    method: "GET",
+    token,
+    signal,
+  });
 }
+
 
 export function cancelarPericiaRequest(id, { token, signal } = {}) {
   return http(`/pericia/${encodeURIComponent(id)}/cancelar`, {

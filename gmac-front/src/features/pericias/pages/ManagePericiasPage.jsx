@@ -9,6 +9,12 @@ import styles from "../style/manage-pericias.module.css";
 
 export default function ManagePericiasPage() {
   const [search, setSearch] = useState("");
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  const [statusSelecionado, setStatusSelecionado] = useState("AGENDADA");
+
+
+
 
   return (
     <div className={styles.container}>
@@ -36,14 +42,58 @@ export default function ManagePericiasPage() {
               <div className={styles.attrList}>
                 <div className={styles.attr}>Paciente</div>
                 <div className={styles.attr}>Médico</div>
-                <div className={styles.attr}>Status</div>
+                <div className={`${styles.attr} ${styles.attrPerfil}`}>
+                  Status
+                  <button
+                    type="button"
+                    className={styles.filterBtn}
+                    onClick={() => setStatusOpen((v) => !v)}
+                  >
+                    <i
+                      className={`fa-solid ${statusOpen ? "fa-xmark" : "fa-angle-down"
+                        } ${styles.filterIcon} ${statusOpen ? styles.filterIconOpen : ""
+                        }`}
+                    />
+                  </button>
+
+                  {statusOpen && (
+                    <div className={styles.filterMenu}>
+                      {["AGENDADA", "FINALIZADA", "CANCELADA"].map((status) => (
+                        <label key={status} className={styles.filterItem}>
+                          <input
+                            type="radio"
+                            name="statusPericia"
+                            checked={statusSelecionado === status}
+                            onChange={() => {
+                              setStatusSelecionado(status);
+                              setStatusOpen(false);
+                            }}
+                          />
+                          {status.charAt(0) + status.slice(1).toLowerCase()}
+                        </label>
+                      ))}
+
+                      <button
+                        type="button"
+                        className={styles.clearFilterBtn}
+                        onClick={() => setStatusSelecionado("AGENDADA")}
+                      >
+                        Padrão
+                      </button>
+                    </div>
+                  )}
+
+                </div>
+
                 <div className={styles.attr}>Data</div>
               </div>
               <div className={styles.emptySpace} />
             </div>
           </div>
 
-          <PericiasList search={search} />
+          <PericiasList search={search}
+            statusPericia={statusSelecionado}
+          />
         </div>
       </main>
 

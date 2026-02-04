@@ -16,7 +16,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative; /* importante pros modais absolute */
+  position: relative;
   width: 70%;
   padding: 10px;
   margin: 0 auto;
@@ -54,19 +54,85 @@
   width: 330px;
 }
 
-.attrList {
+.searchAttributes .attrList {
   display: flex;
   height: 70%;
   flex: 1;
 }
 
-.attr {
+.searchAttributes .attr {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
   font-size: 18px;
   color: #696969;
   border-right: solid 2px var(--border-color);
   flex: 1;
   padding: 0 10px;
 }
+
+.searchAttributes .attrList .filterBtn {
+  background: none;
+  cursor: pointer;
+}
+.searchAttributes .attrList .filterBtn i {
+  font-size: 14px;
+  color: #696969;
+}
+
+.filterBtn {
+  background: none;
+  cursor: pointer;
+  border: none;
+}
+
+.filterIcon {
+  font-size: 14px;
+  color: #696969;
+  transition: transform 0.2s ease;
+  transform: rotate(0deg);
+}
+
+.filterIconOpen {
+  transform: rotate(90deg);
+}
+
+
+.filterMenu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: white;
+  border: 1px solid #a0a0a0;
+  border-radius: 8px;
+  z-index: 999;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.clearFilterBtn {
+  border-top: solid 1px var(--border-color);
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.clearFilterBtn:hover {
+  background-color: rgb(138, 138, 138);
+  color: white;
+}
+

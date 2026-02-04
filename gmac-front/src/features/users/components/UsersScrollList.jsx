@@ -7,7 +7,7 @@ import UserDetailsModal from "./UserDetailsModal";
 
 import styles from "../style/users-scroll-list.module.css";
 
-export default function UsersScrollList({ search, perfisSelecionados }) {
+export default function UsersScrollList({ search, perfisSelecionados,ordemNome }) {
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -17,22 +17,36 @@ export default function UsersScrollList({ search, perfisSelecionados }) {
   const [cpfSelecionado, setCpfSelecionado] = useState(null);
 
   const usuariosFiltrados = useMemo(() => {
-    const q = search.trim().toLowerCase();
+  const q = search.trim().toLowerCase();
 
-    return usuarios.filter((u) => {
-      const login = (u.login ?? u.username ?? "").toLowerCase();
-      const perfil = (u.perfil ?? u.role ?? "").toUpperCase();
-      const cpf = (u.cpf ?? "").toLowerCase();
+  let lista = usuarios.filter((u) => {
+    const nome = (u.nome ?? u.username ?? "").toLowerCase();
+    const perfil = (u.perfil ?? u.role ?? "").toUpperCase();
+    const cpf = (u.cpf ?? "").toLowerCase();
 
-      const matchTexto = !q || login.includes(q) || cpf.includes(q);
-      const matchPerfil =
-        !perfisSelecionados ||
-        perfisSelecionados.size === 0 ||
-        perfisSelecionados.has(perfil);
+    const matchTexto = !q || nome.includes(q) || cpf.includes(q);
+    const matchPerfil =
+      !perfisSelecionados ||
+      perfisSelecionados.size === 0 ||
+      perfisSelecionados.has(perfil);
 
-      return matchTexto && matchPerfil;
+    return matchTexto && matchPerfil;
+  });
+
+  if (ordemNome) {
+    lista = [...lista].sort((a, b) => {
+      const nomeA = (a.nome ?? a.username ?? "").toLowerCase();
+      const nomeB = (b.nome ?? b.username ?? "").toLowerCase();
+
+      return ordemNome === "ASC"
+        ? nomeA.localeCompare(nomeB, "pt-BR")
+        : nomeB.localeCompare(nomeA, "pt-BR");
     });
-  }, [usuarios, search, perfisSelecionados]);
+  }
+
+  return lista;
+}, [usuarios, search, perfisSelecionados, ordemNome]);
+
 
   return (
     <>
@@ -58,10 +72,10 @@ export default function UsersScrollList({ search, perfisSelecionados }) {
           {usuariosFiltrados.map((u) => (
             <li
               className={styles.listItem}
-              key={u.id ?? u.cpf ?? u.login ?? u.username}
+              key={u.id ?? u.cpf ?? u.nome ?? u.username}
             >
               <div className={styles.itemInfo}>
-                <p>{u.login ?? u.username ?? "-"}</p>
+                <p>{u.nome ?? u.username ?? "-"}</p>
                 <p>{u.perfil ?? u.role ?? "-"}</p>
                 <p>{u.cpf ?? "-"}</p>
               </div>

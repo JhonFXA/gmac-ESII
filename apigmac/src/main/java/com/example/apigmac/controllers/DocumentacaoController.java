@@ -2,11 +2,9 @@ package com.example.apigmac.controllers;
 
 import com.example.apigmac.DTOs.DocumentoDTO;
 import com.example.apigmac.DTOs.ValidacaoDocumentacaoDTO;
+import com.example.apigmac.DTOs.ValidacaoLogDTO;
 import com.example.apigmac.modelo.enums.StatusDocumentacao;
-import com.example.apigmac.servicos.documentacaoServicos.ServicoListarDocumentacao;
-import com.example.apigmac.servicos.documentacaoServicos.ServicoTransformarDocumentacao;
-import com.example.apigmac.servicos.documentacaoServicos.ServicoValidarDocumentacao;
-import com.example.apigmac.servicos.documentacaoServicos.ServicoBuscarDocumentacao;
+import com.example.apigmac.servicos.documentacaoServicos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
@@ -33,6 +31,8 @@ public class DocumentacaoController {
     private ServicoValidarDocumentacao servicoValidarDocumentacao;
     @Autowired
     private ServicoBuscarDocumentacao servicoBuscarDocumentacao;
+    @Autowired
+    private ServicoBuscarValidacao servicoBuscarValidacao;
 
     @GetMapping("/buscar")
     public ResponseEntity<?> buscarDocumentacao(
@@ -117,7 +117,7 @@ public class DocumentacaoController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("buscar/{id}")
     public ResponseEntity<?> buscarDocumentacao(@PathVariable String id) {
         try {
             DocumentoDTO dto = servicoBuscarDocumentacao.buscarPorId(id);
@@ -137,6 +137,17 @@ public class DocumentacaoController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("erro", "Erro interno ao buscar documentação"));
+        }
+    }
+
+    @GetMapping("buscar/validacao/{id}")
+    public ResponseEntity<?> buscarValidacao(@PathVariable String id) {
+        try {
+            ValidacaoLogDTO dto = servicoBuscarValidacao.buscarValidacaoPorId(id);
+            return ResponseEntity.ok(dto);
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }
