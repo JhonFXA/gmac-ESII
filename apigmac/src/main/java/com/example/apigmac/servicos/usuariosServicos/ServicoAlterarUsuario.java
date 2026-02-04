@@ -1,7 +1,14 @@
 package com.example.apigmac.servicos.usuariosServicos;
 
 import com.example.apigmac.DTOs.AlterarUsuarioDTO;
+import com.example.apigmac.entidades.Administrador;
+import com.example.apigmac.entidades.Medico;
+import com.example.apigmac.entidades.Recepcionista;
 import com.example.apigmac.entidades.Usuario;
+import com.example.apigmac.modelo.enums.Perfil;
+import com.example.apigmac.repositorios.RepositorioAdm;
+import com.example.apigmac.repositorios.RepositorioMed;
+import com.example.apigmac.repositorios.RepositorioRecepicionista;
 import com.example.apigmac.repositorios.RepositorioUsuario;
 import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
@@ -17,6 +24,15 @@ public class ServicoAlterarUsuario{
 
     @Autowired
     private RepositorioUsuario repositorioUsuario;
+
+    @Autowired
+    private RepositorioRecepicionista repositorioRecepicionista;
+
+    @Autowired
+    private RepositorioMed repositorioMed;
+
+    @Autowired
+    private RepositorioAdm repositorioAdm;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -64,9 +80,107 @@ public class ServicoAlterarUsuario{
             }
             usuario.setLogin(dto.login());
         }
+
         if (dto.perfil() != null) {
-            usuario.setPerfil(dto.perfil());
+            switch (dto.perfil()) {
+                case MEDICO -> {
+                    if (usuario.getPerfil() != Perfil.MEDICO) {
+                        if (dto.especializacao() != null && !dto.especializacao().isEmpty()) {
+                            // Cria e salva o médico
+                            Medico medico = new Medico(usuario, dto.especializacao());
+                            repositorioMed.save(medico);
+
+                            // Remove perfil antigo
+                            switch (usuario.getPerfil()) {
+                                case RECEPCIONISTA -> {
+                                    Recepcionista recep = repositorioRecepicionista.findByUsuarioId(usuario.getId());
+                                    if (recep != null) {
+                                        repositorioRecepicionista.delete(recep);
+                                    } else {
+                                        throw new IllegalStateException("Recepcionista não encontrado para exclusão.");
+                                    }
+                                }
+                                case ADMINISTRADOR -> {
+                                    Administrador adm = repositorioAdm.findByUsuarioId(usuario.getId());
+                                    if (adm != null) {
+                                        repositorioAdm.delete(adm);
+                                    } else {
+                                        throw new IllegalStateException("Administrador não encontrado para exclusão.");
+                                    }
+                                }
+                                default -> throw new IllegalStateException("Perfil antigo inválido");
+                            }
+                            usuario.setPerfil(dto.perfil());
+                        } else {
+                            throw new IllegalArgumentException("Especialização do médico é obrigatória.");
+                        }
+                    }
+                }
+
+
+                case ADMINISTRADOR -> {
+                    Administrador adm = new Administrador(usuario);
+                    repositorioAdm.save(adm);
+
+                    // Remove perfil antigo
+                    switch (usuario.getPerfil()) {
+                        case MEDICO -> {
+                            Medico med = repositorioMed.findByUsuarioId(usuario.getId());
+                            if (med != null) {
+                                repositorioMed.delete(med);
+                            } else {
+                                throw new IllegalStateException("Medico não encontrado para exclusão.");
+                            }
+                        }
+                        case RECEPCIONISTA -> {
+                            Recepcionista recep = repositorioRecepicionista.findByUsuarioId(usuario.getId());
+                            if (recep != null) {
+                                repositorioRecepicionista.delete(recep);
+                            } else {
+                                throw new IllegalStateException("Recepcionista não encontrado para exclusão.");
+                            }
+                        }
+                        default -> throw new IllegalStateException("Perfil antigo inválido");
+                    }
+
+                    usuario.setPerfil(dto.perfil());
+                }
+
+
+                case RECEPCIONISTA -> {
+                    Recepcionista recepcionista = new Recepcionista(usuario);
+                    repositorioRecepicionista.save(recepcionista);
+
+                    // Remove perfil antigo
+                    switch (usuario.getPerfil()) {
+                        case MEDICO -> {
+                            Medico med = repositorioMed.findByUsuarioId(usuario.getId());
+                            if (med != null) {
+                                repositorioMed.delete(med);
+                            } else {
+                                throw new IllegalStateException("Medico não encontrado para exclusão.");
+                            }
+                        }
+                        case ADMINISTRADOR -> {
+                            Administrador adm = repositorioAdm.findByUsuarioId(usuario.getId());
+                            if (adm != null) {
+                                repositorioAdm.delete(adm);
+                            } else {
+                                throw new IllegalStateException("Administrador não encontrado para exclusão.");
+                            }
+                        }
+                        default -> throw new IllegalStateException("Perfil antigo inválido");
+                    }
+
+                    usuario.setPerfil(dto.perfil());
+                }
+
+            }
+
+
         }
+
+
         if (dto.dataNascimento() != null) {
             if (!verificacao.dataNascimentoValida(dto.dataNascimento())) {
                 throw new IllegalArgumentException("Data inválida");

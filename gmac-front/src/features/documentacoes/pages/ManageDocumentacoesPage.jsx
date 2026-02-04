@@ -18,7 +18,7 @@ export default function ManageDocumentacoesPage(){
         <div className="breadcumb">
           <p>
             <Link to="/painel-principal">Painel Principal</Link> &gt;{" "}
-            <Link to="">Gerenciar Documentações</Link>
+            <Link to="">Validar Documentações</Link>
           </p>
         </div>
 

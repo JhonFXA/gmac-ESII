@@ -30,14 +30,16 @@ export default function AdministradorPanel() {
             <i class="fa-solid fa-stethoscope"></i>
             <p>Gerenciar Perícias</p>
           </button>
-          <button className={styles.mainButton}>
+          <button 
+          className={styles.mainButton}
+          onClick={() => navigate("/painel-principal/gerar-relatorio")}>
             <i className="fa-solid fa-chart-column"></i>
             <p>Gerar Relatório</p>
           </button>
-          <button className={styles.mainButton}>
+          {/* <button className={styles.mainButton}>
             <i className="fas fa-bell"></i>
             <p>Gerar Notificação</p>
-          </button>
+          </button> */}
         </div>
       </>
   );

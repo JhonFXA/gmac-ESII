@@ -9,13 +9,13 @@ export function useLogout({ redirectTo = "/" } = {}) {
   const { logout } = useAuth();
 
   return useCallback(() => {
-    // 1) limpa todo cache do React Query
+    // limpa todo cache do React Query
     queryClient.clear();
 
-    // 2) limpa token/perfil do AuthContext + localStorage
+    // limpa token/perfil do AuthContext + localStorage
     logout();
 
-    // 3) redireciona para login
+    // redireciona para login
     navigate(redirectTo, { replace: true });
   }, [queryClient, logout, navigate, redirectTo]);
 }

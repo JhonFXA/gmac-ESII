@@ -6,6 +6,7 @@ import com.example.apigmac.modelo.enums.StatusDocumentacao;
 import com.example.apigmac.servicos.documentacaoServicos.ServicoListarDocumentacao;
 import com.example.apigmac.servicos.documentacaoServicos.ServicoTransformarDocumentacao;
 import com.example.apigmac.servicos.documentacaoServicos.ServicoValidarDocumentacao;
+import com.example.apigmac.servicos.documentacaoServicos.ServicoBuscarDocumentacao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
@@ -30,6 +31,8 @@ public class DocumentacaoController {
     private ServicoTransformarDocumentacao servicoTransformarDocumentacao;
     @Autowired
     private ServicoValidarDocumentacao servicoValidarDocumentacao;
+    @Autowired
+    private ServicoBuscarDocumentacao servicoBuscarDocumentacao;
 
     @GetMapping("/buscar")
     public ResponseEntity<?> buscarDocumentacao(
@@ -111,6 +114,29 @@ public class DocumentacaoController {
                     .body(Map.of(
                             "erro", "Erro interno ao validar documentação"
                     ));
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarDocumentacao(@PathVariable String id) {
+        try {
+            DocumentoDTO dto = servicoBuscarDocumentacao.buscarPorId(id);
+            return ResponseEntity.ok(dto);
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("erro", "Erro interno ao buscar documentação"));
         }
     }
 }
