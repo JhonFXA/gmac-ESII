@@ -16,12 +16,10 @@ export async function http(path, { token, signal, headers, body, ...options } = 
     ...headers,
   };
 
-  // ✅ Só seta JSON se NÃO for FormData e se ainda não veio Content-Type custom
   if (!isFormData && !("Content-Type" in mergedHeaders)) {
     mergedHeaders["Content-Type"] = "application/json";
   }
 
-  // ✅ Se for JSON e body for objeto, serializa
   const finalBody =
     body == null
       ? undefined
@@ -31,12 +29,21 @@ export async function http(path, { token, signal, headers, body, ...options } = 
       ? body
       : JSON.stringify(body);
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    signal,
-    body: finalBody,
-    headers: mergedHeaders,
-  });
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      signal,
+      body: finalBody,
+      headers: mergedHeaders,
+    });
+  } catch (err) {
+    const isAbort = err?.name === "AbortError";
+    if (isAbort) throw err;
+
+    throw new Error("Não foi possível conectar ao servidor. Tente novamente.");
+  }
 
   const text = await response.text();
   const json = text ? safeJson(text) : null;
@@ -49,8 +56,6 @@ export async function http(path, { token, signal, headers, body, ...options } = 
       isHandlingUnauthorized = true;
       try {
         unauthorizedHandler();
-      } catch {
-        // não quebra o app se o handler falhar
       } finally {
         setTimeout(() => {
           isHandlingUnauthorized = false;
@@ -74,6 +79,7 @@ export async function http(path, { token, signal, headers, body, ...options } = 
 
   return data;
 }
+
 
 function safeJson(text) {
   try {
