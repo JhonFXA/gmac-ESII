@@ -7,6 +7,8 @@ import com.example.apigmac.repositorios.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class ServicoMarcarPericia {
 
@@ -40,7 +42,13 @@ public class ServicoMarcarPericia {
 //                .orElseThrow(() -> new EntityNotFoundException("Documentacao não encontrada com ID: " + dto.documentacao()));
 
         Pericia pericia = new Pericia();
-        pericia.setDataPericia(dto.dataPericia());
+        if(dto.dataPericia().isAfter(LocalDateTime.now())){
+            pericia.setDataPericia(dto.dataPericia());
+        }else{
+            throw new IllegalArgumentException("DATA INVALIDA");
+        }
+
+
         pericia.setStatusPericia(StatusPericia.AGENDADA);
         pericia.setPaciente(dto.paciente());
         pericia.setUsuario(dto.usuario());

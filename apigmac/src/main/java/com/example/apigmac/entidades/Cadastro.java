@@ -1,6 +1,9 @@
 package com.example.apigmac.entidades;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -8,6 +11,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "cadastro")
+@NoArgsConstructor
+@Setter
 public class Cadastro {
 
     @Id
@@ -21,7 +26,7 @@ public class Cadastro {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Recepcionista recepcionista;
+    private Usuario usuario;
 
     @Column(name = "data_cadastro", nullable = false)
     private LocalDate dataCadastro;

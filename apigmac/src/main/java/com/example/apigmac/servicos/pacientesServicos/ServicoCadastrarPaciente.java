@@ -2,19 +2,19 @@ package com.example.apigmac.servicos.pacientesServicos;
 
 import com.example.apigmac.DTOs.EnderecoDTO;
 import com.example.apigmac.DTOs.PacienteDTO;
-import com.example.apigmac.entidades.Documentacao;
-import com.example.apigmac.entidades.Endereco;
-import com.example.apigmac.entidades.Paciente;
+import com.example.apigmac.entidades.*;
 import com.example.apigmac.modelo.enums.StatusDocumentacao;
 import com.example.apigmac.modelo.enums.StatusSolicitacao;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.repositorios.RepositorioEndereco;
+import com.example.apigmac.repositorios.RepositorioLogCadastroPaciente;
 import com.example.apigmac.repositorios.RepositorioPaciente;
 import com.example.apigmac.servicos.documentacaoServicos.ServicoTransformarDocumentacao;
 import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +27,9 @@ public class ServicoCadastrarPaciente {
 
     @Autowired
     private RepositorioPaciente repositorioPaciente;
+
+    @Autowired
+    private RepositorioLogCadastroPaciente repositorioLogCadastroPaciente;
 
     @Autowired
     private RepositorioDocumentacao repositorioDocumentacao;
@@ -118,6 +121,14 @@ public class ServicoCadastrarPaciente {
         if (documento != null){
             cadastrarDocumento(documento, paciente.getCpf());
         }
+
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        Cadastro cadastro = new Cadastro();
+        cadastro.setPaciente(paciente);
+        cadastro.setUsuario(usuarioLogado);
+        cadastro.setDataCadastro(LocalDate.now());
+        repositorioLogCadastroPaciente.save(cadastro);
 
         return paciente;
     }
