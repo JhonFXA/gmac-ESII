@@ -53,8 +53,7 @@ export default function PericiasList({ search, statusPericia }) {
 
   const periciasFiltradas = useMemo(() => {
     const q = (search ?? "").trim().toLowerCase();
-
-
+    
     return pericias.filter((p) => {
       const paciente = (p.nomePaciente ?? "").toLowerCase();
       const medico = (p.nomeMedico ?? "").toLowerCase();

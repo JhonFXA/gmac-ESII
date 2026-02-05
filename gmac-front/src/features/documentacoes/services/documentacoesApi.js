@@ -41,6 +41,15 @@ export function buscarValidacaoDocumentacaoPorId(id, { token, signal } = {}) {
   });
 }
 
+export function validarDocumentacaoRequest(payload, { token, signal } = {}) {
+  return http(`/documentacao/validar`, {
+    method: "POST",
+    token,
+    signal,
+    body: payload,
+  });
+}
+
 export function normalizeDocumentacoesResponse(data) {
   const lista = Array.isArray(data) ? data : data?.documentacoes ?? [];
   return lista;
