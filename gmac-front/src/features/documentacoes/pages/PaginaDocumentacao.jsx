@@ -4,6 +4,7 @@ import { useAuth } from "@/app/providers/AuthContext";
 
 import { useDocumentacaoDetails } from "../hooks/useDocumentacaoDetails";
 import { useGerarUrlDocumentacao } from "../hooks/useGerarUrlDocumentacao";
+import { useValidarDocumentacao } from "../hooks/useValidarDocumentacao";
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -22,6 +23,8 @@ export default function PaginaDocumentacao() {
   const { data: doc, isLoading, error } = useDocumentacaoDetails(id, token);
 
   const gerarUrlMutation = useGerarUrlDocumentacao(token);
+  const validarMutation = useValidarDocumentacao(token);
+
   const [pdfUrl, setPdfUrl] = useState(null);
 
   const [dialog, setDialog] = useState({ open: false, action: null });
@@ -51,24 +54,43 @@ export default function PaginaDocumentacao() {
   }
 
   function closeDialog() {
+    if (validarMutation.isPending) return;
     setDialog({ open: false, action: null });
   }
 
   const observacaoObrigatoria = true;
 
+  const precisaCredenciais =
+    dialog.action === "aprovar" ||
+    dialog.action === "reprovar" ||
+    dialog.action === "agendar";
+
   const isConfirmDisabled = useMemo(() => {
     const obsOk = !observacaoObrigatoria || !!observacao.trim();
 
-    if (dialog.action === "aprovar" || dialog.action === "reprovar") {
-      return !obsOk || !credenciais.login.trim() || !credenciais.senha.trim();
-    }
+    const credsOk = !precisaCredenciais
+      ? true
+      : !!credenciais.login.trim() && !!credenciais.senha.trim();
 
     if (dialog.action === "agendar") {
-      return !obsOk || !agendamento.dataHora;
+      return !obsOk || !credsOk || !agendamento.dataHora || validarMutation.isPending;
+    }
+
+    if (dialog.action === "aprovar" || dialog.action === "reprovar") {
+      return !obsOk || !credsOk || validarMutation.isPending;
     }
 
     return true;
-  }, [dialog.action, credenciais.login, credenciais.senha, agendamento.dataHora, observacao, observacaoObrigatoria]);
+  }, [
+    dialog.action,
+    credenciais.login,
+    credenciais.senha,
+    agendamento.dataHora,
+    observacao,
+    observacaoObrigatoria,
+    precisaCredenciais,
+    validarMutation.isPending,
+  ]);
 
   const dialogTitle =
     dialog.action === "aprovar"
@@ -86,6 +108,33 @@ export default function PaginaDocumentacao() {
     ? new Date(doc.dataEnvio).toLocaleDateString("pt-BR")
     : "-";
 
+  async function handleConfirm() {
+    if (!id) return;
+
+    const status =
+      dialog.action === "aprovar"
+        ? "APROVADA"
+        : dialog.action === "reprovar"
+          ? "REPROVADA"
+          : "PERICIA";
+
+    const payload = {
+      login: credenciais.login.trim(),
+      senha: credenciais.senha,
+      documentacaoId: id,
+      observacao: observacao.trim(),
+      status,
+      data: status === "PERICIA" ? toBackendDateTime(agendamento.dataHora) : null,
+    };
+
+    try {
+      await validarMutation.mutateAsync({ payload });
+      closeDialog();
+    } catch {
+      // erro já fica em validarMutation.error
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Header />
@@ -101,6 +150,14 @@ export default function PaginaDocumentacao() {
               &gt; <Link to="">{id}</Link>
             </p>
           </div>
+
+          {(validarMutation.isError || validarMutation.isSuccess) && (
+            <div className={`status-msg ${validarMutation.isError ? "error" : "success"}`}>
+              {validarMutation.isError
+                ? validarMutation.error?.message ?? "Erro ao validar documentação."
+                : "Ação registrada com sucesso!"}
+            </div>
+          )}
 
           <div className={styles.patientInfo}>
             <div>
@@ -151,6 +208,7 @@ export default function PaginaDocumentacao() {
               className={styles.approveBtn}
               type="button"
               onClick={() => openDialog("aprovar")}
+              disabled={validarMutation.isPending}
             >
               <i className="fa-solid fa-check"></i>
               <p>Aprovar Documento</p>
@@ -160,6 +218,7 @@ export default function PaginaDocumentacao() {
               className={styles.disapproveBtn}
               type="button"
               onClick={() => openDialog("reprovar")}
+              disabled={validarMutation.isPending}
             >
               <i className="fa-solid fa-xmark"></i>
               <p>Reprovar Documento</p>
@@ -169,6 +228,7 @@ export default function PaginaDocumentacao() {
               className={styles.scheduleBtn}
               type="button"
               onClick={() => openDialog("agendar")}
+              disabled={validarMutation.isPending}
             >
               <i className="fa-regular fa-calendar-plus"></i>
               <p>Agendar Perícia</p>
@@ -192,7 +252,7 @@ export default function PaginaDocumentacao() {
               </div>
 
               <div className={styles.dialogBody}>
-                {(dialog.action === "aprovar" || dialog.action === "reprovar") && (
+                {precisaCredenciais && (
                   <>
                     <div className={styles.dialogField}>
                       <label>
@@ -252,6 +312,7 @@ export default function PaginaDocumentacao() {
                   type="button"
                   className={styles.dialogCancelBtn}
                   onClick={closeDialog}
+                  disabled={validarMutation.isPending}
                 >
                   Cancelar
                 </button>
@@ -260,29 +321,9 @@ export default function PaginaDocumentacao() {
                   type="button"
                   className={styles.dialogConfirmBtn}
                   disabled={isConfirmDisabled}
-                  onClick={() => {
-                    const payload = {
-                      login: credenciais.login.trim(),
-                      senha: credenciais.senha,
-                      documentacaoId: id,
-                      observacao: observacao.trim(),
-                      status:
-                        dialog.action === "aprovar"
-                          ? "APROVADA"
-                          : dialog.action === "reprovar"
-                            ? "REPROVADA"
-                            : "PERICIA",
-                      data:
-                        dialog.action === "agendar"
-                          ? toBackendDateTime(agendamento.dataHora)
-                          : null,
-                    };
-
-                    closeDialog();
-                    console.log(payload);
-                  }}
+                  onClick={handleConfirm}
                 >
-                  Confirmar
+                  {validarMutation.isPending ? "Confirmando..." : "Confirmar"}
                 </button>
               </div>
             </div>
