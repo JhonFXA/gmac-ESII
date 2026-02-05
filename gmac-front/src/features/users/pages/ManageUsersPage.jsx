@@ -109,6 +109,14 @@ export default function ManageUsersPage() {
                         />
                         Médico
                       </label>
+                      <label className={styles.filterItem}>
+                        <input
+                          type="checkbox"
+                          checked={perfisSelecionados.has("INATIVO")}
+                          onChange={() => togglePerfil("INATIVO")}
+                        />
+                        Inativo
+                      </label>
                       <button
                         type="button"
                         className={styles.clearFilterBtn}

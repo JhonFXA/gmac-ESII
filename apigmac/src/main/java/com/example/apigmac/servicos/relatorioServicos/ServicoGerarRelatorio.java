@@ -55,9 +55,9 @@ public class ServicoGerarRelatorio {
 
         long totalNaoBeneficiados = repositorioPaciente.count(PacienteRelatorioSpecs.naoBeneficiados(inicio, fim));
 
-        long totalPendentes = repositorioPaciente.count(PacienteRelatorioSpecs.pendentes());
+        long totalPendentes = repositorioPaciente.count(PacienteRelatorioSpecs.pendentes(inicio,fim));
 
-        long qtdTotal = repositorioPaciente.count();
+        long qtdTotal = repositorioPaciente.count(PacienteRelatorioSpecs.cadastradoNoPeriodo(inicio,fim));
 
         return new RelatorioBeneficioDTO(qtdTotal,totalBeneficiados,totalNaoBeneficiados,totalPendentes);
     }

@@ -20,6 +20,13 @@ export default function DocumentacoesList({ search, statusDocumentacao }) {
   } = useListarDocumentacao({ token, statusDocumentacao, });
 
   const visualizarMutation = useGerarUrlDocumentacao(token);
+function formatarDataBR(data) {
+  if (!data) return "-";
+
+  const [ano, mes, dia] = data.split("T")[0].split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
 
   // modal info
   const [infoOpen, setInfoOpen] = useState(false);
@@ -88,13 +95,11 @@ export default function DocumentacoesList({ search, statusDocumentacao }) {
                 </li>
                 <li>
                   <strong>Observação:</strong>{" "}
-                  {validacao.observacao || "-"}
+                  {validacao.observacao}
                 </li>
                 <li>
                   <strong>Data:</strong>{" "}
-                  {validacao.data
-                    ? new Date(validacao.data).toLocaleDateString("pt-BR")
-                    : "-"}
+                  {formatarDataBR(validacao.data)}
                 </li>
               </ul>
             )}

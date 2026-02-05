@@ -93,117 +93,119 @@ public class ServicoValidarDocumentacao {
         }
     }
 
-private void atualizarStatusRelacionados(
-            Documentacao doc,
-            StatusValidacaoDocumentacao status,
-            Usuario usuario,
-            LocalDateTime data
-){
-            String nomePaciente = doc.getPaciente().getNome().toUpperCase(Locale.forLanguageTag("pt-BR"));
-            String email = doc.getPaciente().getEmail();
+    private void atualizarStatusRelacionados(
+                Documentacao doc,
+                StatusValidacaoDocumentacao status,
+                Usuario usuario,
+                LocalDateTime data
+    ){
+                String nomePaciente = doc.getPaciente().getNome().toUpperCase(Locale.forLanguageTag("pt-BR"));
+                String email = doc.getPaciente().getEmail();
 
 
-            switch (status) {
-                case APROVADA -> {
-                    servicoEmail.enviarEmailTexto(
-                            email,
-                            "Solicitação de Medicação Aprovada",
-                            """
-                            Prezado(a) Sr(a). %s,
-        
-                            Informamos que, após avaliação médica, sua solicitação de medicação foi APROVADA.
-        
-                            Solicitamos que compareça à unidade de saúde mais próxima para dar continuidade às próximas etapas do processo.
-        
-                            Esta mensagem é automática e enviada pelo sistema de gerenciamento de solicitações de medicação.
-        
-                            Atenciosamente,
-                            Sistema GMAC
-                            """.formatted(nomePaciente)
+                switch (status) {
+                    case APROVADA -> {
+                        servicoEmail.enviarEmailTexto(
+                                email,
+                                "Solicitação de Medicação Aprovada",
+                                """
+                                Prezado(a) Sr(a). %s,
+            
+                                Informamos que, após avaliação médica, sua solicitação de medicação foi APROVADA.
+            
+                                Solicitamos que compareça à unidade de saúde mais próxima para dar continuidade às próximas etapas do processo.
+            
+                                Esta mensagem é automática e enviada pelo sistema de gerenciamento de solicitações de medicação.
+            
+                                Atenciosamente,
+                                Sistema GMAC
+                                """.formatted(nomePaciente)
 
-                    );
+                        );
 
-                    doc.setStatusDocumentacao(StatusDocumentacao.APROVADA);
+                        doc.setStatusDocumentacao(StatusDocumentacao.APROVADA);
 
-                    boolean existePendenteOuPericia = doc.getPaciente()
-                            .getDocumentacoes()
-                            .stream()
-                            .anyMatch(d -> d.getStatusDocumentacao() == StatusDocumentacao.PENDENTE
-                                    || d.getStatusDocumentacao() == StatusDocumentacao.PERICIA);
+                        boolean existePendenteOuPericia = doc.getPaciente()
+                                .getDocumentacoes()
+                                .stream()
+                                .anyMatch(d -> d.getStatusDocumentacao() == StatusDocumentacao.PENDENTE
+                                        || d.getStatusDocumentacao() == StatusDocumentacao.PERICIA);
 
 
-                    if (!existePendenteOuPericia){
-                        doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                        if (!existePendenteOuPericia){
+                            doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                        }
                     }
-                }
 
-                case REPROVADA -> {
-                    servicoEmail.enviarEmailTexto(
-                            email,
-                            "Solicitação de Medicação Reprovada",
-                            """
-                            Prezado(a) Sr(a). %s,
-        
-                            Informamos que, após avaliação médica, sua solicitação de medicação foi REPROVADA.
-        
-                            Para mais informações ou esclarecimentos, orientamos que procure a unidade de saúde onde realizou a solicitação.
-        
-                            Esta mensagem é automática e enviada pelo sistema de gerenciamento de solicitações de medicação.
-        
-                            Atenciosamente,
-                            Sistema GMAC
-                            """.formatted(nomePaciente)
-                    );
+                    case REPROVADA -> {
+                        servicoEmail.enviarEmailTexto(
+                                email,
+                                "Solicitação de Medicação Reprovada",
+                                """
+                                Prezado(a) Sr(a). %s,
+            
+                                Informamos que, após avaliação médica, sua solicitação de medicação foi REPROVADA.
+            
+                                Para mais informações ou esclarecimentos, orientamos que procure a unidade de saúde onde realizou a solicitação.
+            
+                                Esta mensagem é automática e enviada pelo sistema de gerenciamento de solicitações de medicação.
+            
+                                Atenciosamente,
+                                Sistema GMAC
+                                """.formatted(nomePaciente)
+                        );
 
-                    doc.setStatusDocumentacao(StatusDocumentacao.REPROVADA);
+                        doc.setStatusDocumentacao(StatusDocumentacao.REPROVADA);
 
-                    boolean existePendenteOuPericia = doc.getPaciente()
-                            .getDocumentacoes()
-                            .stream()
-                            .anyMatch(d -> d.getStatusDocumentacao() == StatusDocumentacao.PENDENTE
-                                    || d.getStatusDocumentacao() == StatusDocumentacao.PERICIA);
+                        boolean existePendenteOuPericia = doc.getPaciente()
+                                .getDocumentacoes()
+                                .stream()
+                                .anyMatch(d -> d.getStatusDocumentacao() == StatusDocumentacao.PENDENTE
+                                        || d.getStatusDocumentacao() == StatusDocumentacao.PERICIA);
 
 
-                    if (!existePendenteOuPericia){
-                        doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                        if (!existePendenteOuPericia){
+                            doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.FINALIZADA);
+                        }
                     }
-                }
 
-                case PERICIA -> {
+                    case PERICIA -> {
+                        if(!(data.isAfter(LocalDateTime.now()))){
+                            throw new IllegalArgumentException("DATA INVALIDA");
+                        }
+                        DateTimeFormatter formatter =
+                                DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+                        servicoEmail.enviarEmailTexto(
+                                email,
+                                "Perícia Médica Necessária – Solicitação de Medicação",
+                                """
+                                Prezado(a) Sr(a). %s,
+            
+                                Informamos que sua solicitação de medicação encontra-se em análise
+                                e foi identificada a necessidade de realização de perícia médica.
+            
+                                O agendamento da perícia foi realizado para dia %s.
+            
+                                Esta mensagem é automática e enviada pelo sistema de gerenciamento
+                                de solicitações de medicação.
+            
+                                Atenciosamente,
+                                Sistema GMAC
+                                """.formatted(nomePaciente, data.format(formatter)).toUpperCase(Locale.forLanguageTag("pt-BR")));
 
-                    DateTimeFormatter formatter =
-                            DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
-                    servicoEmail.enviarEmailTexto(
-                            email,
-                            "Perícia Médica Necessária – Solicitação de Medicação",
-                            """
-                            Prezado(a) Sr(a). %s,
-        
-                            Informamos que sua solicitação de medicação encontra-se em análise
-                            e foi identificada a necessidade de realização de perícia médica.
-        
-                            O agendamento da perícia foi realizado para dia %s.
-        
-                            Esta mensagem é automática e enviada pelo sistema de gerenciamento
-                            de solicitações de medicação.
-        
-                            Atenciosamente,
-                            Sistema GMAC
-                            """.formatted(nomePaciente, data.format(formatter)).toUpperCase(Locale.forLanguageTag("pt-BR")));
+                        doc.setStatusDocumentacao(StatusDocumentacao.PERICIA);
+                        doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.PENDENTE);
 
-                    doc.setStatusDocumentacao(StatusDocumentacao.PERICIA);
-                    doc.getPaciente().setStatusSolicitacao(StatusSolicitacao.PENDENTE);
-
-                    PericiaDTO periciaDTO = new PericiaDTO(
-                            data,
-                            StatusPericia.AGENDADA,
-                            doc.getPaciente(),
-                            usuario,
-                            doc
-                    );
-                    servicoMarcarPericia.marcarPericia(periciaDTO);
+                        PericiaDTO periciaDTO = new PericiaDTO(
+                                data,
+                                StatusPericia.AGENDADA,
+                                doc.getPaciente(),
+                                usuario,
+                                doc
+                        );
+                        servicoMarcarPericia.marcarPericia(periciaDTO);
+                    }
                 }
             }
-        }
 
     }

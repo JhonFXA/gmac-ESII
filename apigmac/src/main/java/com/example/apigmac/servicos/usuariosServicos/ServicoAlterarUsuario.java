@@ -1,10 +1,7 @@
 package com.example.apigmac.servicos.usuariosServicos;
 
 import com.example.apigmac.DTOs.AlterarUsuarioDTO;
-import com.example.apigmac.entidades.Administrador;
-import com.example.apigmac.entidades.Medico;
-import com.example.apigmac.entidades.Recepcionista;
-import com.example.apigmac.entidades.Usuario;
+import com.example.apigmac.entidades.*;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioAdm;
 import com.example.apigmac.repositorios.RepositorioMed;
@@ -66,7 +63,8 @@ public class ServicoAlterarUsuario{
             usuario.setNome(dto.nome());
         }
         if (dto.email() != null) {
-            if (repositorioUsuario.findByEmail(dto.email()) != null){
+            Usuario existente = (Usuario) repositorioUsuario.findByEmail(dto.email());
+            if (existente != null && !existente.getId().equals(usuario.getId())) {
                 throw new IllegalArgumentException("Email já cadastrado");
             }
             if (!verificacao.emailValido(dto.email())){
@@ -75,7 +73,8 @@ public class ServicoAlterarUsuario{
             usuario.setEmail(dto.email());
         }
         if (dto.login() != null) {
-            if (repositorioUsuario.findByLogin(dto.login()) != null) {
+            Usuario existente = (Usuario) repositorioUsuario.findByLogin(dto.login());
+            if (existente != null && !existente.getId().equals(usuario.getId())) {
                 throw new IllegalArgumentException("Login já existe");
             }
             usuario.setLogin(dto.login());
@@ -172,6 +171,9 @@ public class ServicoAlterarUsuario{
                         default -> throw new IllegalStateException("Perfil antigo inválido");
                     }
 
+                    usuario.setPerfil(dto.perfil());
+                }
+                case INATIVO -> {
                     usuario.setPerfil(dto.perfil());
                 }
 

@@ -194,6 +194,7 @@ export default function EditUserPage() {
                   <option value="ADMINISTRADOR">Administrador</option>
                   <option value="RECEPCIONISTA">Recepcionista</option>
                   <option value="MEDICO">Médico</option>
+                  <option value="INATIVO">Inativo</option>
                 </select>
               </div>
 

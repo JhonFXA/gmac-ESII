@@ -7,7 +7,7 @@ import { useRemarcarPericia } from "../hooks/useRemarcarPericia";
 import { useGerarUrlDocumentacao } from "../../documentacoes/hooks/useGerarUrlDocumentacao";
 import { useValidacaoDocumentacaoDetails } from "@/features/documentacoes/hooks/useValidacaoDetails";
 
-
+import { useNavigate } from "react-router-dom";
 
 import styles from "../style/pericias-list.module.css";
 
@@ -20,6 +20,8 @@ function formatarDataHoraBR(dataISO) {
 
 export default function PericiasList({ search, statusPericia }) {
   const { token, perfil } = useAuth();
+
+    const navigate = useNavigate();
 
   const { data: pericias = [], isLoading, error } = usePericias({
     token,
@@ -273,7 +275,7 @@ export default function PericiasList({ search, statusPericia }) {
                     title="Ver Documentação"
                     disabled={visualizarMutation.isPending}
                     onClick={() =>
-                      visualizarMutation.mutate({ id: p.idDocumentacao })
+                      navigate(`/painel-principal/validar-documentacoes/${p.idDocumentacao}`)
                     }
                   >
                     <i className="fa-solid fa-magnifying-glass"></i>
