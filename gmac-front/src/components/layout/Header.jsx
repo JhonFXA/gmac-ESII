@@ -32,10 +32,6 @@ function Header() {
       <img height={100} src={logo} alt="Logo GMAC" />
 
       <nav className={styles.navHeader}>
-        <button className={`${styles.headerBtn} ${styles.notificationBtn}`}>
-          <i className="fa-regular fa-bell"></i>
-        </button>
-
         <button
           onClick={toggleMenu}
           className={`${styles.headerBtn} ${styles.userBtn}`}
@@ -64,20 +60,6 @@ function Header() {
               <button>
                 <i className="fa-solid fa-user"></i>
                 <p>Informação Pessoal</p>
-              </button>
-            </li>
-
-            <li className={styles.notificationsOption}>
-              <button>
-                <i className="fa-solid fa-bell"></i>
-                <p>Avisos</p>
-              </button>
-            </li>
-
-            <li className={styles.settingsOption}>
-              <button>
-                <i className="fa-solid fa-gear"></i>
-                <p>Configurações</p>
               </button>
             </li>
 

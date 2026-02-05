@@ -8,6 +8,6 @@ export function usePacientes(token) {
     queryFn: ({ signal }) => listPacientesRequest({ token, signal }),
     enabled: !!token,
     staleTime: 30_000,
-    select: normalizeUsuariosResponse, // ✅ já chega array
+    select: normalizeUsuariosResponse, // já chega array
   });
 }

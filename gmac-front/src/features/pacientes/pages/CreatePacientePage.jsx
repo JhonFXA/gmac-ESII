@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/app/providers/AuthContext";
+import { useToast } from "@/app/providers/ToastProvider";
 
 import { useCreatePaciente } from "../hooks/useCreatePaciente";
-
 import { buscarCep } from "@/features/pacientes/services/buscaViaCep";
 
 import styles from "@/features/users/style/create-user.module.css";
@@ -24,11 +24,10 @@ const emptyEndereco = () => ({
 
 export default function CreatePacientePage() {
   const { token } = useAuth();
+  const toast = useToast();
   const createMutation = useCreatePaciente(token);
+
   const [cepErrors, setCepErrors] = useState({});
-  const [localStatus, setLocalStatus] = useState(null);
-
-
 
   const initialState = {
     nome: "",
@@ -42,6 +41,8 @@ export default function CreatePacientePage() {
     documento: null,
   };
 
+  const [formData, setFormData] = useState(initialState);
+
   const handleCepBlur = async (cep, idx) => {
     const dadosEndereco = await buscarCep(cep);
 
@@ -50,10 +51,7 @@ export default function CreatePacientePage() {
         ...prev,
         [idx]: "CEP inválido ou não encontrado",
       }));
-      setLocalStatus({
-        type: "error",
-        message: "CEP inválido ou não encontrado. Verifique e tente novamente.",
-      });
+      toast.error("CEP inválido ou não encontrado. Verifique e tente novamente.");
       return;
     }
 
@@ -63,19 +61,14 @@ export default function CreatePacientePage() {
       delete copy[idx];
       return copy;
     });
-    setLocalStatus(null);
 
     setFormData((prev) => ({
       ...prev,
       enderecos: prev.enderecos.map((end, i) =>
-        i === idx ? { ...end, ...dadosEndereco, readonlyViaCep: true, } : end
+        i === idx ? { ...end, ...dadosEndereco, readonlyViaCep: true } : end
       ),
     }));
   };
-
-
-
-  const [formData, setFormData] = useState(initialState);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -96,20 +89,19 @@ export default function CreatePacientePage() {
         }),
       }));
 
-      if (field === "cep" && value.replace(/\D/g, "").length === 8) {
+      if (field === "cep") {
         const cepLimpo = value.replace(/\D/g, "");
-        handleCepBlur(cepLimpo, idx)
+
+        if (cepLimpo.length === 8) {
+          handleCepBlur(cepLimpo, idx);
+        }
 
         // se apagou o CEP
         if (!cepLimpo) {
           setFormData((prev) => ({
             ...prev,
             enderecos: prev.enderecos.map((end, i) =>
-              i === idx
-                ? {
-                  ...emptyEndereco(), // limpa tudo
-                }
-                : end
+              i === idx ? { ...emptyEndereco() } : end
             ),
           }));
 
@@ -119,10 +111,11 @@ export default function CreatePacientePage() {
             return copy;
           });
 
-          setLocalStatus(null);
           return;
         }
       }
+
+      return;
     }
 
     setFormData((prev) => ({
@@ -152,10 +145,23 @@ export default function CreatePacientePage() {
         enderecos: prev.enderecos.filter((_, i) => i !== index),
       };
     });
+
+    // limpa erro do índice removido (se existir)
+    setCepErrors((prev) => {
+      if (!(index in prev)) return prev;
+      const copy = { ...prev };
+      delete copy[index];
+      return copy;
+    });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (Object.keys(cepErrors).length > 0) {
+      toast.error("Existe um CEP inválido nos endereços informados.");
+      return;
+    }
 
     const dados = {
       nome: formData.nome,
@@ -177,7 +183,6 @@ export default function CreatePacientePage() {
     };
 
     const fd = new FormData();
-
     fd.append(
       "dados",
       new Blob([JSON.stringify(dados)], { type: "application/json" })
@@ -186,42 +191,16 @@ export default function CreatePacientePage() {
     if (formData.documento) {
       fd.append("documento", formData.documento);
     }
-    if (Object.keys(cepErrors).length > 0) {
-      setLocalStatus({
-        type: "error",
-        message: "Existe um CEP inválido nos endereços informados.",
-      });
-      return;
-    }
-
 
     try {
       await createMutation.mutateAsync({ payload: fd });
+      toast.success("Paciente cadastrado com sucesso!");
       setFormData(initialState);
-    } catch {
-      // erro já fica em createMutation.error
+      setCepErrors({});
+    } catch (err) {
+      toast.error(err?.message || "Erro ao cadastrar paciente.");
     }
   }
-
-  const status = useMemo(() => {
-    if (localStatus) return localStatus;
-
-    if (createMutation.isSuccess) {
-      return { type: "success", message: "Paciente cadastrado com sucesso!" };
-    }
-
-    if (createMutation.isError) {
-      return { type: "error", message: createMutation.error.message };
-    }
-
-    return null;
-  }, [
-    localStatus,
-    createMutation.isSuccess,
-    createMutation.isError,
-    createMutation.error,
-  ]);
-
 
   return (
     <div className={styles.container}>
@@ -234,10 +213,6 @@ export default function CreatePacientePage() {
             <Link to="">Cadastrar Paciente</Link>
           </p>
         </div>
-
-        {status?.message && (
-          <div className={`status-msg ${status.type}`}>{status.message}</div>
-        )}
 
         <div className={styles.userRegistrationContainer}>
           <form className={styles.form} onSubmit={handleSubmit}>
@@ -345,8 +320,17 @@ export default function CreatePacientePage() {
             </div>
 
             {formData.enderecos.map((end, idx) => (
-              <div key={idx} style={{ borderTop: "1px solid #ccc", paddingTop: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div
+                key={idx}
+                style={{ borderTop: "1px solid #ccc", paddingTop: 12 }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <strong>Endereço {idx + 1}</strong>
 
                   <button
@@ -380,7 +364,6 @@ export default function CreatePacientePage() {
                     value={end.logradouro}
                     readOnly={end.readonlyViaCep}
                     onChange={handleChange}
-
                     type="text"
                     name={`enderecos.${idx}.logradouro`}
                     required
@@ -420,7 +403,6 @@ export default function CreatePacientePage() {
                     value={end.bairro}
                     readOnly={end.readonlyViaCep}
                     onChange={handleChange}
-
                     type="text"
                     name={`enderecos.${idx}.bairro`}
                     required
@@ -435,7 +417,6 @@ export default function CreatePacientePage() {
                     value={end.cidade}
                     readOnly={end.readonlyViaCep}
                     onChange={handleChange}
-
                     type="text"
                     name={`enderecos.${idx}.cidade`}
                     required
@@ -450,7 +431,6 @@ export default function CreatePacientePage() {
                     value={end.estado}
                     readOnly={end.readonlyViaCep}
                     onChange={handleChange}
-
                     type="text"
                     name={`enderecos.${idx}.estado`}
                     maxLength={2}
@@ -461,7 +441,11 @@ export default function CreatePacientePage() {
             ))}
 
             <div style={{ marginTop: 12 }}>
-              <button type="button" onClick={addEndereco} style={{ cursor: "pointer" }}>
+              <button
+                type="button"
+                onClick={addEndereco}
+                style={{ cursor: "pointer" }}
+              >
                 + Adicionar outro endereço
               </button>
             </div>

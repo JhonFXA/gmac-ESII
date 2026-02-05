@@ -1,9 +1,10 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useAuth } from "@/app/providers/AuthContext";
+import { useCreateUser } from "../hooks/useCreateUser";
 
 import styles from "../style/create-user.module.css";
 
@@ -23,10 +24,9 @@ export default function CadastrarUsuario() {
   };
 
   const [formData, setFormData] = useState(initialState);
-
-  const [statusMessage, setStatusMessage] = useState("");
-  const [statusType, setStatusType] = useState(""); // success | error
   const [specialty, setSpecialty] = useState(false);
+
+  const createUserMutation = useCreateUser(token);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -36,17 +36,13 @@ export default function CadastrarUsuario() {
     }));
   }
 
+  const senhasDiferentes =
+    !!formData.repeatPassword && formData.password !== formData.repeatPassword;
+
   async function handleSubmit(e) {
     e.preventDefault();
 
-    setStatusMessage("");
-    setStatusType("");
-
-    if (formData.password !== formData.repeatPassword) {
-      setStatusMessage("As senhas não conferem");
-      setStatusType("error");
-      return;
-    }
+    if (formData.password !== formData.repeatPassword) return;
 
     const payload = {
       login: formData.username,
@@ -62,29 +58,11 @@ export default function CadastrarUsuario() {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/usuario/registro", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setStatusMessage(errorData?.erro || "Erro ao cadastrar usuário.");
-        setStatusType("error");
-        return;
-      }
-
-      setStatusMessage("Usuário cadastrado com sucesso!");
-      setStatusType("success");
+      await createUserMutation.mutateAsync({ payload });
       setFormData(initialState);
       setSpecialty(false);
-    } catch (error) {
-      setStatusMessage("Erro inesperado ao cadastrar usuário.");
-      setStatusType("error");
+    } catch {
+      // o toast já mostra a mensagem do backend (error.message)
     }
   }
 
@@ -100,13 +78,13 @@ export default function CadastrarUsuario() {
           </p>
         </div>
 
-        {statusMessage && (
-          <div className={`status-msg ${statusType}`}>{statusMessage}</div>
+        {senhasDiferentes && (
+          <div className={`status-msg error`}>As senhas não conferem</div>
         )}
 
         <div className={styles.userRegistrationContainer}>
           <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={`${styles.nameField}`}>
+            <div className={styles.nameField}>
               <label>Nome Completo</label>
               <input
                 placeholder="Insira o nome completo"
@@ -129,6 +107,7 @@ export default function CadastrarUsuario() {
                 type="text"
                 name="cpf"
                 required
+                autoComplete="off"
               />
             </div>
 
@@ -142,6 +121,7 @@ export default function CadastrarUsuario() {
                 type="email"
                 name="email"
                 required
+                autoComplete="email"
               />
             </div>
 
@@ -180,6 +160,7 @@ export default function CadastrarUsuario() {
                 type="date"
                 name="birthdate"
                 required
+                autoComplete="bday"
               />
             </div>
 
@@ -194,6 +175,7 @@ export default function CadastrarUsuario() {
                   type="text"
                   name="username"
                   required
+                  autoComplete="username"
                 />
               </div>
 
@@ -208,6 +190,7 @@ export default function CadastrarUsuario() {
                     value={formData.specialty ?? ""}
                     onChange={handleChange}
                     required
+                    autoComplete="off"
                   />
                 </div>
               )}
@@ -223,6 +206,7 @@ export default function CadastrarUsuario() {
                 type="password"
                 name="password"
                 required
+                autoComplete="new-password"
               />
             </div>
 
@@ -236,12 +220,17 @@ export default function CadastrarUsuario() {
                 type="password"
                 name="repeatPassword"
                 required
+                autoComplete="new-password"
               />
             </div>
 
             <div className={styles.submitButtonContainer}>
-              <button className={styles.submitButton} type="submit">
-                Cadastrar
+              <button
+                className={styles.submitButton}
+                type="submit"
+                disabled={createUserMutation.isPending || senhasDiferentes}
+              >
+                {createUserMutation.isPending ? "Cadastrando..." : "Cadastrar"}
               </button>
             </div>
           </form>

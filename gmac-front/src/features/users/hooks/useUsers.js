@@ -7,6 +7,6 @@ export function useUsers(token) {
     queryFn: ({ signal }) => listUsersRequest({ token, signal }),
     enabled: !!token,
     staleTime: 30_000,
-    select: normalizeUsuariosResponse, // ✅ já chega array
+    select: normalizeUsuariosResponse, // já chega array
   });
 }
