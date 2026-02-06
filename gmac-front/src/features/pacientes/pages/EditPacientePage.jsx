@@ -199,7 +199,7 @@ export default function EditPacientePage() {
 
   function removeNovoEndereco(index) {
     setFormData((prev) => {
-      if (prev.enderecosNovos.length <= 1) return prev;
+      if (prev.enderecosNovos.length < 1) return prev;
       return {
         ...prev,
         enderecosNovos: prev.enderecosNovos.filter((_, i) => i !== index),
@@ -297,7 +297,7 @@ export default function EditPacientePage() {
       await pacienteQuery.refetch();
       setFormData((prev) => ({ ...prev, enderecosNovos: [emptyEndereco()] }));
       setCepErrors({});
-    } catch {}
+    } catch { }
   }
 
   const isSaving =
@@ -458,8 +458,20 @@ export default function EditPacientePage() {
                 </div>
               )}
 
-              <div style={{ borderTop: "1px solid #ccc", paddingTop: 12 }}>
+              <div
+                style={{
+                  borderTop: "1px solid #ccc",
+                  paddingTop: 12,
+                  marginTop: 16,
+                }}
+              >
                 <strong>Adicionar novos endereços</strong>
+
+                {formData.enderecosNovos.length === 0 && (
+                  <p style={{ marginTop: 8, fontStyle: "italic", color: "#666" }}>
+                    Nenhum endereço novo será adicionado.
+                  </p>
+                )}
 
                 {formData.enderecosNovos.map((end, idx) => (
                   <div key={idx} style={{ marginTop: 12 }}>
@@ -474,7 +486,6 @@ export default function EditPacientePage() {
                       <button
                         type="button"
                         onClick={() => removeNovoEndereco(idx)}
-                        disabled={formData.enderecosNovos.length <= 1}
                         style={{ cursor: "pointer" }}
                       >
                         Remover
@@ -571,7 +582,7 @@ export default function EditPacientePage() {
                     onClick={addNovoEndereco}
                     style={{ cursor: "pointer" }}
                   >
-                    + Adicionar outro endereço
+                    + Adicionar endereço
                   </button>
                 </div>
               </div>

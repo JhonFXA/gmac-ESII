@@ -194,11 +194,10 @@ export default function CreatePacientePage() {
 
     try {
       await createMutation.mutateAsync({ payload: fd });
-      toast.success("Paciente cadastrado com sucesso!");
       setFormData(initialState);
       setCepErrors({});
     } catch (err) {
-      toast.error(err?.message || "Erro ao cadastrar paciente.");
+      //toast já trata os erros
     }
   }
 
