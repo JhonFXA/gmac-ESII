@@ -139,7 +139,14 @@ public class DocumentacaoController {
                     .status(HttpStatus.FORBIDDEN)
                     .body(Map.of("erro", ex.getMessage()));
 
-        } catch (Exception ex) {
+        }catch (IllegalStateException ex) {
+            // Usuário sem permissão para validar
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("erro", ex.getMessage()));
+
+        }
+        catch (Exception ex) {
             // Erro inesperado
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
