@@ -116,6 +116,10 @@ public class ServicoValidarDocumentacao {
                     );
             Paciente paciente = documentacao.getPaciente();
 
+            if(documentacao.getStatusDocumentacao() == StatusDocumentacao.REPROVADA || documentacao.getStatusDocumentacao() == StatusDocumentacao.REPROVADA){
+                throw new IllegalStateException("Documentação já avaliada");
+            }
+
             if(paciente.getStatusSolicitacao() == StatusSolicitacao.FINALIZADA){
                 throw new IllegalStateException("Solicitação já finalizada, não é possível realizar esta ação");
             }
