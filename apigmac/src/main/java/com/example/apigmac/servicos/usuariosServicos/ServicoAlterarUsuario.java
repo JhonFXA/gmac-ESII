@@ -146,66 +146,71 @@ public class ServicoAlterarUsuario {
 
                 case ADMINISTRADOR -> {
                     // Cria e persiste o perfil administrador
-                    Administrador adm = new Administrador(usuario);
-                    repositorioAdm.save(adm);
 
-                    // Remove o perfil anterior
-                    switch (usuario.getPerfil()) {
-                        case MEDICO -> {
-                            Medico med = repositorioMed.findByUsuarioId(usuario.getId());
-                            if (med != null) {
-                                repositorioMed.delete(med);
-                            } else {
-                                throw new IllegalStateException(
-                                        "Medico não encontrado para exclusão.");
+                    if (usuario.getPerfil() != Perfil.ADMINISTRADOR) {
+                        // Remove o perfil anterior
+                        Administrador adm = new Administrador(usuario);
+                        repositorioAdm.save(adm);
+                        switch (usuario.getPerfil()) {
+                            case MEDICO -> {
+                                Medico med = repositorioMed.findByUsuarioId(usuario.getId());
+                                if (med != null) {
+                                    repositorioMed.delete(med);
+                                } else {
+                                    throw new IllegalStateException(
+                                            "Medico não encontrado para exclusão.");
+                                }
                             }
-                        }
-                        case RECEPCIONISTA -> {
-                            Recepcionista recep =
-                                    repositorioRecepicionista.findByUsuarioId(usuario.getId());
-                            if (recep != null) {
-                                repositorioRecepicionista.delete(recep);
-                            } else {
-                                throw new IllegalStateException(
-                                        "Recepcionista não encontrado para exclusão.");
+                            case RECEPCIONISTA -> {
+                                Recepcionista recep =
+                                        repositorioRecepicionista.findByUsuarioId(usuario.getId());
+                                if (recep != null) {
+                                    repositorioRecepicionista.delete(recep);
+                                } else {
+                                    throw new IllegalStateException(
+                                            "Recepcionista não encontrado para exclusão.");
+                                }
                             }
+                            default -> throw new IllegalStateException("Perfil antigo inválido");
                         }
-                        default -> throw new IllegalStateException("Perfil antigo inválido");
+
+                        usuario.setPerfil(dto.perfil());
                     }
-
-                    usuario.setPerfil(dto.perfil());
                 }
 
                 case RECEPCIONISTA -> {
                     // Cria e persiste o perfil recepcionista
-                    Recepcionista recepcionista = new Recepcionista(usuario);
-                    repositorioRecepicionista.save(recepcionista);
 
-                    // Remove o perfil anterior
-                    switch (usuario.getPerfil()) {
-                        case MEDICO -> {
-                            Medico med = repositorioMed.findByUsuarioId(usuario.getId());
-                            if (med != null) {
-                                repositorioMed.delete(med);
-                            } else {
-                                throw new IllegalStateException(
-                                        "Medico não encontrado para exclusão.");
+
+                    if (usuario.getPerfil() != Perfil.RECEPCIONISTA) {
+                        // Remove o perfil anterior
+                        Recepcionista recepcionista = new Recepcionista(usuario);
+                        repositorioRecepicionista.save(recepcionista);
+                        switch (usuario.getPerfil()) {
+                            case MEDICO -> {
+                                Medico med = repositorioMed.findByUsuarioId(usuario.getId());
+                                if (med != null) {
+                                    repositorioMed.delete(med);
+                                } else {
+                                    throw new IllegalStateException(
+                                            "Medico não encontrado para exclusão.");
+                                }
                             }
-                        }
-                        case ADMINISTRADOR -> {
-                            Administrador adm =
-                                    repositorioAdm.findByUsuarioId(usuario.getId());
-                            if (adm != null) {
-                                repositorioAdm.delete(adm);
-                            } else {
-                                throw new IllegalStateException(
-                                        "Administrador não encontrado para exclusão.");
+                            case ADMINISTRADOR -> {
+                                Administrador adm =
+                                        repositorioAdm.findByUsuarioId(usuario.getId());
+                                if (adm != null) {
+                                    repositorioAdm.delete(adm);
+                                } else {
+                                    throw new IllegalStateException(
+                                            "Administrador não encontrado para exclusão.");
+                                }
                             }
+                            default -> throw new IllegalStateException("Perfil antigo inválido");
                         }
-                        default -> throw new IllegalStateException("Perfil antigo inválido");
+
+                        usuario.setPerfil(dto.perfil());
                     }
-
-                    usuario.setPerfil(dto.perfil());
                 }
 
                 case INATIVO -> {

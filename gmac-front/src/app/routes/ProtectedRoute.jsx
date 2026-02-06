@@ -9,7 +9,6 @@ export function ProtectedRoute({children, allowedProfiles}) {
     }
     
     if (allowedProfiles && !allowedProfiles.includes(perfil)) {
-        console.log("hmmmm")
         return <Navigate to="/painel-principal" replace />;
     }
 
