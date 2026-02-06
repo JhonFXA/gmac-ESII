@@ -151,14 +151,6 @@ export default function PaginaDocumentacao() {
             </p>
           </div>
 
-          {(validarMutation.isError || validarMutation.isSuccess) && (
-            <div className={`status-msg ${validarMutation.isError ? "error" : "success"}`}>
-              {validarMutation.isError
-                ? validarMutation.error?.message ?? "Erro ao validar documentação."
-                : "Ação registrada com sucesso!"}
-            </div>
-          )}
-
           <div className={styles.patientInfo}>
             <div>
               <strong>Paciente:</strong> {doc?.nomePaciente ?? doc?.nome ?? "-"}
@@ -320,7 +312,6 @@ export default function PaginaDocumentacao() {
                 <button
                   type="button"
                   className={styles.dialogConfirmBtn}
-                  disabled={isConfirmDisabled}
                   onClick={handleConfirm}
                 >
                   {validarMutation.isPending ? "Confirmando..." : "Confirmar"}

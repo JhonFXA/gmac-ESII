@@ -54,11 +54,55 @@ public class ServicoValidarDocumentacao {
      */
     @Transactional
     public void registrarValidacao(ValidacaoDocumentacaoDTO dto) {
+
+        if (dto == null) {
+            throw new IllegalArgumentException("Os dados da validação não foram informados.");
+        }
+
+        if (dto.login() == null || dto.login().isBlank()) {
+            throw new IllegalArgumentException("O login do usuário é obrigatório.");
+        }
+
+        if (dto.senha() == null || dto.senha().isBlank()) {
+            throw new IllegalArgumentException("A senha do usuário é obrigatória.");
+        }
+
+        if (dto.status() == null) {
+            throw new IllegalArgumentException("O status da validação deve ser informado.");
+        }
+
+
+        if (dto.observacao() == null || dto.observacao().isBlank()) {
+            throw new IllegalArgumentException(
+                    "A observação é obrigatória"
+            );
+        }
+
+        if (dto.observacao().length() < 10) {
+            throw new IllegalArgumentException(
+                    "A observação deve conter pelo menos 10 caracteres."
+            );
+        }
+
+        if (dto.observacao().length() > 500) {
+            throw new IllegalArgumentException(
+                    "A observação não pode ultrapassar 500 caracteres."
+            );
+        }
+
+
+        if (dto.status() == StatusValidacaoDocumentacao.PERICIA && dto.data() == null) {
+            throw new IllegalArgumentException(
+                    "A data da perícia é obrigatória quando o status é PERÍCIA."
+            );
+        }
+
         try {
             // Autenticação do usuário responsável pela validação
             var authToken =
                     new UsernamePasswordAuthenticationToken(dto.login(), dto.senha());
             var auth = authenticationManager.authenticate(authToken);
+
             Usuario usuario = (Usuario) auth.getPrincipal();
 
 
@@ -66,7 +110,9 @@ public class ServicoValidarDocumentacao {
             Documentacao documentacao = repositorioDocumentacao
                     .findById(dto.documentacaoId())
                     .orElseThrow(() ->
-                            new NoSuchElementException("Documentação não encontrada")
+                            new NoSuchElementException(
+                                    "Documentação não encontrada para o identificador informado."
+                            )
                     );
             Paciente paciente = documentacao.getPaciente();
 
@@ -100,14 +146,19 @@ public class ServicoValidarDocumentacao {
                     usuario,
                     dto.data()
             );
+            atualizarStatusRelacionados(
+                    documentacao,
+                    dto.status(),
+                    usuario,
+                    dto.data()
+            );
 
             // Persistência das alterações
             repositorioValidacaoDocumentacao.save(validacao);
             repositorioDocumentacao.save(documentacao);
 
         } catch (AuthenticationException ex) {
-            // Credenciais inválidas para validação
-            throw new IllegalArgumentException("Credenciais inválidas");
+            throw new AccessDeniedException("Login ou senha inválidos");
         }
     }
 
