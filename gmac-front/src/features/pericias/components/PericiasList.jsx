@@ -269,7 +269,7 @@ export default function PericiasList({ search, statusPericia }) {
                     title="Ver Documentação"
                     disabled={visualizarMutation.isPending}
                     onClick={() =>
-                      navigate(`/painel-principal/validar-documentacoes/${p.idDocumentacao}`)
+                      navigate(`/painel-principal/gerenciar-pericias/${p.idDocumentacao}`)
                     }
                   >
                     <i className="fa-solid fa-magnifying-glass"></i>

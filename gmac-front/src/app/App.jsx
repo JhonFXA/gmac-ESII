@@ -14,6 +14,7 @@ import CreateUserPage from "@/features/users/pages/CreateUserPage";
 import ManageUsersPage from "@/features/users/pages/ManageUsersPage.jsx";
 import EditUserPage from "@/features/users/pages/EditUserPage.jsx";
 import ManagePericiasPage from "@/features/pericias/pages/ManagePericiasPage.jsx";
+import PericiaPage from "@/features/pericias/pages/PericiaPage.jsx";
 import CreatePacientePage from "@/features/pacientes/pages/CreatePacientePage.jsx";
 import ManagePacientesPage from "@/features/pacientes/pages/ManagePacientesPage.jsx";
 import EditPacientePage from "@/features/pacientes/pages/EditPacientePage.jsx";
@@ -78,6 +79,18 @@ function App() {
                       ]}
                     >
                       <ManagePericiasPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/painel-principal/gerenciar-pericias/:id"
+                  element={
+                    <ProtectedRoute
+                      allowedProfiles={[
+                        "MEDICO",
+                      ]}
+                    >
+                      <PericiaPage />
                     </ProtectedRoute>
                   }
                 />
