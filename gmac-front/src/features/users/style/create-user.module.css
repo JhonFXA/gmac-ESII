@@ -113,3 +113,56 @@
 .uppercase {
   text-transform: uppercase;
 }
+
+.existingAddressesContainer,
+.addressesContainer {
+  flex-basis: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.existingAddressesGroup,
+.addressesGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px; /* pode ajustar */
+  align-items: stretch;
+}
+
+.existingAddressCard {
+  flex: 1 1 320px;  /* cresce, encolhe, base 320px */
+  max-width: 520px; /* opcional: evita ficar gigante */
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: #f3f3f3;
+}
+
+
+.addressBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+
+.documentInput{
+  border-radius: 8px;
+  width: 100%;
+  height: 3rem;
+  padding: 10px;
+  font-size: 18px;
+}
+
+.documentField label {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+
+
+

@@ -297,7 +297,7 @@ export default function EditPacientePage() {
       await pacienteQuery.refetch();
       setFormData((prev) => ({ ...prev, enderecosNovos: [emptyEndereco()] }));
       setCepErrors({});
-    } catch { }
+    } catch {}
   }
 
   const isSaving =
@@ -423,174 +423,170 @@ export default function EditPacientePage() {
                   <option value="OUTROS">Outros</option>
                 </select>
               </div>
-
               {formData.enderecosExistentes.length > 0 && (
-                <div style={{ borderTop: "1px solid #ccc", paddingTop: 12 }}>
+                <div className={styles.existingAddressesContainer}>
                   <strong>Endereços cadastrados</strong>
-                  {formData.enderecosExistentes.map((e, i) => (
-                    <div
-                      key={`${e.cep}-${e.logradouro}-${e.numero}-${i}`}
-                      style={{
-                        marginTop: 8,
-                        padding: 8,
-                        background: "#f3f3f3",
-                      }}
-                    >
-                      <div>
-                        <strong>CEP:</strong> {e.cep}
-                      </div>
-                      <div>
-                        <strong>Logradouro:</strong> {e.logradouro}, {e.numero}
-                      </div>
-                      <div>
-                        <strong>Bairro:</strong> {e.bairro}
-                      </div>
-                      <div>
-                        <strong>Cidade/UF:</strong> {e.cidade} - {e.estado}
-                      </div>
-                      {e.complemento ? (
+
+                  <div className={styles.existingAddressesGroup}>
+                    {formData.enderecosExistentes.map((e, i) => (
+                      <div
+                        key={`${e.cep}-${e.logradouro}-${e.numero}-${i}`}
+                        className={styles.existingAddressCard}
+                      >
                         <div>
-                          <strong>Complemento:</strong> {e.complemento}
+                          <strong>CEP:</strong> {e.cep}
                         </div>
-                      ) : null}
-                    </div>
-                  ))}
+                        <div>
+                          <strong>Logradouro:</strong> {e.logradouro},{" "}
+                          {e.numero}
+                        </div>
+                        <div>
+                          <strong>Bairro:</strong> {e.bairro}
+                        </div>
+                        <div>
+                          <strong>Cidade/UF:</strong> {e.cidade} - {e.estado}
+                        </div>
+                        {e.complemento ? (
+                          <div>
+                            <strong>Complemento:</strong> {e.complemento}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              <div
-                style={{
-                  borderTop: "1px solid #ccc",
-                  paddingTop: 12,
-                  marginTop: 16,
-                }}
-              >
+              <div className={styles.addressesContainer}>
                 <strong>Adicionar novos endereços</strong>
 
                 {formData.enderecosNovos.length === 0 && (
-                  <p style={{ marginTop: 8, fontStyle: "italic", color: "#666" }}>
+                  <p
+                    style={{ marginTop: 8, fontStyle: "italic", color: "#666" }}
+                  >
                     Nenhum endereço novo será adicionado.
                   </p>
                 )}
 
-                {formData.enderecosNovos.map((end, idx) => (
-                  <div key={idx} style={{ marginTop: 12 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span>Endereço novo {idx + 1}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeNovoEndereco(idx)}
-                        style={{ cursor: "pointer" }}
+                <div className={styles.addressesGroup}>
+                  {formData.enderecosNovos.map((end, idx) => (
+                    <div key={idx} className={styles.addressBlock}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
                       >
-                        Remover
-                      </button>
+                        <span>Endereço novo {idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeNovoEndereco(idx)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <strong>Remover</strong>
+                        </button>
+                      </div>
+                      <div className={styles.emailField}>
+                        <label>CEP</label>
+                        <input
+                          className={styles.input}
+                          value={end.cep}
+                          onChange={handleChange}
+                          type="text"
+                          name={`enderecosNovos.${idx}.cep`}
+                          placeholder="00000-000"
+                        />
+                      </div>
+                      <div className={styles.nameField}>
+                        <label>Logradouro</label>
+                        <input
+                          className={styles.input}
+                          value={end.logradouro}
+                          readOnly={end.readonlyViaCep}
+                          onChange={handleChange}
+                          type="text"
+                          name={`enderecosNovos.${idx}.logradouro`}
+                          placeholder="Rua / Avenida"
+                        />
+                      </div>
+                      <div className={styles.cpfField}>
+                        <label>Número</label>
+                        <input
+                          className={styles.input}
+                          value={end.numero}
+                          onChange={handleChange}
+                          type="text"
+                          name={`enderecosNovos.${idx}.numero`}
+                          placeholder="Nº"
+                        />
+                      </div>
+                      <div className={styles.emailField}>
+                        <label>Complemento</label>
+                        <input
+                          className={styles.input}
+                          value={end.complemento}
+                          onChange={handleChange}
+                          type="text"
+                          name={`enderecosNovos.${idx}.complemento`}
+                          placeholder="Apto, bloco, etc."
+                        />
+                      </div>
+                      <div className={styles.emailField}>
+                        <label>Bairro</label>
+                        <input
+                          className={styles.input}
+                          value={end.bairro}
+                          readOnly={end.readonlyViaCep}
+                          onChange={handleChange}
+                          type="text"
+                          name={`enderecosNovos.${idx}.bairro`}
+                          placeholder="Bairro"
+                        />
+                      </div>
+                      <div className={styles.emailField}>
+                        <label>Cidade</label>
+                        <input
+                          className={styles.input}
+                          value={end.cidade}
+                          readOnly={end.readonlyViaCep}
+                          onChange={handleChange}
+                          type="text"
+                          name={`enderecosNovos.${idx}.cidade`}
+                          placeholder="Cidade"
+                        />
+                      </div>
+                      <div className={styles.cpfField}>
+                        <label>Estado (UF)</label>
+                        <input
+                          className={styles.input}
+                          value={end.estado}
+                          readOnly={end.readonlyViaCep}
+                          onChange={handleChange}
+                          type="text"
+                          name={`enderecosNovos.${idx}.estado`}
+                          maxLength={2}
+                          placeholder="UF"
+                        />
+                      </div>
                     </div>
-
-                    <div className={styles.emailField}>
-                      <label>CEP</label>
-                      <input
-                        className={styles.input}
-                        value={end.cep}
-                        onChange={handleChange}
-                        type="text"
-                        name={`enderecosNovos.${idx}.cep`}
-                      />
-                    </div>
-
-                    <div className={styles.nameField}>
-                      <label>Logradouro</label>
-                      <input
-                        className={styles.input}
-                        value={end.logradouro}
-                        readOnly={end.readonlyViaCep}
-                        onChange={handleChange}
-                        type="text"
-                        name={`enderecosNovos.${idx}.logradouro`}
-                      />
-                    </div>
-
-                    <div className={styles.cpfField}>
-                      <label>Número</label>
-                      <input
-                        className={styles.input}
-                        value={end.numero}
-                        onChange={handleChange}
-                        type="text"
-                        name={`enderecosNovos.${idx}.numero`}
-                      />
-                    </div>
-
-                    <div className={styles.emailField}>
-                      <label>Complemento</label>
-                      <input
-                        className={styles.input}
-                        value={end.complemento}
-                        onChange={handleChange}
-                        type="text"
-                        name={`enderecosNovos.${idx}.complemento`}
-                      />
-                    </div>
-
-                    <div className={styles.emailField}>
-                      <label>Bairro</label>
-                      <input
-                        className={styles.input}
-                        value={end.bairro}
-                        readOnly={end.readonlyViaCep}
-                        onChange={handleChange}
-                        type="text"
-                        name={`enderecosNovos.${idx}.bairro`}
-                      />
-                    </div>
-
-                    <div className={styles.emailField}>
-                      <label>Cidade</label>
-                      <input
-                        className={styles.input}
-                        value={end.cidade}
-                        readOnly={end.readonlyViaCep}
-                        onChange={handleChange}
-                        type="text"
-                        name={`enderecosNovos.${idx}.cidade`}
-                      />
-                    </div>
-
-                    <div className={styles.cpfField}>
-                      <label>Estado (UF)</label>
-                      <input
-                        className={styles.input}
-                        value={end.estado}
-                        readOnly={end.readonlyViaCep}
-                        onChange={handleChange}
-                        type="text"
-                        name={`enderecosNovos.${idx}.estado`}
-                        maxLength={2}
-                      />
-                    </div>
+                  ))}
+                  <div style={{ marginTop: 12 }}>
+                    <button
+                      type="button"
+                      onClick={addNovoEndereco}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <strong>+ Adicionar endereço</strong>
+                    </button>
                   </div>
-                ))}
-
-                <div style={{ marginTop: 12 }}>
-                  <button
-                    type="button"
-                    onClick={addNovoEndereco}
-                    style={{ cursor: "pointer" }}
-                  >
-                    + Adicionar endereço
-                  </button>
                 </div>
               </div>
 
-              <div className={styles.emailField} style={{ marginTop: 12 }}>
+              <div className={styles.documentField} style={{ marginTop: 12 }}>
                 <label>Novo Documento (PDF)</label>
                 <input
-                  className={styles.input}
+                  className={styles.documentInput}
                   type="file"
                   accept="application/pdf"
                   onChange={handleDocumentoChange}
