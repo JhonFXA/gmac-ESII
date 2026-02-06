@@ -129,9 +129,7 @@ export default function PericiasList({ search, statusPericia }) {
                 : "Confirmar Cancelamento"}
             </button>
 
-            {cancelMutation.isError && (
-              <p className={styles.errorText}>{cancelMutation.error.message}</p>
-            )}
+
           </div>
         </div>
       )}
@@ -168,10 +166,6 @@ export default function PericiasList({ search, statusPericia }) {
               {remarcarMutation.isPending ? "Salvando..." : "Salvar Nova Data"}
             </button>
           </div>
-
-          {remarcarMutation.isError && (
-            <p className={styles.errorText}>{remarcarMutation.error.message}</p>
-          )}
         </div>
       )}
       {/* MODAL INFO */}

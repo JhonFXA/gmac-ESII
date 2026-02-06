@@ -8,6 +8,8 @@ import { useAuth } from "@/app/providers/AuthContext";
 import { useUserDetails } from "../hooks/useUserDetails";
 import { useUpdateUser } from "../hooks/useUpdateUser";
 
+import { useToast } from "@/app/providers/ToastProvider";
+
 import styles from "../style/create-user.module.css";
 
 function cleanPayload(obj) {
@@ -23,6 +25,7 @@ function cleanPayload(obj) {
 export default function EditUserPage() {
   const { token } = useAuth();
   const { cpf } = useParams();
+  const toast = useToast();
 
   const userQuery = useUserDetails(cpf, token);
   const updateMutation = useUpdateUser(token, cpf);
@@ -73,7 +76,7 @@ export default function EditUserPage() {
     e.preventDefault();
 
     if (formData.password !== formData.repeatPassword) {
-      // erro de validação local
+      toast.error("As senhas não conferem");
       return;
     }
 
@@ -102,11 +105,8 @@ export default function EditUserPage() {
 
   const status = useMemo(() => {
     if (formData.password !== formData.repeatPassword && formData.repeatPassword) {
-      return { type: "error", message: "As senhas não conferem" };
+      return;
     }
-    if (updateMutation.isSuccess) return { type: "success", message: "Usuário editado com sucesso!" };
-    if (updateMutation.isError) return { type: "error", message: updateMutation.error.message };
-    if (userQuery.isError) return { type: "error", message: userQuery.error.message };
     return null;
   }, [
     formData.password,

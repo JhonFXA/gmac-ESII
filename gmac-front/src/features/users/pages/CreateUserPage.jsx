@@ -7,9 +7,12 @@ import { useAuth } from "@/app/providers/AuthContext";
 import { useCreateUser } from "../hooks/useCreateUser";
 
 import styles from "../style/create-user.module.css";
+import { useToast } from "@/app/providers/ToastProvider";
+
 
 export default function CadastrarUsuario() {
   const { token } = useAuth();
+  const toast = useToast();
 
   const initialState = {
     nome: "",
@@ -41,6 +44,11 @@ export default function CadastrarUsuario() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (senhasDiferentes) {
+    toast.error("As senhas não conferem");
+    return;
+  }
 
     if (formData.password !== formData.repeatPassword) return;
 
@@ -78,9 +86,6 @@ export default function CadastrarUsuario() {
           </p>
         </div>
 
-        {senhasDiferentes && (
-          <div className={`status-msg error`}>As senhas não conferem</div>
-        )}
 
         <div className={styles.userRegistrationContainer}>
           <form className={styles.form} onSubmit={handleSubmit}>
@@ -228,7 +233,7 @@ export default function CadastrarUsuario() {
               <button
                 className={styles.submitButton}
                 type="submit"
-                disabled={createUserMutation.isPending || senhasDiferentes}
+                disabled={createUserMutation.isPending}
               >
                 {createUserMutation.isPending ? "Cadastrando..." : "Cadastrar"}
               </button>
