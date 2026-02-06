@@ -9,7 +9,6 @@ export function useRelatorioDashboard({ ano, tipo, valor, token }) {
     enabled: !!token && !!ano && !!tipo && valor !== undefined,
     staleTime: 30_000,
     select: (data) => {
-      console.log("Dados do relatório recebidos:", data);
       return data;
     },
   });

@@ -83,11 +83,7 @@ function App() {
                   path="/painel-principal/validar-documentacoes"
                   element={
                     <ProtectedRoute
-                      allowedProfiles={[
-                        "ADMINISTRADOR",
-                        "MEDICO",
-                        "RECEPCIONISTA",
-                      ]}
+                      allowedProfiles={["MEDICO"]}
                     >
                       <ManageDocumentacoesPage />
                     </ProtectedRoute>
@@ -96,7 +92,7 @@ function App() {
                 <Route
                   path="/painel-principal/cadastrar-paciente"
                   element={
-                    <ProtectedRoute allowedProfiles={["RECEPCIONISTA"]}>
+                    <ProtectedRoute allowedProfiles={["ADMINISTRADOR","RECEPCIONISTA"]}>
                       <CreatePacientePage />
                     </ProtectedRoute>
                   }
@@ -104,7 +100,7 @@ function App() {
                 <Route
                   path="/painel-principal/consultar-cadastro"
                   element={
-                    <ProtectedRoute allowedProfiles={["RECEPCIONISTA"]}>
+                    <ProtectedRoute allowedProfiles={["ADMINISTRADOR","RECEPCIONISTA"]}>
                       <ManagePacientesPage />
                     </ProtectedRoute>
                   }
@@ -112,7 +108,7 @@ function App() {
                 <Route
                   path="/painel-principal/consultar-cadastro/editar-paciente/:cpf"
                   element={
-                    <ProtectedRoute allowedProfiles={["RECEPCIONISTA"]}>
+                    <ProtectedRoute allowedProfiles={["ADMINISTRADOR","RECEPCIONISTA"]}>
                       <EditPacientePage />
                     </ProtectedRoute>
                   }
