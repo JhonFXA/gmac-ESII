@@ -7,9 +7,6 @@ import com.example.apigmac.repositorios.RepositorioPaciente;
 import com.example.apigmac.utils.CpfUtils;
 import com.example.apigmac.utils.PacienteSpecs;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -19,44 +16,44 @@ import java.util.List;
 @Service
 public class ServicoListarPaciente {
 
+    // Repositório responsável pela consulta de pacientes
     @Autowired
     private RepositorioPaciente repositorioPaciente;
 
+    /**
+     * Lista pacientes aplicando filtros opcionais e ordenação por nome.
+     * Retorna apenas os dados necessários para exibição em lista/paginação,
+     * garantindo desempenho e desacoplamento da entidade.
+     */
     public List<PaginaPacienteDTO> listarPacientes(
             String nome,
             String cpf,
             StatusSolicitacao statusSolicitacao,
-            boolean decrescente){
-//            int pagina,
-//            int tamanho) {
+            boolean decrescente) {
 
-//        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-//        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-
-
+        // Define a ordenação baseada no parâmetro recebido
+        // Centraliza a regra de ordenação para manter clareza
         Sort sort = decrescente
                 ? Sort.by("nome").descending()
                 : Sort.by("nome").ascending();
 
-//        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
-
+        // Cria a especificação dinâmica com base nos filtros informados
         Specification<Paciente> spec =
                 PacienteSpecs.filtrar(nome, cpf, statusSolicitacao);
 
-//        Page<Paciente> paginaEntidades =
-//                repositorioPaciente.findAll(spec, pageable);
-       List<Paciente> paginaEntidades =
-                repositorioPaciente.findAll(spec,sort);
+        // Executa a consulta aplicando filtros e ordenação
+        List<Paciente> pacientes =
+                repositorioPaciente.findAll(spec, sort);
 
-
-
-        return paginaEntidades.stream().map(paciente ->
-                new PaginaPacienteDTO(
+        // Converte a lista de entidades para DTO de listagem
+        // evitando exposição desnecessária de dados
+        return pacientes.stream()
+                .map(paciente -> new PaginaPacienteDTO(
                         paciente.getNome(),
                         CpfUtils.formatar(paciente.getCpf()),
                         paciente.getStatusSolicitacao(),
                         paciente.getDataNascimento()
-                )
-        ).toList();
+                ))
+                .toList();
     }
 }

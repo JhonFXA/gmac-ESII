@@ -7,9 +7,6 @@ import com.example.apigmac.utils.DocumentacaoSpecs;
 import com.example.apigmac.repositorios.RepositorioDocumentacao;
 import com.example.apigmac.utils.CpfUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -19,40 +16,32 @@ import java.util.List;
 @Service
 public class ServicoListarDocumentacao {
 
+    // Repositório responsável pelo acesso às documentações no banco de dados
     @Autowired
     private RepositorioDocumentacao repositorioDocumentacao;
 
+    /**
+     * Realiza a listagem de documentações com base em filtros opcionais
+     * como CPF, nome do paciente, status e ordenação por data de envio.
+     */
     public List<DocumentoDTO> listarDocumentos(
             String cpf,
             String nome,
             StatusDocumentacao status,
-            boolean decrescente){
-//            int pagina,
-//            int tamanho) {
+            boolean decrescente) {
 
-//        if (pagina < 0) {
-//            throw new IllegalArgumentException("A página não pode ser negativa");
-//        }
-//
-//        if (tamanho <= 0) {
-//            throw new IllegalArgumentException("O tamanho da página deve ser maior que zero");
-//        }
-
+        // Normalização do CPF para garantir consistência na busca
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
-
-        // 1. Definindo a Ordenação (Igual ao anterior)
+        // Definição da ordenação com base na data de envio
         Sort sort;
         if (decrescente) {
             sort = Sort.by("dataEnvio").descending();
         } else {
             sort = Sort.by("dataEnvio").ascending();
         }
-//
-//        // 2. Criando o objeto de Paginação
-//        Pageable pageable = PageRequest.of(pagina, tamanho, sort);
 
-        // 3. Definindo o Status Default
+        // Definição do status padrão quando nenhum status é informado
         StatusDocumentacao statusParaFiltrar;
         if (status == null) {
             statusParaFiltrar = StatusDocumentacao.PENDENTE;
@@ -60,11 +49,15 @@ public class ServicoListarDocumentacao {
             statusParaFiltrar = status;
         }
 
-        // 4. Executando a busca paginada
-        Specification<Documentacao> spec = DocumentacaoSpecs.filtrar(cpfNormalizado, nome, statusParaFiltrar);
-//        Page<Documentacao> paginaEntidades = repositorioDocumentacao.findAll(spec, pageable);
-        List<Documentacao> paginaEntidades = repositorioDocumentacao.findAll(spec,sort);
+        // Criação da Specification para aplicação dos filtros dinâmicos
+        Specification<Documentacao> spec =
+                DocumentacaoSpecs.filtrar(cpfNormalizado, nome, statusParaFiltrar);
 
+        // Execução da consulta com filtros e ordenação
+        List<Documentacao> paginaEntidades =
+                repositorioDocumentacao.findAll(spec, sort);
+
+        // Conversão das entidades em DTOs para retorno ao controller
         return paginaEntidades.stream().map(doc -> new DocumentoDTO(
                 doc.getId().toString(),
                 CpfUtils.formatar(doc.getPaciente().getCpf()),
@@ -74,4 +67,3 @@ public class ServicoListarDocumentacao {
         )).toList();
     }
 }
-

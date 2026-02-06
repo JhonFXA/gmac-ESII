@@ -52,9 +52,8 @@ class ServicoAlterarUsuarioTest {
     void deveAlterarNomeELoginComSucesso() {
 
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
-                "novo.login", null, null,
-                CPF_COM_MASCARA,
-                "Novo Nome", null, null
+                "novo.login", null, null,CPF_NORMALIZADO,
+                "Novo Nome", null, null, LocalDate.now()
         );
 
         when(verificacao.cpfValido(anyString())).thenReturn(true);
@@ -79,7 +78,7 @@ class ServicoAlterarUsuarioTest {
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
                 null, null, novaSenha,
                 CPF_COM_MASCARA,
-                null, null, null
+                null, null, null, null
         );
 
         when(verificacao.cpfValido(anyString())).thenReturn(true);
@@ -102,7 +101,7 @@ class ServicoAlterarUsuarioTest {
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
                 null, emailExistente, null,
                 CPF_COM_MASCARA,
-                null, null, null
+                null, null, null, null
         );
 
         when(verificacao.cpfValido(anyString())).thenReturn(true);
@@ -127,7 +126,7 @@ class ServicoAlterarUsuarioTest {
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
                 null, null, null,
                 CPF_COM_MASCARA,
-                null, Perfil.ADMINISTRADOR, dataValida
+                null, Perfil.ADMINISTRADOR, null, dataValida
         );
 
         when(verificacao.cpfValido(anyString())).thenReturn(true);
@@ -151,7 +150,7 @@ class ServicoAlterarUsuarioTest {
         AlterarUsuarioDTO dto = new AlterarUsuarioDTO(
                 null, null, null,
                 CPF_COM_MASCARA,
-                null, null, null
+                null, null, null, null
         );
 
         assertThrows(RuntimeException.class,

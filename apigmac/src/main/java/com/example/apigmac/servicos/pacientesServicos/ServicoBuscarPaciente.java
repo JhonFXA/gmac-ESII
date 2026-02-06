@@ -13,21 +13,36 @@ import java.util.NoSuchElementException;
 
 @Service
 public class ServicoBuscarPaciente {
+
+    // Repositório responsável pelo acesso aos dados do paciente
     @Autowired
     private RepositorioPaciente repositorioPaciente;
 
-    public PacienteDTO buscarPaciente(String cpf){
+    /**
+     * Busca um paciente pelo CPF e retorna seus dados em formato DTO.
+     * Aplica validações básicas e garante que apenas dados formatados
+     * e consistentes sejam expostos para a camada superior.
+     */
+    public PacienteDTO buscarPaciente(String cpf) {
+
+        // Validação de entrada para evitar processamento desnecessário
         if (cpf == null || cpf.isBlank()) {
             throw new IllegalArgumentException("CPF é obrigatório");
         }
+
+        // Normaliza o CPF para manter padrão interno de consulta
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
+        // Busca o paciente no banco de dados
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
 
+        // Garante que o paciente exista antes de prosseguir
         if (paciente == null) {
             throw new NoSuchElementException("Paciente não encontrado");
         }
 
+        // Converte a lista de entidades Endereco para EnderecoDTO
+        // evitando expor entidades diretamente
         List<EnderecoDTO> enderecosDTO = paciente.getEnderecos()
                 .stream()
                 .map(endereco -> new EnderecoDTO(
@@ -41,8 +56,7 @@ public class ServicoBuscarPaciente {
                 ))
                 .toList();
 
-
-
+        // Retorna o DTO com os dados do paciente já tratados e formatados
         return new PacienteDTO(
                 paciente.getNome(),
                 CpfUtils.formatar(paciente.getCpf()),
@@ -53,6 +67,6 @@ public class ServicoBuscarPaciente {
                 paciente.getSexo(),
                 paciente.getEstadoCivil(),
                 enderecosDTO
-                );
+        );
     }
 }

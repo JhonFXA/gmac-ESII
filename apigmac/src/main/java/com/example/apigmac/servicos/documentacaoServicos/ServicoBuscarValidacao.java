@@ -12,14 +12,22 @@ import java.util.UUID;
 @Service
 public class ServicoBuscarValidacao {
 
-
+    // Repositório responsável pelo acesso aos registros de validação da documentação
     @Autowired
     private RepositorioValidacaoDocumentacao repositorioValidacaoDocumentacao;
+
+    /**
+     * Realiza a busca da última validação associada a uma documentação específica,
+     * retornando as informações necessárias para exibição em histórico ou auditoria.
+     */
     public ValidacaoLogDTO buscarValidacaoPorId(String id) {
+
+        // Validação básica do identificador recebido
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Id do documento inválido");
         }
 
+        // Conversão do ID para o formato UUID
         UUID documentacaoId;
         try {
             documentacaoId = UUID.fromString(id);
@@ -27,6 +35,7 @@ public class ServicoBuscarValidacao {
             throw new IllegalArgumentException("Id do documento inválido");
         }
 
+        // Busca da validação mais recente associada à documentação
         ValidacaoDocumentacao validacaoDocumentacao =
                 repositorioValidacaoDocumentacao
                         .findFirstByDocumentacaoIdOrderByDataValidacaoDesc(documentacaoId)
@@ -34,6 +43,7 @@ public class ServicoBuscarValidacao {
                                 "Nenhuma validação encontrada para essa documentação"
                         ));
 
+        // Montagem do DTO com os dados da validação para retorno ao controller
         return new ValidacaoLogDTO(
                 validacaoDocumentacao.getUsuario().getNome(),
                 validacaoDocumentacao.getPaciente().getNome(),

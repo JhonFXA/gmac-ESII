@@ -12,14 +12,22 @@ import java.time.LocalDateTime;
 @Service
 public class ServicoMarcarPericia {
 
+    // Repositório responsável pelo controle de existência e persistência das perícias
     @Autowired
     private RepositorioPericia repositorioPericia;
 
+    /**
+     * Realiza o agendamento de uma perícia garantindo unicidade por documentação
+     * e consistência das regras de data e vínculo entre as entidades.
+     */
     public void marcarPericia(PericiaDTO dto){
+
+        // Validação defensiva para evitar processamento com dados incompletos
         if(dto == null){
             throw new IllegalArgumentException("Dados da pericia não informados");
         }
 
+        // Garantia de integridade mínima do fluxo de agendamento
         if (dto.paciente()== null ||
                 dto.documentacao()== null ||
                 dto.usuario() == null ||
@@ -28,19 +36,12 @@ public class ServicoMarcarPericia {
             throw new IllegalArgumentException("Algum campo obrigatório está null no DTO");
         }
 
+        // Impede múltiplas perícias associadas à mesma documentação
         if(repositorioPericia.existsByDocumentacaoId(dto.documentacao().getId())){
             throw new IllegalStateException("Já existe uma perícia marcada para esta documentação");
         }
 
-//        Paciente paciente = repositorioPaciente.findById(dto.paciente())
-//                .orElseThrow(() -> new EntityNotFoundException("Paciente não encontrado com ID: " + dto.paciente()));
-//
-//        Usuario usuario = repositorioUsuario.findById(dto.usuario())
-//                .orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado com ID: " + dto.usuario()));
-//
-//        Documentacao documentacao = repositorioDocumentacao.findById(dto.documentacao())
-//                .orElseThrow(() -> new EntityNotFoundException("Documentacao não encontrada com ID: " + dto.documentacao()));
-
+        // Criação da entidade perícia com validação explícita da regra temporal
         Pericia pericia = new Pericia();
         if(dto.dataPericia().isAfter(LocalDateTime.now())){
             pericia.setDataPericia(dto.dataPericia());
@@ -48,15 +49,13 @@ public class ServicoMarcarPericia {
             throw new IllegalArgumentException("DATA INVALIDA");
         }
 
-
+        // Inicialização do estado e associações da perícia
         pericia.setStatusPericia(StatusPericia.AGENDADA);
         pericia.setPaciente(dto.paciente());
         pericia.setUsuario(dto.usuario());
         pericia.setDocumentacao(dto.documentacao());
 
+        // Persistência final após validação completa das regras
         repositorioPericia.save(pericia);
-
-    };
-
-
+    }
 }
