@@ -14,14 +14,16 @@ import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
-
+/**
+ * Serviço responsável pelo cadastro de pacientes,
+ * incluindo validações, endereços, documentos e auditoria do cadastro.
+ */
 @Service
 public class ServicoCadastrarPaciente {
 
@@ -43,15 +45,22 @@ public class ServicoCadastrarPaciente {
     @Autowired
     private RepositorioEndereco repositorioEndereco;
 
-
+    /**
+     * Realiza o cadastro completo de um paciente,
+     * aplicando validações e persistindo informações associadas.
+     */
     @Transactional
-    public Paciente cadastrarPaciente(PacienteDTO dados, MultipartFile documento){
+    public Paciente cadastrarPaciente(PacienteDTO dados, MultipartFile documento) {
 
+        // Garante a existência dos dados obrigatórios
         if (dados == null) {
             throw new IllegalArgumentException("Dados do paciente não informados");
         }
+
+        // Normaliza o CPF para padronização e validação
         String cpfNormalizado = CpfUtils.normalizar((dados.cpf()));
 
+        // Validações de regras de negócio do paciente
         if (!verificacao.textoObrigatorioValido(dados.nome(), 3)) {
             throw new IllegalArgumentException("Nome inválido");
         }
@@ -88,18 +97,17 @@ public class ServicoCadastrarPaciente {
             throw new IllegalArgumentException("Estado civil é obrigatório");
         }
 
-//        if (dados.statusSolicitacao() == null) {
-//            throw new IllegalArgumentException("Status da solicitação é obrigatório");
-//        }
-
+        // Garante que ao menos um endereço seja informado
         if (dados.enderecos() == null || dados.enderecos().isEmpty()) {
             throw new IllegalArgumentException("É obrigatório informar pelo menos um endereço");
         }
 
+        // Validação do documento, quando presente
         if (!verificacao.pdfValido(documento)) {
             throw new IllegalArgumentException("Documento inválido (apenas PDF)");
         }
 
+        // Criação da entidade paciente com status inicial padrão
         Paciente paciente = new Paciente(
                 dados.nome(),
                 cpfNormalizado,
@@ -111,33 +119,45 @@ public class ServicoCadastrarPaciente {
                 dados.dataNascimento()
         );
 
-
+        // Persistência do paciente
         paciente = repositorioPaciente.save(paciente);
 
+        // Cadastro dos endereços associados ao paciente
         for (EnderecoDTO dto : dados.enderecos()) {
-            cadastrarEndereco(dto,paciente.getCpf());
+            cadastrarEndereco(dto, paciente.getCpf());
         }
 
-        if (documento != null){
+        // Cadastro do documento, quando informado
+        if (documento != null) {
             cadastrarDocumento(documento, paciente.getCpf());
         }
 
-        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        // Registro de auditoria do cadastro (usuário e data)
+        var authentication =
+                org.springframework.security.core.context.SecurityContextHolder
+                        .getContext().getAuthentication();
+
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
         Cadastro cadastro = new Cadastro();
         cadastro.setPaciente(paciente);
         cadastro.setUsuario(usuarioLogado);
         cadastro.setDataCadastro(LocalDate.now());
+
         repositorioLogCadastroPaciente.save(cadastro);
 
         return paciente;
     }
 
+    /**
+     * Cadastra um endereço e associa ao paciente correspondente.
+     */
+    public void cadastrarEndereco(EnderecoDTO enderecoDTO, String cpf) {
 
-    public void cadastrarEndereco(EnderecoDTO enderecoDTO, String cpf){
-
+        // Normaliza o CPF para busca consistente
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
+        // Validações dos dados de endereço
         if (enderecoDTO == null) {
             throw new IllegalArgumentException("Endereço não informado");
         }
@@ -166,11 +186,13 @@ public class ServicoCadastrarPaciente {
             throw new IllegalArgumentException("Número inválido");
         }
 
+        // Recupera o paciente para associação do endereço
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if (paciente == null) {
             throw new NoSuchElementException("Paciente não encontrado");
         }
 
+        // Criação da entidade endereço
         Endereco endereco = new Endereco(
                 enderecoDTO.cep(),
                 enderecoDTO.cidade(),
@@ -181,44 +203,51 @@ public class ServicoCadastrarPaciente {
                 enderecoDTO.complemento()
         );
 
+        // Associação bidirecional paciente-endereço
         endereco.setPaciente(paciente);
         paciente.adicionarEndereco(endereco);
 
         repositorioEndereco.save(endereco);
     }
 
+    /**
+     * Cadastra um documento associado ao paciente,
+     * definindo status inicial e metadados.
+     */
+    public void cadastrarDocumento(MultipartFile documento, String cpf) {
 
-    public void cadastrarDocumento(MultipartFile documento, String cpf){
-
-
+        // Garante a presença do documento
         if (documento == null || documento.isEmpty()) {
             throw new IllegalArgumentException("Documento é obrigatório");
         }
 
-
+        // Normaliza o CPF para busca
         String cpfNormalizado = CpfUtils.normalizar(cpf);
 
+        // Validação do formato do documento
         if (!verificacao.pdfValido(documento)) {
             throw new IllegalArgumentException("Documento inválido (somente PDF)");
         }
 
+        // Recupera o paciente para associação do documento
         Paciente paciente = repositorioPaciente.findByCpf(cpfNormalizado);
         if (paciente == null) {
             throw new NoSuchElementException("Paciente não encontrado");
         }
 
+        // Geração do caminho de armazenamento do documento
         String caminho = transformarDocumentacao
                 .caminhoDocumentacao(documento, paciente.getCpf());
 
+        // Criação da entidade documentação
         Documentacao documentacao = new Documentacao();
         documentacao.setCaminho(caminho);
         documentacao.setStatusDocumentacao(StatusDocumentacao.PENDENTE);
         documentacao.setDataEnvio(LocalDate.now());
         documentacao.setPaciente(paciente);
 
+        // Associação e persistência do documento
         paciente.adicionarDocumentacao(documentacao);
         repositorioDocumentacao.save(documentacao);
     }
-
-
 }

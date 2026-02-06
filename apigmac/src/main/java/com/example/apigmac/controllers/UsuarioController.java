@@ -9,8 +9,6 @@ import com.example.apigmac.servicos.usuariosServicos.ServicoBuscarUsuario;
 import com.example.apigmac.servicos.usuariosServicos.ServicoListarUsuario;
 import com.example.apigmac.servicos.usuariosServicos.ServicoRegistro;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,15 +16,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador responsável pelo gerenciamento de usuários do sistema.
+ */
 @RestController
-@RequestMapping("usuario")
+@RequestMapping("/usuario")
 public class UsuarioController {
 
     @Autowired
     private ServicoAlterarUsuario servicoAlterarUsuario;
 
     @Autowired
-    private ServicoRegistro registroService;
+    private ServicoRegistro servicoRegistro;
 
     @Autowired
     private ServicoBuscarUsuario servicoBuscarUsuario;
@@ -34,79 +35,91 @@ public class UsuarioController {
     @Autowired
     private ServicoListarUsuario servicoListarUsuario;
 
+    /**
+     * Atualiza os dados de um usuário a partir do CPF atual.
+     */
     @PutMapping("/alterar/{cpfAtual}")
-    public ResponseEntity<?> alterarUsuario(@RequestBody AlterarUsuarioDTO dto, @PathVariable String cpfAtual){
+    public ResponseEntity<?> alterarUsuario(
+            @RequestBody AlterarUsuarioDTO dados,
+            @PathVariable String cpfAtual) {
+
         try {
-            servicoAlterarUsuario.alterarUsuario(dto, cpfAtual);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (IllegalArgumentException ex){
-            return ResponseEntity
-                    .badRequest()
+            servicoAlterarUsuario.alterarUsuario(dados, cpfAtual);
+            return ResponseEntity.noContent().build();
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest()
                     .body(Map.of("erro", ex.getMessage()));
 
         } catch (RuntimeException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("erro", ex.getMessage()));
 
         } catch (Exception ex) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("erro", "Erro interno ao alterar usuário"));
         }
     }
 
+    /**
+     * Retorna os dados de um usuário a partir do CPF.
+     */
     @GetMapping("/buscar/{cpf}")
     public ResponseEntity<?> buscarUsuario(@PathVariable String cpf) {
         try {
-            ExibeUsuarioDTO dto = servicoBuscarUsuario.buscarUsuario(cpf);
-            return ResponseEntity.ok(dto);
+            ExibeUsuarioDTO usuario = servicoBuscarUsuario.buscarUsuario(cpf);
+            return ResponseEntity.ok(usuario);
+
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity
-                    .badRequest()
+            return ResponseEntity.badRequest()
                     .body(Map.of("erro", ex.getMessage()));
 
         } catch (RuntimeException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("erro", ex.getMessage()));
 
         } catch (Exception ex) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("erro", "Erro interno ao buscar usuário"));
         }
     }
 
-
+    /**
+     * Realiza o cadastro de um novo usuário no sistema.
+     */
     @PostMapping("/registro")
     public ResponseEntity<?> cadastrarUsuario(@RequestBody RegistroUsuarioDTO dados) {
         try {
-            registroService.cadastrarUsuario(dados);
+            servicoRegistro.cadastrarUsuario(dados);
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity
-                    .badRequest()
+            return ResponseEntity.badRequest()
                     .body(Map.of("erro", ex.getMessage()));
 
         } catch (Exception ex) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("erro", "Erro interno ao cadastrar usuário"));
         }
     }
+
+    /**
+     * Lista usuários aplicando filtros opcionais.
+     */
     @GetMapping("/listar")
-    public ResponseEntity<?> listarUsuarios(@RequestParam(required = false) String nome,
-                                            @RequestParam(required = false) String cpf,
-                                            @RequestParam(required = false) Perfil perfil,
-                                            @RequestParam(defaultValue = "true") boolean decrescente){
-//                                            @RequestParam(defaultValue = "0") int pagina,
-//                                            @RequestParam(defaultValue = "10") int tamanhoPagina) {
+    public ResponseEntity<?> listarUsuarios(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String cpf,
+            @RequestParam(required = false) Perfil perfil,
+            @RequestParam(defaultValue = "true") boolean ordemDecrescente) {
+
         try {
-            List<ExibeUsuarioDTO> exibeUsuarioDTOS = servicoListarUsuario.listarUsuarios(nome,cpf,perfil,decrescente);
-            return ResponseEntity.ok(exibeUsuarioDTOS);
-        }catch (IllegalArgumentException ex) {
+            List<ExibeUsuarioDTO> usuarios =
+                    servicoListarUsuario.listarUsuarios(nome, cpf, perfil, ordemDecrescente);
+
+            return ResponseEntity.ok(usuarios);
+
+        } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest()
                     .body(Map.of("erro", ex.getMessage()));
 
