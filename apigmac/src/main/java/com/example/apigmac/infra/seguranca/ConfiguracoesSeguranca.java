@@ -34,7 +34,7 @@ public class ConfiguracoesSeguranca {
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET,"/usuario/buscar/{cpf}").hasRole("ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.POST,"/usuario/registro").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/usuario/registro").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT,"/usuario/alterar").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET,"/usuario/listar").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/paciente/cadastrar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")

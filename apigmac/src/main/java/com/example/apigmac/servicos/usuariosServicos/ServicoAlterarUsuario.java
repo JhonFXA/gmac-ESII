@@ -5,7 +5,7 @@ import com.example.apigmac.entidades.*;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioAdm;
 import com.example.apigmac.repositorios.RepositorioMed;
-import com.example.apigmac.repositorios.RepositorioRecepicionista;
+import com.example.apigmac.repositorios.RepositorioRecepcionista;
 import com.example.apigmac.repositorios.RepositorioUsuario;
 import com.example.apigmac.utils.ServicoVerificacao;
 import com.example.apigmac.utils.CpfUtils;
@@ -28,7 +28,7 @@ public class ServicoAlterarUsuario {
     private RepositorioUsuario repositorioUsuario;
 
     @Autowired
-    private RepositorioRecepicionista repositorioRecepicionista;
+    private RepositorioRecepcionista repositorioRecepcionista;
 
     @Autowired
     private RepositorioMed repositorioMed;
@@ -115,9 +115,9 @@ public class ServicoAlterarUsuario {
                             switch (usuario.getPerfil()) {
                                 case RECEPCIONISTA -> {
                                     Recepcionista recep =
-                                            repositorioRecepicionista.findByUsuarioId(usuario.getId());
+                                            repositorioRecepcionista.findByUsuarioId(usuario.getId());
                                     if (recep != null) {
-                                        repositorioRecepicionista.delete(recep);
+                                        repositorioRecepcionista.delete(recep);
                                     } else {
                                         throw new IllegalStateException(
                                                 "Recepcionista não encontrado para exclusão.");
@@ -163,9 +163,9 @@ public class ServicoAlterarUsuario {
                             }
                             case RECEPCIONISTA -> {
                                 Recepcionista recep =
-                                        repositorioRecepicionista.findByUsuarioId(usuario.getId());
+                                        repositorioRecepcionista.findByUsuarioId(usuario.getId());
                                 if (recep != null) {
-                                    repositorioRecepicionista.delete(recep);
+                                    repositorioRecepcionista.delete(recep);
                                 } else {
                                     throw new IllegalStateException(
                                             "Recepcionista não encontrado para exclusão.");
@@ -185,7 +185,7 @@ public class ServicoAlterarUsuario {
                     if (usuario.getPerfil() != Perfil.RECEPCIONISTA) {
                         // Remove o perfil anterior
                         Recepcionista recepcionista = new Recepcionista(usuario);
-                        repositorioRecepicionista.save(recepcionista);
+                        repositorioRecepcionista.save(recepcionista);
                         switch (usuario.getPerfil()) {
                             case MEDICO -> {
                                 Medico med = repositorioMed.findByUsuarioId(usuario.getId());

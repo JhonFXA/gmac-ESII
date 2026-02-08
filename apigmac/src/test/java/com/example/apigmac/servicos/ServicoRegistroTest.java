@@ -8,7 +8,7 @@ import com.example.apigmac.entidades.Usuario;
 import com.example.apigmac.modelo.enums.Perfil;
 import com.example.apigmac.repositorios.RepositorioAdm;
 import com.example.apigmac.repositorios.RepositorioMed;
-import com.example.apigmac.repositorios.RepositorioRecepicionista;
+import com.example.apigmac.repositorios.RepositorioRecepcionista;
 import com.example.apigmac.repositorios.RepositorioUsuario;
 import com.example.apigmac.servicos.usuariosServicos.ServicoRegistro;
 import com.example.apigmac.utils.ServicoVerificacao;
@@ -41,7 +41,7 @@ class ServicoRegistroTest {
     private RepositorioMed repositorioMed;
 
     @Mock
-    private RepositorioRecepicionista repositorioRecepicionista;
+    private RepositorioRecepcionista repositorioRecepcionista;
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
@@ -103,7 +103,7 @@ class ServicoRegistroTest {
         assertEquals("senhaCriptografada", resultado.getSenha());
         verify(repositorioAdm, times(1)).save(any(Administrador.class));
         verify(repositorioMed, never()).save(any(Medico.class));
-        verify(repositorioRecepicionista, never()).save(any(Recepcionista.class));
+        verify(repositorioRecepcionista, never()).save(any(Recepcionista.class));
     }
 
     // ---------------------------- TESTES DE PERFIS ----------------------------
@@ -131,7 +131,7 @@ class ServicoRegistroTest {
 
         verify(repositorioMed, times(1)).save(any(Medico.class));
         verify(repositorioAdm, never()).save(any(Administrador.class));
-        verify(repositorioRecepicionista, never()).save(any(Recepcionista.class));
+        verify(repositorioRecepcionista, never()).save(any(Recepcionista.class));
     }
 
     @Test
@@ -155,7 +155,7 @@ class ServicoRegistroTest {
 
         servicoRegistro.cadastrarUsuario(dtoRecep);
 
-        verify(repositorioRecepicionista, times(1)).save(any(Recepcionista.class));
+        verify(repositorioRecepcionista, times(1)).save(any(Recepcionista.class));
     }
 
     // ---------------------------- TESTES DE EXCEÇÕES ----------------------------
