@@ -62,9 +62,9 @@ Este documento descreve os endpoints disponíveis na API, organizados por módul
 
 ## 📊 Relatórios
 
-| Método | Endpoint               | Acesso  |
-| ------ | ---------------------- | ------- |
-| GET    | `/relatorio/dashboard` | Público |
+| Método | Endpoint               | Acesso        |
+| ------ | ---------------------- | ------------- |
+| GET    | `/relatorio/dashboard` | ADMINISTRADOR |
 
 ---
 
@@ -74,6 +74,3 @@ Este documento descreve os endpoints disponíveis na API, organizados por módul
 * Qualquer endpoint não listado explicitamente exige autenticação.
 * Os perfis utilizam o padrão `ROLE_` internamente (ex: `ROLE_ADMINISTRADOR`).
 
----
-
-📘 **Sugestão**: este README pode ser colocado na raiz do projeto ou integrado a uma documentação Swagger/OpenAPI para visualização interativa.
