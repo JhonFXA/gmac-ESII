@@ -69,7 +69,7 @@ public class ServicoToken {
      *
      * @return instante de expiração do token
      */
-    private Instant tempoExpiracao() {
+    public Instant tempoExpiracao() {
         return LocalDateTime.now()
                 .plusHours(12)
                 .toInstant(ZoneOffset.of("-03:00"));
