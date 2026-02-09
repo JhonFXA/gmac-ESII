@@ -31,7 +31,7 @@ public class ServicoRegistro {
     private RepositorioMed repositorioMed;
 
     @Autowired
-    private RepositorioRecepicionista repositorioRecepicionista;
+    private RepositorioRecepcionista repositorioRecepcionista;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -129,7 +129,7 @@ public class ServicoRegistro {
         switch (dados.perfil()) {
             case ADMINISTRADOR -> repositorioAdm.save(new Administrador(usuario));
             case MEDICO -> repositorioMed.save(new Medico(usuario, dados.especializacao()));
-            case RECEPCIONISTA -> repositorioRecepicionista.save(new Recepcionista(usuario));
+            case RECEPCIONISTA -> repositorioRecepcionista.save(new Recepcionista(usuario));
             default -> throw new IllegalArgumentException("Perfil inválido");
         }
     }

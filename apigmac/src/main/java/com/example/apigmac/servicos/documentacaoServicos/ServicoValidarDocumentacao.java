@@ -150,12 +150,6 @@ public class ServicoValidarDocumentacao {
                     usuario,
                     dto.data()
             );
-            atualizarStatusRelacionados(
-                    documentacao,
-                    dto.status(),
-                    usuario,
-                    dto.data()
-            );
 
             // Persistência das alterações
             repositorioValidacaoDocumentacao.save(validacao);

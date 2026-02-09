@@ -35,8 +35,6 @@ public class ServicoMarcarPericia {
 
             throw new IllegalArgumentException("Algum campo obrigatório está null no DTO");
         }
-
-        // Impede múltiplas perícias associadas à mesma documentação
         if(repositorioPericia.existsByDocumentacaoId(dto.documentacao().getId())){
             throw new IllegalStateException("Já existe uma perícia marcada para esta documentação");
         }
