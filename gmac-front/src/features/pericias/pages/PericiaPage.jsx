@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "@/app/providers/AuthContext";
 
+//TODO: refatorar para usar hooks de pericia
 import { useDocumentacaoDetails } from "@/features/documentacoes/hooks/useDocumentacaoDetails";
 import { useGerarUrlDocumentacao } from "@/features/documentacoes/hooks/useGerarUrlDocumentacao";
-import { useValidarPericia } from "@/features/documentacoes/hooks/useValidarPericia";
+import { useValidarDocumentacao } from "@/features/documentacoes/hooks/useValidarDocumentacao";
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -18,7 +19,7 @@ export default function PericiaPage() {
   const { data: doc, isLoading, error } = useDocumentacaoDetails(id, token);
 
   const gerarUrlMutation = useGerarUrlDocumentacao(token);
-  const validarMutation = useValidarPericia(token);
+  const validarMutation = useValidarDocumentacao(token);
 
   const [pdfUrl, setPdfUrl] = useState(null);
 
