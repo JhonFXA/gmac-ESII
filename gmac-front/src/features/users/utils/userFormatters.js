@@ -20,5 +20,6 @@ export function calcularIdade(dataNascimento) {
 export function formatarDataBR(dataISO) {
   if (!dataISO) return null;
   const [ano, mes, dia] = dataISO.slice(0, 10).split("-");
+  console.log("Data formatada:", `${dia}/${mes}/${ano}`);
   return `${dia}/${mes}/${ano}`;
 }

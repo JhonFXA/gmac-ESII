@@ -37,6 +37,16 @@ export function remarcarPericiaRequest(id, novaDataISO, { token, signal } = {}) 
   });
 }
 
+export function validarPericiaRequest(payload, { token, signal } = {}) {
+  return http(`/pericia/validar`, {
+    method: "POST",
+    token,
+    signal,
+    body: payload,
+  });
+}
+
+
 export function normalizePericiasResponse(data) {
   const lista = Array.isArray(data) ? data : data?.pericias ?? [];
   return lista;

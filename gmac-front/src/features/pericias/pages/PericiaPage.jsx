@@ -4,17 +4,12 @@ import { useAuth } from "@/app/providers/AuthContext";
 
 import { useDocumentacaoDetails } from "@/features/documentacoes/hooks/useDocumentacaoDetails";
 import { useGerarUrlDocumentacao } from "@/features/documentacoes/hooks/useGerarUrlDocumentacao";
-import { useValidarDocumentacao } from "@/features/documentacoes/hooks/useValidarDocumentacao";
+import { useValidarPericia } from "@/features/documentacoes/hooks/useValidarPericia";
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 import styles from "@/features/documentacoes/style/pagina-documentacao.module.css";
-
-function toBackendDateTime(datetimeLocal) {
-  if (!datetimeLocal) return null;
-  return datetimeLocal.replace("T", " ") + ":00";
-}
 
 export default function PericiaPage() {
   const { id } = useParams();
@@ -23,13 +18,12 @@ export default function PericiaPage() {
   const { data: doc, isLoading, error } = useDocumentacaoDetails(id, token);
 
   const gerarUrlMutation = useGerarUrlDocumentacao(token);
-  const validarMutation = useValidarDocumentacao(token);
+  const validarMutation = useValidarPericia(token);
 
   const [pdfUrl, setPdfUrl] = useState(null);
 
   const [dialog, setDialog] = useState({ open: false, action: null });
   const [credenciais, setCredenciais] = useState({ login: "", senha: "" });
-  const [agendamento, setAgendamento] = useState({ dataHora: "" });
   const [observacao, setObservacao] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
@@ -49,7 +43,6 @@ export default function PericiaPage() {
   function openDialog(action) {
     setDialog({ open: true, action });
     setCredenciais({ login: "", senha: "" });
-    setAgendamento({ dataHora: "" });
     setShowPassword(false);
   }
 
@@ -61,9 +54,7 @@ export default function PericiaPage() {
   const observacaoObrigatoria = true;
 
   const precisaCredenciais =
-    dialog.action === "aprovar" ||
-    dialog.action === "reprovar" ||
-    dialog.action === "agendar";
+    dialog.action === "aprovar" || dialog.action === "reprovar";
 
   const isConfirmDisabled = useMemo(() => {
     const obsOk = !observacaoObrigatoria || !!observacao.trim();
@@ -71,10 +62,6 @@ export default function PericiaPage() {
     const credsOk = !precisaCredenciais
       ? true
       : !!credenciais.login.trim() && !!credenciais.senha.trim();
-
-    if (dialog.action === "agendar") {
-      return !obsOk || !credsOk || !agendamento.dataHora || validarMutation.isPending;
-    }
 
     if (dialog.action === "aprovar" || dialog.action === "reprovar") {
       return !obsOk || !credsOk || validarMutation.isPending;
@@ -85,7 +72,6 @@ export default function PericiaPage() {
     dialog.action,
     credenciais.login,
     credenciais.senha,
-    agendamento.dataHora,
     observacao,
     observacaoObrigatoria,
     precisaCredenciais,
@@ -96,10 +82,8 @@ export default function PericiaPage() {
     dialog.action === "aprovar"
       ? "Confirmar aprovação"
       : dialog.action === "reprovar"
-        ? "Confirmar reprovação"
-        : dialog.action === "agendar"
-          ? "Agendar perícia"
-          : "";
+      ? "Confirmar reprovação"
+      : "";
 
   if (isLoading) return <p>Carregando...</p>;
   if (error) return <p>Erro: {error.message}</p>;
@@ -111,12 +95,7 @@ export default function PericiaPage() {
   async function handleConfirm() {
     if (!id) return;
 
-    const status =
-      dialog.action === "aprovar"
-        ? "APROVADA"
-        : dialog.action === "reprovar"
-          ? "REPROVADA"
-          : "PERICIA";
+    const status = dialog.action === "aprovar" ? "APROVADA" : "REPROVADA";
 
     const payload = {
       login: credenciais.login.trim(),
@@ -124,7 +103,7 @@ export default function PericiaPage() {
       documentacaoId: id,
       observacao: observacao.trim(),
       status,
-      data: status === "PERICIA" ? toBackendDateTime(agendamento.dataHora) : null,
+      data: null,
     };
 
     try {
@@ -215,16 +194,6 @@ export default function PericiaPage() {
               <i className="fa-solid fa-xmark"></i>
               <p>Reprovar Documento</p>
             </button>
-
-            <button
-              className={styles.scheduleBtn}
-              type="button"
-              onClick={() => openDialog("agendar")}
-              disabled={validarMutation.isPending}
-            >
-              <i className="fa-regular fa-calendar-plus"></i>
-              <p>Agendar Perícia</p>
-            </button>
           </div>
         </div>
 
@@ -238,6 +207,7 @@ export default function PericiaPage() {
                   className={styles.dialogCloseBtn}
                   onClick={closeDialog}
                   aria-label="Fechar"
+                  disabled={validarMutation.isPending}
                 >
                   ×
                 </button>
@@ -255,7 +225,10 @@ export default function PericiaPage() {
                         type="text"
                         value={credenciais.login}
                         onChange={(e) =>
-                          setCredenciais((p) => ({ ...p, login: e.target.value }))
+                          setCredenciais((p) => ({
+                            ...p,
+                            login: e.target.value,
+                          }))
                         }
                         autoComplete="off"
                       />
@@ -270,7 +243,10 @@ export default function PericiaPage() {
                         type={showPassword ? "text" : "password"}
                         value={credenciais.senha}
                         onChange={(e) =>
-                          setCredenciais((p) => ({ ...p, senha: e.target.value }))
+                          setCredenciais((p) => ({
+                            ...p,
+                            senha: e.target.value,
+                          }))
                         }
                         autoComplete="new-password"
                       />
@@ -278,24 +254,18 @@ export default function PericiaPage() {
                         type="button"
                         className={styles.showPasswordBtn}
                         onClick={() => setShowPassword((v) => !v)}
-                        aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                        aria-label={
+                          showPassword ? "Ocultar senha" : "Mostrar senha"
+                        }
                       >
-                        <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`} />
+                        <i
+                          className={`fa-solid ${
+                            showPassword ? "fa-eye-slash" : "fa-eye"
+                          }`}
+                        />
                       </button>
                     </div>
                   </>
-                )}
-
-                {dialog.action === "agendar" && (
-                  <div className={styles.dialogField}>
-                    <label>Data e horário</label>
-                    <input
-                      className={styles.dialogInput}
-                      type="datetime-local"
-                      value={agendamento.dataHora}
-                      onChange={(e) => setAgendamento({ dataHora: e.target.value })}
-                    />
-                  </div>
                 )}
               </div>
 
@@ -313,6 +283,7 @@ export default function PericiaPage() {
                   type="button"
                   className={styles.dialogConfirmBtn}
                   onClick={handleConfirm}
+                  disabled={isConfirmDisabled}
                 >
                   {validarMutation.isPending ? "Confirmando..." : "Confirmar"}
                 </button>
